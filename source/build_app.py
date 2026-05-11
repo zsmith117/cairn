@@ -441,6 +441,184 @@ TEMPLATE_FORMS = {
             },
         ],
     },
+    "UXR-004-template-5.2": {
+        "title": "Research Plan",
+        "intro": "Detailed planning artifact — goes deeper than the Research Brief. Covers methodology, timeline, budget, and approvals. Built section by section; export to Word when you're ready to circulate.",
+        "sections": [
+            {
+                "id": "header",
+                "title": "Study details",
+                "fields": [
+                    {"name": "study_name", "label": "Study name", "type": "text", "autofill": "project.name"},
+                    {"name": "study_code", "label": "Study code", "type": "text", "placeholder": "e.g. PRJ2026-014"},
+                    {"name": "version", "label": "Version", "type": "text", "placeholder": "1.0"},
+                    {"name": "date", "label": "Date", "type": "date", "autofill": "today"},
+                ],
+            },
+            {
+                "id": "team",
+                "title": "Study team",
+                "fields": [
+                    {"name": "lead_researcher", "label": "Lead researcher", "type": "text", "autofill": "project.owner"},
+                    {"name": "supporting_researchers", "label": "Supporting researchers", "type": "text"},
+                    {"name": "sponsor", "label": "Research sponsor", "type": "text", "autofill": "project.stakeholder"},
+                    {"name": "key_stakeholders", "label": "Key stakeholders", "type": "text"},
+                ],
+            },
+            {
+                "id": "background",
+                "title": "1. Background and context",
+                "blurb": "Why is this research being conducted? What business context drives it?",
+                "fields": [
+                    {"name": "background", "type": "textarea", "rows": 4},
+                    {"name": "prior_research", "label": "Prior research (one study per line)", "type": "textarea", "rows": 3, "placeholder": "Q1 onboarding study, March 2026 — found users abandon at step 3"},
+                ],
+            },
+            {
+                "id": "objectives",
+                "title": "2. Research objectives",
+                "blurb": "This research aims to…",
+                "fields": [
+                    {"name": "objective_1", "label": "Objective 1", "type": "textarea", "rows": 2},
+                    {"name": "objective_2", "label": "Objective 2", "type": "textarea", "rows": 2},
+                    {"name": "decision_informed", "label": "…in order to inform the decision to…", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "questions",
+                "title": "3. Research questions",
+                "fields": [
+                    {"name": "rq_primary_1", "label": "Primary question 1 (must answer)", "type": "textarea", "rows": 2},
+                    {"name": "rq_primary_2", "label": "Primary question 2", "type": "textarea", "rows": 2},
+                    {"name": "rq_primary_3", "label": "Primary question 3", "type": "textarea", "rows": 2},
+                    {"name": "rq_secondary_1", "label": "Secondary question 1 (important)", "type": "textarea", "rows": 2},
+                    {"name": "rq_secondary_2", "label": "Secondary question 2", "type": "textarea", "rows": 2},
+                    {"name": "rq_exploratory", "label": "Exploratory question (if time permits)", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "hypotheses",
+                "title": "4. Hypotheses (if applicable)",
+                "fields": [
+                    {"name": "h1", "label": "H1", "type": "textarea", "rows": 2},
+                    {"name": "h2", "label": "H2", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "method",
+                "title": "5. Methodology",
+                "fields": [
+                    {"name": "method", "label": "Method", "type": "text", "placeholder": "e.g. semi-structured interviews"},
+                    {"name": "method_rationale", "label": "Rationale", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "participants",
+                "title": "Participant requirements",
+                "fields": [
+                    {"name": "target_population", "label": "Target population", "type": "textarea", "rows": 2},
+                    {"name": "criteria_must_have", "label": "Must have", "type": "textarea", "rows": 2},
+                    {"name": "criteria_nice_to_have", "label": "Nice to have", "type": "textarea", "rows": 2},
+                    {"name": "criteria_quotas", "label": "Quotas", "type": "textarea", "rows": 2},
+                    {"name": "criteria_exclusions", "label": "Exclusions", "type": "textarea", "rows": 2},
+                    {"name": "sample_size", "label": "Sample size", "type": "text", "placeholder": "e.g. 8–10"},
+                    {"name": "sample_rationale", "label": "Sample size rationale", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "sessions",
+                "title": "Session details",
+                "fields": [
+                    {
+                        "name": "session_format",
+                        "label": "Format",
+                        "type": "radio",
+                        "options": [
+                            {"value": "remote", "label": "Remote"},
+                            {"value": "in_person", "label": "In-person"},
+                            {"value": "field", "label": "Field visit"},
+                        ],
+                    },
+                    {"name": "session_duration", "label": "Duration (minutes)", "type": "text", "placeholder": "60"},
+                    {"name": "rec_audio", "label": "Recording: Audio", "type": "checkbox"},
+                    {"name": "rec_video", "label": "Recording: Video", "type": "checkbox"},
+                    {"name": "rec_screen", "label": "Recording: Screen", "type": "checkbox"},
+                    {"name": "tools", "label": "Tools (Zoom, Otter, Figma, etc.)", "type": "text"},
+                ],
+            },
+            {
+                "id": "timeline",
+                "title": "6. Timeline",
+                "blurb": "Target dates for each milestone.",
+                "fields": [
+                    {"name": "tl_plan_approved", "label": "Plan approved", "type": "date"},
+                    {"name": "tl_recruit_begin", "label": "Recruitment begins", "type": "date"},
+                    {"name": "tl_recruit_done", "label": "Recruitment complete", "type": "date"},
+                    {"name": "tl_sessions_begin", "label": "Sessions begin", "type": "date"},
+                    {"name": "tl_sessions_done", "label": "Sessions complete", "type": "date"},
+                    {"name": "tl_analysis_done", "label": "Analysis complete", "type": "date"},
+                    {"name": "tl_findings_delivered", "label": "Findings delivered", "type": "date"},
+                ],
+            },
+            {
+                "id": "deliverables",
+                "title": "7. Deliverables",
+                "blurb": "One deliverable per line: format · audience · date.",
+                "fields": [
+                    {"name": "deliverables", "type": "textarea", "rows": 4, "placeholder": "Top-line readout · slide deck · exec team · 2026-06-15\nFull report · doc · all-hands · 2026-06-22"},
+                ],
+            },
+            {
+                "id": "budget",
+                "title": "8. Resources and budget",
+                "fields": [
+                    {"name": "budget_incentives", "label": "Incentives", "type": "text"},
+                    {"name": "budget_recruitment", "label": "Recruitment", "type": "text"},
+                    {"name": "budget_tools", "label": "Tools", "type": "text"},
+                    {"name": "budget_travel", "label": "Travel", "type": "text"},
+                    {"name": "budget_total", "label": "Total", "type": "text"},
+                ],
+            },
+            {
+                "id": "risks",
+                "title": "9. Risks and mitigations",
+                "blurb": "One risk per line: risk · probability · impact · mitigation.",
+                "fields": [
+                    {"name": "risks", "type": "textarea", "rows": 4, "placeholder": "Low recruitment yield · medium · high · prepay vendor and over-screen by 30%"},
+                ],
+            },
+            {
+                "id": "comms",
+                "title": "10. Communication plan",
+                "fields": [
+                    {"name": "status_updates", "label": "Status updates", "type": "text", "placeholder": "Weekly Slack on Mondays"},
+                    {"name": "check_ins", "label": "Stakeholder check-ins", "type": "text"},
+                    {"name": "escalation", "label": "Issue escalation", "type": "text"},
+                ],
+            },
+            {
+                "id": "ethics",
+                "title": "11. Ethical considerations",
+                "fields": [
+                    {"name": "consent_approach", "label": "Consent approach", "type": "textarea", "rows": 2},
+                    {"name": "data_handling", "label": "Data handling", "type": "textarea", "rows": 2},
+                    {"name": "participant_considerations", "label": "Participant considerations", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "approvals",
+                "title": "Approvals",
+                "fields": [
+                    {"name": "approval_lead_name", "label": "Research lead — name", "type": "text"},
+                    {"name": "approval_lead_date", "label": "Date", "type": "date"},
+                    {"name": "approval_sponsor_name", "label": "Research sponsor — name", "type": "text"},
+                    {"name": "approval_sponsor_date", "label": "Date", "type": "date"},
+                    {"name": "approval_other_name", "label": "Other (if required) — name", "type": "text"},
+                    {"name": "approval_other_date", "label": "Date", "type": "date"},
+                ],
+            },
+        ],
+    },
     "UXR-005-template-5.1": {
         "title": "Generative Interview Guide",
         "intro": "Build your interview script section by section. Fields autosave to the project. Export to Word for a printable guide you can take into sessions.",
@@ -3150,6 +3328,8 @@ function autofillValue(field, proj) {
   if (!field.autofill || !proj) return '';
   if (field.autofill === 'project.name') return proj.name || '';
   if (field.autofill === 'project.owner') return proj.owner || '';
+  if (field.autofill === 'project.stakeholder') return proj.stakeholder || '';
+  if (field.autofill === 'project.description') return proj.description || '';
   if (field.autofill === 'today') return new Date().toISOString().slice(0, 10);
   return '';
 }

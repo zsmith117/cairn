@@ -3895,7 +3895,7 @@ TEMPLATE = r"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>UX Research SOP Library</title>
+<title>Throughline</title>
 <style>
   :root {
     --bg: #fbfaf7;
@@ -5968,15 +5968,15 @@ TEMPLATE = r"""<!doctype html>
     <button class="hamburger" onclick="openSidebar()" aria-label="Open navigation">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
-    <div class="mobile-header-title" id="mobile-title">SOP Library</div>
+    <div class="mobile-header-title" id="mobile-title">Throughline</div>
     <button class="hamburger" onclick="openSearch()" aria-label="Search">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
     </button>
   </header>
   <aside class="sidebar" id="sidebar">
     <div class="brand" onclick="goHome(); closeSidebar();">
-      <div class="brand-mark">UX</div>
-      <div class="brand-name">SOP Library</div>
+      <div class="brand-mark">TL</div>
+      <div class="brand-name">Throughline</div>
     </div>
     <div class="brand-sub">UX Research Operations</div>
 
@@ -5984,7 +5984,7 @@ TEMPLATE = r"""<!doctype html>
 
     <div class="mode-toggle" id="mode-toggle">
       <button id="mode-guide" onclick="route('guide')">Project Guide</button>
-      <button id="mode-library" onclick="route('library')">SOP Library</button>
+      <button id="mode-library" onclick="route('library')">SOPs</button>
     </div>
 
     <button class="search-btn" onclick="openSearch()">
@@ -6915,7 +6915,7 @@ function renderEmptyNav() {
 function updateMobileTitle(r) {
   const el = document.getElementById('mobile-title');
   if (!el) return;
-  let title = 'SOP Library';
+  let title = 'Throughline';
   if (r.view === 'projects') title = 'Projects';
   else if (r.view === 'project-home') title = activeProject()?.name || 'Project';
   else if (r.view === 'phase') {
@@ -6923,7 +6923,7 @@ function updateMobileTitle(r) {
     title = ph ? `Phase ${ph.number}: ${ph.title}` : 'Phase';
   }
   else if (r.view === 'guide-home') title = 'Project Guide';
-  else if (r.view === 'library-home') title = 'SOP Library';
+  else if (r.view === 'library-home') title = 'SOP Library';  // page heading inside library mode
   else if (r.view === 'sop') {
     const sop = SOPS[r.sopId];
     title = sop ? sop.display : 'SOP';
@@ -7513,7 +7513,7 @@ function renderGuideHome() {
 
     <div style="margin-top:48px; padding-top:24px; border-top:1px solid var(--border); color:var(--text-muted); font-size:13.5px;">
       Looking for the underlying SOPs, checklists, and templates organized by topic?
-      <a onclick="route('library')" style="color:var(--accent); cursor:pointer; border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);">Switch to the SOP Library →</a>
+      <a onclick="route('library')" style="color:var(--accent); cursor:pointer; border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);">Switch to the SOP library →</a>
     </div>
   `;
 }

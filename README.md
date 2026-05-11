@@ -1,58 +1,104 @@
-# UX Research SOP Library
+# Throughline
 
-A self-contained web app organizing 9 UX research SOPs, 40 checklists, and 49 templates for B2B industrial research operations.
+A working project workspace and reference library for UX research operations.
+Built for B2B industrial research where evidence has to survive procurement,
+engineering, and the C-suite.
+
+Live demo: **https://zsmith117.github.io/throughline/**
 
 ## Open it
 
-Double-click **`UX Research SOP Library.html`**. The app runs entirely offline in your browser — no install, no server.
+Visit the URL above, or double-click `Throughline.html` to run it locally
+in your browser. No install, no server, no account — everything saves in
+`localStorage` and stays on your device.
 
 ## Two ways to use it
 
 Toggle between modes at the top of the sidebar:
 
-- **Project Guide** (default) — five research phases from kickoff to close. Each phase shows the work, references the SOPs you'll need, and the completion checklist saves locally so you can pick up where you left off.
-- **SOP Library** — the same SOPs, checklists, and templates organized by lifecycle phase for reference browsing.
+- **Project Guide** (default) — a 5-phase runbook for an entire research
+  project, from kickoff through delivery. Each phase shows your in-progress
+  artifacts, recommends the right starter for that phase, and tracks your
+  completion as you go.
+- **SOPs** — the underlying reference library: 9 UX research SOPs, 40
+  checklists, 49 templates, organized for browsing.
 
 ## Features
 
-- **Procedure** — the full SOP, with a scroll-spy table of contents on the right.
-- **Checklists** — collapsible checklists per SOP, with proper task-list checkboxes.
-- **Templates** — collapsible form templates per SOP, with editable tables.
-- **Phase checkboxes** — task lists inside the Project Guide phases persist in `localStorage`. Sidebar and home cards show your completion %.
-- **Cross-references** — each SOP shows "Used in: Phase X" pills linking back to the relevant guide phase.
-- **Cmd-K** (or `/`) — search across SOPs, checklists, templates, *and* guide phases.
-- **Open in Word** — at the bottom of any checklist/template (and the top of each procedure), download a `.doc` you can save locally and edit in Microsoft Word.
-- **Theme toggle** — light/dark, bottom-left of the sidebar.
+### Project workspace
+- **Create multiple projects** with name, owner, stakeholder, description.
+- **Phase progression** — Project Initiation → Research Design → Field Work
+  → Analysis → Delivery & Close. Phase advances automatically when its
+  completion checklist hits 100%.
+- **Next-action card** on every project home points at the right artifact
+  to work on next.
+- **Autosave** — everything you type persists immediately. A subtle "Saved"
+  toast confirms each write.
 
-## Sharing
+### Fillable artifacts
+- **25 of 49 templates have bespoke forms** that render as interactive UI:
+  Research Brief, Plan, Interview Guide, Screener, Session Notes,
+  Theme Development, Insight Development, Executive Summary, and more.
+- **The remaining 24 templates** are editable in place — `___` blanks
+  become text inputs, table cells become `contenteditable`, checklist
+  `- [ ]` items become live checkboxes.
+- **Multi-instance support** — Session Notes, Field Notes, Workshop
+  Agendas, Health Checks, etc. can have N instances per project (one
+  per session, visit, workshop, audit, …) with per-instance status.
+- **Section completeness** — each form section shows `3/5` filled in
+  mono next to the title, with a green ✓ when complete.
 
-The HTML file is fully portable. To send it to someone, just attach `UX Research SOP Library.html` to an email or drop it into a shared drive. They double-click and it works.
+### Working with the docs
+- **Open in Word** — every artifact exports to a `.doc` populated with
+  your project name and filled-in data. Filename prefixed with the
+  project so files stay organized.
+- **Compile Readout** — one click on the project home bundles every
+  filled artifact into a single Word document with a cover page,
+  phase grouping, and properly nested headings. Ready to send.
+- **Export project as JSON** — backup or move a project between devices.
+
+### Discovery and recovery
+- **⌘K / `/`** search across SOPs, checklists, templates, and phases.
+  When a project is active, your in-progress artifacts surface above
+  reference results.
+- **Undo for delete** — accidentally delete an instance or a whole
+  project? An undo toast appears for 8 seconds. One click restores it.
+- **Welcome banner** explains the workflow on your first project visit.
+
+### Accessibility & responsive
+- WCAG AA contrast on all status indicators.
+- Inline text inputs carry derived `aria-label`s from preceding context.
+- Hidden `aria-live` announcer reads each autosave + milestone.
+- Mobile drawer navigation below 880px viewport.
 
 ## Editing the content
 
-The source markdown files live in `source/`. If you want to update an SOP:
+The source markdown files live in `source/`. To update an SOP:
 
-1. Edit any file in `source/markdown/`, `source/Checklists/`, or `source/Templates/`.
-2. Run the build script to regenerate the HTML:
+1. Edit any file in `source/markdown/`, `source/Checklists/`,
+   `source/Templates/`, or `source/phases/`.
+2. Run the build script:
 
    ```
    cd source
    python3 build_app.py
    ```
 
-   This rewrites `source/index.html`. Copy that over the top-level `UX Research SOP Library.html` when you're happy.
+3. Copy the regenerated `source/index.html` over the top-level
+   `Throughline.html`.
 
-Python 3.8+ is the only dependency. The first build downloads `marked.min.js` (~30 KB) and caches it as `source/.marked.min.js`.
+Python 3.8+ is the only dependency. The first build downloads
+`marked.min.js` (~30 KB) and caches it.
 
 ## File map
 
 ```
-UX Research SOP Library.html    ← the app
-README.md                       ← this file
+Throughline.html        ← the app (drop into any browser, no server)
+README.md
 source/
-  build_app.py                  ← bundles markdown → HTML
-  markdown/                     ← 9 SOPs
-  Checklists/                   ← 40 checklists (after dedupe)
-  Templates/                    ← 49 templates (after dedupe)
-  phases/                       ← 5 Project Guide phase pages
+  build_app.py         ← bundles markdown + form schemas → HTML
+  markdown/            ← 9 SOPs
+  Checklists/          ← 46 source files → 40 after dedupe
+  Templates/           ← 52 source files → 49 after dedupe
+  phases/              ← 5 Project Guide phase pages
 ```

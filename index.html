@@ -181,6 +181,80 @@
     border-radius: 50%;
     flex-shrink: 0;
   }
+
+  /* Phase-complete celebration banner */
+  .celebrate-toast {
+    position: fixed;
+    top: 22px;
+    right: 22px;
+    max-width: 360px;
+    background: var(--accent);
+    color: var(--surface);
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 8px 28px rgba(0,0,0,.18);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    opacity: 0;
+    transform: translateY(-12px) scale(.96);
+    pointer-events: none;
+    transition: opacity .25s, transform .25s;
+    z-index: 220;
+  }
+  html[data-theme="dark"] .celebrate-toast { color: var(--bg); }
+  .celebrate-toast.show {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  .celebrate-toast-icon {
+    width: 38px; height: 38px;
+    border-radius: 50%;
+    background: rgba(255,255,255,.18);
+    display: grid; place-items: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+  html[data-theme="dark"] .celebrate-toast-icon { background: rgba(0,0,0,.18); }
+  .celebrate-toast-title {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+  .celebrate-toast-sub {
+    font-size: 12.5px;
+    opacity: .85;
+    margin-top: 3px;
+  }
+  .celebrate-toast-cta {
+    background: rgba(255,255,255,.18);
+    border: none;
+    color: inherit;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  html[data-theme="dark"] .celebrate-toast-cta { background: rgba(0,0,0,.18); }
+  .celebrate-toast-cta:hover { background: rgba(255,255,255,.28); }
+  html[data-theme="dark"] .celebrate-toast-cta:hover { background: rgba(0,0,0,.28); }
+
+  /* Search result group headers */
+  .search-group-header {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .14em;
+    color: var(--text-faint);
+    font-weight: 600;
+    padding: 10px 22px 4px;
+    margin-top: 2px;
+  }
+  .search-group-header:first-child { margin-top: 0; }
   .sr-only {
     position: absolute !important;
     width: 1px; height: 1px;
@@ -1973,6 +2047,14 @@
 </div>
 
 <div class="save-toast" id="save-toast" role="status" aria-live="off"><span class="save-toast-dot"></span><span id="save-toast-text">Saved</span></div>
+<div class="celebrate-toast" id="celebrate-toast" role="status">
+  <div class="celebrate-toast-icon">✓</div>
+  <div>
+    <div class="celebrate-toast-title" id="celebrate-toast-title">Phase complete</div>
+    <div class="celebrate-toast-sub" id="celebrate-toast-sub"></div>
+  </div>
+  <button class="celebrate-toast-cta" id="celebrate-toast-cta" onclick="onCelebrateCta()">Open</button>
+</div>
 <div class="sr-only" id="sr-announcer" aria-live="polite" aria-atomic="true"></div>
 
 <div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeSearch()">
@@ -2368,6 +2450,37 @@ function showSaveToast(text) {
   if (a) a.textContent = text || 'Saved';
 }
 
+let _celebrateRoute = null;
+let _celebrateTimer = null;
+function showPhaseComplete(completedPhase, nextPhase) {
+  const t = document.getElementById('celebrate-toast');
+  if (!t) return;
+  const title = `Phase ${completedPhase.number}: ${completedPhase.title} complete`;
+  const sub = nextPhase ? `Next up — Phase ${nextPhase.number}: ${nextPhase.title}` : 'You finished the project guide.';
+  document.getElementById('celebrate-toast-title').textContent = title;
+  document.getElementById('celebrate-toast-sub').textContent = sub;
+  const cta = document.getElementById('celebrate-toast-cta');
+  if (nextPhase) {
+    cta.style.display = '';
+    cta.textContent = `Open Phase ${nextPhase.number} →`;
+    _celebrateRoute = `guide/${nextPhase.id}`;
+  } else {
+    cta.style.display = 'none';
+    _celebrateRoute = null;
+  }
+  t.classList.add('show');
+  clearTimeout(_celebrateTimer);
+  _celebrateTimer = setTimeout(() => t.classList.remove('show'), 5000);
+  const a = document.getElementById('sr-announcer');
+  if (a) a.textContent = title + (nextPhase ? '. ' + sub : '');
+}
+function onCelebrateCta() {
+  if (_celebrateRoute) {
+    route(_celebrateRoute);
+    document.getElementById('celebrate-toast').classList.remove('show');
+  }
+}
+
 // ---- Project state model ----
 const PROJECTS_KEY = 'sop-projects-v1';
 const LEGACY_CHECKLIST_KEY = 'sop-guide-checklist-state';
@@ -2547,19 +2660,13 @@ function renderGuideNav(activePhaseId) {
 
 function renderLibraryNav(activeSopId) {
   const nav = document.getElementById('nav');
-  nav.innerHTML = DATA.phases.map((phase, i) => `
-    <div class="nav-phase">
-      <div class="nav-phase-header">
-        <span class="nav-phase-num">${String(i+1).padStart(2,'0')}</span>
-        <span>${phase.name}</span>
-      </div>
-      ${phase.sops.map(s => `
-        <a class="nav-link ${s.id===activeSopId?'active':''}" onclick="route('sop/${s.id}/procedure')">
-          <span class="nav-id">${s.id.replace('UXR-','')}</span>${s.display}
-        </a>
-      `).join('')}
-    </div>
-  `).join('');
+  const allSops = DATA.phases.flatMap(p => p.sops);
+  nav.innerHTML = `<div class="nav-section-label">Standard Operating Procedures</div>` +
+    allSops.map(s => `
+      <a class="nav-link ${s.id===activeSopId?'active':''}" onclick="route('sop/${s.id}/procedure')">
+        <span class="nav-id">${s.id.replace('UXR-','')}</span>${s.display}
+      </a>
+    `).join('');
 }
 
 function updateModeToggle(mode) {
@@ -2830,17 +2937,27 @@ function computeNextAction() {
   };
 }
 
-// Auto-advance currentPhase when the active phase's checklist hits 100%.
+// Auto-advance currentPhase when the active phase's checklist hits 100%, and
+// celebrate the milestone (once per phase per project).
 function maybeAdvanceCurrentPhase() {
   const proj = activeProject();
   if (!proj) return;
   const cur = proj.currentPhase || 'phase-1';
   const idx = DATA.guide_phases.findIndex(p => p.id === cur);
-  if (idx === -1 || idx >= DATA.guide_phases.length - 1) return;
+  if (idx === -1) return;
   const pct = phaseCompletionPercent(cur);
-  if (pct === 100) {
-    updateActiveProject(p => { p.currentPhase = DATA.guide_phases[idx + 1].id; });
-  }
+  if (pct !== 100) return;
+
+  const completedPhase = DATA.guide_phases[idx];
+  const nextPhase = idx < DATA.guide_phases.length - 1 ? DATA.guide_phases[idx + 1] : null;
+
+  const celebrated = (proj.celebratedPhases || []).includes(cur);
+  updateActiveProject(p => {
+    p.celebratedPhases = p.celebratedPhases || [];
+    if (!p.celebratedPhases.includes(cur)) p.celebratedPhases.push(cur);
+    if (nextPhase) p.currentPhase = nextPhase.id;
+  });
+  if (!celebrated) showPhaseComplete(completedPhase, nextPhase);
 }
 
 function projectOverallCompletion(proj) {
@@ -3332,9 +3449,10 @@ function renderPhaseWorkSection(phaseId) {
 // ---- Library home view ----
 function renderLibraryHome() {
   const t = DATA.totals;
+  const allSops = DATA.phases.flatMap(p => p.sops);
   document.getElementById('main').innerHTML = `
     <div class="home-eyebrow">UX Research Operations · SOP Library</div>
-    <h1 class="home-title">A working library for industrial UX research.</h1>
+    <h1 class="home-title">Standard operating procedures.</h1>
     <p class="home-lede">
       Nine SOPs, ${t.checklists} checklists, and ${t.templates} templates covering the full research lifecycle —
       from informed consent through repository curation. Built for B2B teams where research evidence has to survive
@@ -3344,33 +3462,23 @@ function renderLibraryHome() {
       <div class="stat"><div class="n">${t.sops}</div><div class="l">SOPs</div></div>
       <div class="stat"><div class="n">${t.checklists}</div><div class="l">Checklists</div></div>
       <div class="stat"><div class="n">${t.templates}</div><div class="l">Templates</div></div>
-      <div class="stat"><div class="n">7</div><div class="l">Lifecycle phases</div></div>
     </div>
 
-    ${DATA.phases.map((phase, i) => `
-      <section class="phase-section">
-        <div class="phase-head">
-          <span class="phase-num">${String(i+1).padStart(2,'0')} / ${String(DATA.phases.length).padStart(2,'0')}</span>
-          <h2 class="phase-name">${phase.name}</h2>
+    <div class="phase-cards">
+      ${allSops.map(s => `
+        <div class="sop-card" onclick="route('sop/${s.id}/procedure')">
+          <div class="sop-card-id">${s.id}</div>
+          <div class="sop-card-title">${s.display}</div>
+          <div class="sop-card-meta">
+            <span>${s.read_minutes} min read</span>
+            <span>·</span>
+            <span>${s.checklist_count} checklists</span>
+            <span>·</span>
+            <span>${s.template_count} templates</span>
+          </div>
         </div>
-        <p class="phase-blurb">${phase.blurb}</p>
-        <div class="phase-cards">
-          ${phase.sops.map(s => `
-            <div class="sop-card" onclick="route('sop/${s.id}/procedure')">
-              <div class="sop-card-id">${s.id}</div>
-              <div class="sop-card-title">${s.display}</div>
-              <div class="sop-card-meta">
-                <span>${s.read_minutes} min read</span>
-                <span>·</span>
-                <span>${s.checklist_count} checklists</span>
-                <span>·</span>
-                <span>${s.template_count} templates</span>
-              </div>
-            </div>
-          `).join('')}
-        </div>
-      </section>
-    `).join('')}
+      `).join('')}
+    </div>
   `;
 }
 
@@ -3394,7 +3502,7 @@ function renderSop(sopId, tab, anchor, fromPhase) {
       ` : `
         <a onclick="route('library')">Library</a>
         <span class="sep">/</span>
-        <span>${phase.name}</span>
+        <span>${sop.id}</span>
       `}
     </div>
     <div class="sop-title-row">
@@ -4147,18 +4255,51 @@ function renderSearchResults(q) {
     if (score > 0) hits.push({ doc: d, score });
   }
   hits.sort((a, b) => b.score - a.score);
-  searchResults = hits.slice(0, 30);
+
+  // Partition: results that match a saved artifact in the active project
+  // float to the top under a 'Your work' header.
+  const proj = activeProject();
+  const yours = [];
+  const reference = [];
+  hits.forEach(h => {
+    const d = h.doc;
+    const artifactKey =
+      d.kind === 'Checklist' ? `${d.sopId}-checklist-${d.section}` :
+      d.kind === 'Template' ? `${d.sopId}-template-${d.section}` : null;
+    if (proj && artifactKey && proj.artifactStatus?.[artifactKey]) yours.push(h);
+    else reference.push(h);
+  });
+  // Cap total at 30, prioritising 'your work'
+  const limited = [...yours.slice(0, 12), ...reference.slice(0, 30 - Math.min(yours.length, 12))];
+  searchResults = limited;
   if (!searchResults.length) {
     results.innerHTML = `<div class="search-empty">No matches for "${escapeHtml(q)}".</div>`;
     return;
   }
-  results.innerHTML = searchResults.map((h, i) => `
+
+  const yourCount = Math.min(yours.length, 12);
+  const html = [];
+  if (yourCount > 0) {
+    html.push(`<div class="search-group-header">Your work · ${yourCount}</div>`);
+    for (let i = 0; i < yourCount; i++) {
+      html.push(renderSearchHit(limited[i], i, q));
+    }
+    html.push(`<div class="search-group-header">Library reference</div>`);
+  }
+  for (let i = yourCount; i < limited.length; i++) {
+    html.push(renderSearchHit(limited[i], i, q));
+  }
+  results.innerHTML = html.join('');
+}
+
+function renderSearchHit(h, i, q) {
+  return `
     <div class="search-result ${i===searchSelIdx?'sel':''}" data-i="${i}" onclick="goSearch(${i})">
       <div class="search-result-title">${escapeHtml(h.doc.title)}</div>
       <div class="search-result-meta">${h.doc.kind} · ${h.doc.sopId}${h.doc.section ? ' · ' + h.doc.section : ''} · ${h.doc.phase}</div>
       ${snippet(h.doc.raw, q) ? `<div class="search-result-snippet">${snippet(h.doc.raw, q)}</div>` : ''}
     </div>
-  `).join('');
+  `;
 }
 
 function goSearch(i) {

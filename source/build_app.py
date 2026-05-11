@@ -322,6 +322,128 @@ def compute_sop_to_phases(guide_phases):
     return out
 
 
+# Fillable template forms. Each entry replaces the markdown view of a template
+# with an interactive form when the user is inside a project.
+TEMPLATE_FORMS = {
+    "UXR-004-template-5.1": {
+        "title": "Research Brief",
+        "intro": "Align the team on what we're learning, why, and how the findings will be used. Created at project kickoff.",
+        "sections": [
+            {
+                "id": "header",
+                "title": "Project",
+                "fields": [
+                    {"name": "project", "label": "Project name", "type": "text", "autofill": "project.name"},
+                    {"name": "date", "label": "Date", "type": "date", "autofill": "today"},
+                    {"name": "requester", "label": "Requester", "type": "text", "placeholder": "Who is asking for this research?"},
+                    {"name": "researcher", "label": "Researcher", "type": "text", "autofill": "project.owner"},
+                ],
+            },
+            {
+                "id": "background",
+                "title": "Background",
+                "blurb": "What's happening that prompts this research request?",
+                "fields": [{"name": "background", "type": "textarea", "rows": 4}],
+            },
+            {
+                "id": "decision",
+                "title": "Business decision",
+                "blurb": "This research will inform the decision to…",
+                "fields": [{"name": "decision", "type": "textarea", "rows": 3}],
+            },
+            {
+                "id": "questions",
+                "title": "Key questions",
+                "blurb": "Up to three things we need to learn.",
+                "fields": [
+                    {"name": "question_1", "label": "Question 1", "type": "textarea", "rows": 2},
+                    {"name": "question_2", "label": "Question 2", "type": "textarea", "rows": 2},
+                    {"name": "question_3", "label": "Question 3", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "assumptions",
+                "title": "What we think we know",
+                "blurb": "Current assumptions or hypotheses going in.",
+                "fields": [
+                    {"name": "assumption_1", "label": "Assumption 1", "type": "text"},
+                    {"name": "assumption_2", "label": "Assumption 2", "type": "text"},
+                    {"name": "assumption_3", "label": "Assumption 3", "type": "text"},
+                ],
+            },
+            {
+                "id": "timeline",
+                "title": "Timeline",
+                "fields": [
+                    {"name": "decision_deadline", "label": "Decision needed by", "type": "date"},
+                    {"name": "research_completion", "label": "Research completion target", "type": "date"},
+                ],
+            },
+            {
+                "id": "constraints",
+                "title": "Constraints",
+                "fields": [
+                    {"name": "budget", "label": "Budget", "type": "text"},
+                    {"name": "participant_access", "label": "Participant access", "type": "text"},
+                    {"name": "other_constraints", "label": "Other", "type": "text"},
+                ],
+            },
+            {
+                "id": "existing_research",
+                "title": "Existing research",
+                "fields": [
+                    {"name": "checked_repo", "label": "Checked repository", "type": "checkbox"},
+                    {"name": "relevant_studies", "label": "Relevant studies found", "type": "text"},
+                    {"name": "no_prior", "label": "No prior research found", "type": "checkbox"},
+                ],
+            },
+            {
+                "id": "assessment",
+                "title": "Preliminary assessment",
+                "fields": [
+                    {"name": "approach", "label": "Recommended approach", "type": "textarea", "rows": 3},
+                    {
+                        "name": "effort",
+                        "label": "Estimated effort",
+                        "type": "radio",
+                        "options": [
+                            {"value": "small", "label": "Small (1–2 weeks)"},
+                            {"value": "medium", "label": "Medium (3–5 weeks)"},
+                            {"value": "large", "label": "Large (6+ weeks)"},
+                        ],
+                    },
+                ],
+            },
+            {
+                "id": "next_steps",
+                "title": "Next steps",
+                "fields": [
+                    {
+                        "name": "next_step",
+                        "type": "radio",
+                        "options": [
+                            {"value": "proceed", "label": "Proceed to full research plan"},
+                            {"value": "more_info", "label": "Need more information"},
+                            {"value": "defer", "label": "Defer"},
+                            {"value": "decline", "label": "Decline"},
+                        ],
+                    },
+                    {"name": "next_step_note", "label": "Notes / reason", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "approval",
+                "title": "Approval",
+                "fields": [
+                    {"name": "approved_by", "label": "Approved by", "type": "text"},
+                    {"name": "approval_date", "label": "Approval date", "type": "date"},
+                ],
+            },
+        ],
+    }
+}
+
+
 def main():
     sops = collect_sops()
     checklists = collect_attachments(CHECKLIST_DIR)
@@ -381,6 +503,7 @@ def main():
         "phases": phase_blocks,
         "guide_phases": guide_phases,
         "totals": totals,
+        "template_forms": TEMPLATE_FORMS,
     }
     data_json = json.dumps(data, ensure_ascii=False)
 
@@ -1195,6 +1318,474 @@ TEMPLATE = r"""<!doctype html>
     font-weight: 600;
   }
 
+  /* Active project banner in sidebar */
+  .project-banner {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    cursor: pointer;
+    transition: border-color .15s;
+  }
+  .project-banner:hover { border-color: var(--border-strong); }
+  .project-banner-label {
+    font-size: 10px;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    margin-bottom: 3px;
+    font-weight: 600;
+  }
+  .project-banner-name {
+    font-family: var(--serif);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.2;
+    word-wrap: break-word;
+  }
+  .project-banner-switch {
+    font-size: 11px;
+    color: var(--text-faint);
+    margin-top: 4px;
+  }
+  .project-banner.empty {
+    background: transparent;
+    border-style: dashed;
+  }
+  .project-banner.empty .project-banner-name {
+    color: var(--text-muted);
+    font-family: var(--sans);
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+
+  /* Projects dashboard */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 14px;
+    margin-top: 24px;
+  }
+  .project-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    cursor: pointer;
+    transition: border-color .15s, transform .15s, box-shadow .15s;
+    position: relative;
+  }
+  .project-card:hover {
+    border-color: var(--border-strong);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+  }
+  .project-card.active {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+  }
+  .project-card-active-tag {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .project-card-name {
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 500;
+    letter-spacing: -.01em;
+    margin: 0 0 6px;
+    padding-right: 60px;
+  }
+  .project-card-desc {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin: 0 0 12px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .project-card-meta {
+    display: flex;
+    gap: 10px;
+    font-size: 11.5px;
+    color: var(--text-faint);
+    margin-bottom: 12px;
+  }
+  .project-card-progress {
+    height: 4px;
+    background: var(--surface-2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+  .project-card-progress-bar { height: 100%; background: var(--accent); transition: width .25s; }
+  .project-card-phase {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11.5px;
+    color: var(--text-muted);
+  }
+
+  .new-project-card {
+    background: var(--surface);
+    border: 2px dashed var(--border-strong);
+    border-radius: var(--radius);
+    padding: 28px;
+    cursor: pointer;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    color: var(--text-muted);
+    transition: border-color .15s, color .15s, background .15s;
+  }
+  .new-project-card:hover {
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+  }
+  html[data-theme="dark"] .new-project-card:hover { color: var(--accent); }
+  .new-project-plus {
+    font-size: 32px;
+    line-height: 1;
+    font-weight: 300;
+    font-family: var(--serif);
+  }
+
+  /* Project home view */
+  .ph-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 8px;
+  }
+  .ph-title {
+    font-family: var(--serif);
+    font-size: 40px;
+    font-weight: 500;
+    letter-spacing: -.02em;
+    line-height: 1.05;
+    margin: 0;
+  }
+  .ph-meta {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-top: 6px;
+  }
+  .ph-actions {
+    display: flex;
+    gap: 8px;
+    flex-shrink: 0;
+    margin-top: 8px;
+  }
+  .ph-action-btn {
+    background: transparent;
+    border: 1px solid var(--border-strong);
+    color: var(--text-muted);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    cursor: pointer;
+    transition: border-color .15s, color .15s, background .15s;
+  }
+  .ph-action-btn:hover { border-color: var(--accent); color: var(--accent-ink); background: var(--accent-soft); }
+  html[data-theme="dark"] .ph-action-btn:hover { color: var(--accent); }
+
+  .ph-section {
+    margin-top: 36px;
+  }
+  .ph-section-title {
+    font-family: var(--serif);
+    font-size: 20px;
+    font-weight: 500;
+    margin: 0 0 4px;
+    letter-spacing: -.005em;
+  }
+  .ph-section-sub {
+    color: var(--text-muted);
+    font-size: 13.5px;
+    margin: 0 0 18px;
+  }
+  .ph-phase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+  }
+  .ph-phase-tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    cursor: pointer;
+    transition: border-color .15s, transform .15s;
+  }
+  .ph-phase-tile:hover { border-color: var(--border-strong); transform: translateY(-1px); }
+  .ph-phase-tile.current { border-color: var(--accent); }
+  .ph-phase-tile-num {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-faint);
+    letter-spacing: .08em;
+  }
+  .ph-phase-tile-title {
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 500;
+    margin: 4px 0 8px;
+  }
+  .ph-phase-tile-bar {
+    height: 3px;
+    background: var(--surface-2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 4px;
+  }
+  .ph-phase-tile-bar > div { height: 100%; background: var(--accent); transition: width .25s; }
+  .ph-phase-tile-pct { font-size: 11px; color: var(--text-faint); }
+
+  .artifact-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    gap: 14px;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .artifact-row:hover { background: var(--surface-2); }
+  .artifact-row:last-child { border-bottom: none; }
+  .artifact-row-kind {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--text-faint);
+    width: 80px;
+    flex-shrink: 0;
+  }
+  .artifact-row-title { flex: 1; min-width: 0; font-size: 13.5px; }
+  .artifact-row-title strong { font-weight: 500; }
+  .artifact-row-status {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+  .status-todo { background: var(--surface-2); color: var(--text-faint); }
+  .status-in-progress { background: #fef3c7; color: #92400e; }
+  html[data-theme="dark"] .status-in-progress { background: #443a1a; color: #fcd34d; }
+  .status-done { background: var(--accent-soft); color: var(--accent-ink); }
+  html[data-theme="dark"] .status-done { color: var(--accent); }
+  .artifact-row-date { font-size: 11px; color: var(--text-faint); flex-shrink: 0; }
+
+  /* Create/edit project form */
+  .pf-form {
+    max-width: 540px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-top: 16px;
+  }
+  .pf-field { margin-bottom: 18px; }
+  .pf-field label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    letter-spacing: .01em;
+  }
+  .pf-field input[type="text"],
+  .pf-field input[type="date"],
+  .pf-field textarea,
+  .pf-field select,
+  .form-input {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    padding: 8px 11px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: var(--sans);
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .pf-field textarea, textarea.form-input {
+    resize: vertical;
+    min-height: 80px;
+    line-height: 1.5;
+  }
+  .pf-field input:focus, .pf-field textarea:focus, .form-input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .pf-field .hint { font-size: 11.5px; color: var(--text-faint); margin-top: 4px; }
+  .pf-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--border);
+  }
+  .pf-btn-primary {
+    background: var(--accent);
+    color: var(--surface);
+    border: 1px solid var(--accent);
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  html[data-theme="dark"] .pf-btn-primary { color: var(--bg); }
+  .pf-btn-primary:hover { opacity: .9; }
+  .pf-btn-secondary {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-strong);
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .pf-btn-secondary:hover { color: var(--text); border-color: var(--text-muted); }
+
+  /* Save-to-project widget on artifacts */
+  .save-to-project {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-right: auto;
+  }
+  .save-to-project select {
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12.5px;
+    font-family: var(--sans);
+  }
+  .save-status-label {
+    font-size: 11.5px;
+    color: var(--text-faint);
+  }
+
+  /* Template form view */
+  .tform-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 14px;
+  }
+  .tform-section-title {
+    font-family: var(--serif);
+    font-size: 17px;
+    font-weight: 500;
+    margin: 0 0 6px;
+    letter-spacing: -.005em;
+  }
+  .tform-section-blurb {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin: 0 0 16px;
+  }
+  .tform-field { margin-bottom: 14px; }
+  .tform-field:last-child { margin-bottom: 0; }
+  .tform-field label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+  .tform-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .tform-radio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .tform-radio-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13.5px;
+    transition: background .15s;
+  }
+  .tform-radio-option:hover { background: var(--surface-2); }
+  .tform-radio-option.selected { background: var(--accent-soft); color: var(--accent-ink); }
+  html[data-theme="dark"] .tform-radio-option.selected { color: var(--accent); }
+  .tform-checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13.5px;
+    cursor: pointer;
+  }
+  .tform-intro {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    padding: 14px 18px;
+    border-radius: 6px;
+    color: var(--accent-ink);
+    margin-bottom: 18px;
+    font-size: 13.5px;
+    line-height: 1.5;
+  }
+  html[data-theme="dark"] .tform-intro { color: var(--text); }
+  .tform-toggle {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 16px;
+    font-size: 12px;
+  }
+  .tform-toggle button {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: var(--sans);
+  }
+  .tform-toggle button.active {
+    background: var(--accent-soft);
+    border-color: var(--accent);
+    color: var(--accent-ink);
+  }
+  html[data-theme="dark"] .tform-toggle button.active { color: var(--accent); }
+  .tform-saved-note {
+    font-size: 11.5px;
+    color: var(--text-faint);
+    margin-left: auto;
+    align-self: center;
+  }
+
   /* TOC */
   .toc {
     position: sticky;
@@ -1315,6 +1906,8 @@ TEMPLATE = r"""<!doctype html>
       <div class="brand-name">SOP Library</div>
     </div>
     <div class="brand-sub">UX Research Operations</div>
+
+    <div id="project-banner-slot"></div>
 
     <div class="mode-toggle" id="mode-toggle">
       <button id="mode-guide" onclick="route('guide')">Project Guide</button>
@@ -1479,7 +2072,62 @@ function registerDownload(key, title, sopId, markdown) {
 }
 function triggerDownload(key) {
   const d = DOWNLOAD_REGISTRY.get(key);
-  if (d) downloadAsWord(d.title, d.sopId, d.markdown);
+  if (!d) return;
+  const schema = DATA.template_forms[key];
+  const proj = activeProject();
+  const stored = proj?.artifactStatus[key]?.data;
+  if (schema && stored && Object.values(stored).some(v => v !== '' && v !== false && v != null)) {
+    downloadFilledForm(d, schema, proj, stored);
+  } else {
+    downloadAsWord(d.title, d.sopId, d.markdown);
+  }
+}
+
+function downloadFilledForm(meta, schema, proj, data) {
+  let body = '';
+  schema.sections.forEach(s => {
+    if (s.title) body += `<h2>${escapeHtml(s.title)}</h2>`;
+    if (s.blurb) body += `<p style="color:#666;font-style:italic;">${escapeHtml(s.blurb)}</p>`;
+    s.fields.forEach(f => {
+      const v = data[f.name];
+      if (f.type === 'radio') {
+        const opt = (f.options || []).find(o => o.value === v);
+        const label = opt ? opt.label : '—';
+        body += `<p><strong>${escapeHtml(f.label || f.name)}:</strong> ${escapeHtml(label)}</p>`;
+      } else if (f.type === 'checkbox') {
+        body += `<p>${v === true ? '☑' : '☐'} ${escapeHtml(f.label || f.name)}</p>`;
+      } else if (f.type === 'textarea') {
+        const display = (v && String(v).trim()) || '—';
+        body += `<p><strong>${escapeHtml(f.label || f.name)}:</strong></p><p style="margin-left:12px;">${escapeHtml(display).replace(/\n/g, '<br>')}</p>`;
+      } else {
+        const display = (v && String(v).trim()) || '—';
+        body += `<p><strong>${escapeHtml(f.label || f.name)}:</strong> ${escapeHtml(display)}</p>`;
+      }
+    });
+  });
+  const today = new Date().toISOString().slice(0, 10);
+  const projName = proj ? proj.name : '';
+  const filename = (projName ? projName + ' — ' : '') + meta.title;
+  const safeName = filename.replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, ' ').trim() + '.doc';
+  const doc = `<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8"><title>${escapeHtml(filename)}</title>
+<style>${WORD_CSS}</style></head>
+<body>
+<h1>${escapeHtml(schema.title || meta.title)}</h1>
+<div class="meta">${projName ? `Project: ${escapeHtml(projName)} · ` : ''}Source: ${escapeHtml(meta.sopId)} · Exported ${today}</div>
+${body}
+</body></html>`;
+  const blob = new Blob(['﻿', doc], { type: 'application/msword' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = safeName;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 100);
 }
 
 const DOWNLOAD_ICON = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
@@ -1500,6 +2148,98 @@ function toggleTheme() {
   applyTheme(cur === 'dark' ? 'light' : 'dark');
 }
 applyTheme(localStorage.getItem('sop-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+
+// ---- Project state model ----
+const PROJECTS_KEY = 'sop-projects-v1';
+const LEGACY_CHECKLIST_KEY = 'sop-guide-checklist-state';
+
+function loadProjectsState() {
+  try {
+    return JSON.parse(localStorage.getItem(PROJECTS_KEY) || '{"projects":[],"activeId":null}');
+  } catch { return {projects:[], activeId:null}; }
+}
+function saveProjectsState(state) {
+  localStorage.setItem(PROJECTS_KEY, JSON.stringify(state));
+}
+function createProject({name, description, owner, stakeholder}) {
+  const now = new Date().toISOString();
+  return {
+    id: 'p-' + Math.random().toString(36).slice(2, 10),
+    name: name || 'Untitled project',
+    description: description || '',
+    owner: owner || '',
+    stakeholder: stakeholder || '',
+    currentPhase: 'phase-1',
+    createdAt: now,
+    updatedAt: now,
+    phaseChecks: {},
+    artifactStatus: {},
+  };
+}
+function activeProject() {
+  const state = loadProjectsState();
+  if (!state.activeId) return null;
+  return state.projects.find(p => p.id === state.activeId) || null;
+}
+function setActiveProject(id) {
+  const state = loadProjectsState();
+  state.activeId = id;
+  saveProjectsState(state);
+}
+function updateActiveProject(mutate) {
+  const state = loadProjectsState();
+  const p = state.projects.find(x => x.id === state.activeId);
+  if (!p) return;
+  mutate(p);
+  p.updatedAt = new Date().toISOString();
+  saveProjectsState(state);
+}
+function getArtifactState(key) {
+  const p = activeProject();
+  return (p && p.artifactStatus[key]) || null;
+}
+function setArtifactStatus(key, patch) {
+  updateActiveProject(p => {
+    const cur = p.artifactStatus[key] || {};
+    p.artifactStatus[key] = {...cur, ...patch, updatedAt: new Date().toISOString()};
+  });
+}
+function setArtifactData(key, data) {
+  updateActiveProject(p => {
+    const cur = p.artifactStatus[key] || {status: 'in-progress'};
+    p.artifactStatus[key] = {...cur, data, status: cur.status === 'done' ? 'done' : 'in-progress', updatedAt: new Date().toISOString()};
+  });
+}
+
+// Migrate legacy global checkbox state (from before per-project tracking) into a Default project.
+(function migrateLegacy() {
+  const state = loadProjectsState();
+  if (state.projects.length > 0) return;
+  let legacy = null;
+  try { legacy = JSON.parse(localStorage.getItem(LEGACY_CHECKLIST_KEY) || '{}'); } catch { return; }
+  if (!legacy || !Object.keys(legacy).length) return;
+  const p = createProject({
+    name: 'Default project',
+    description: 'Migrated from earlier reference-mode checkbox progress. Rename or archive when you no longer need it.',
+  });
+  p.phaseChecks = legacy;
+  state.projects.push(p);
+  state.activeId = p.id;
+  saveProjectsState(state);
+})();
+
+// Per-project phase-completion checkbox helpers
+function loadPhaseChecks() {
+  const p = activeProject();
+  if (p) return p.phaseChecks || {};
+  try { return JSON.parse(localStorage.getItem(LEGACY_CHECKLIST_KEY) || '{}'); }
+  catch { return {}; }
+}
+function savePhaseChecks(state) {
+  const proj = activeProject();
+  if (proj) updateActiveProject(p => { p.phaseChecks = state; });
+  else localStorage.setItem(LEGACY_CHECKLIST_KEY, JSON.stringify(state));
+}
 
 // ---- Sidebar ----
 function renderGuideNav(activePhaseId) {
@@ -1546,25 +2286,32 @@ function route(hash) {
   location.hash = hash;
 }
 function goHome() {
-  location.hash = 'guide';
+  location.hash = activeProject() ? 'project-home' : 'projects';
 }
 
 function parseHash() {
   const h = location.hash.replace(/^#/, '');
-  if (!h || h === 'guide') return { view: 'guide-home' };
+  if (!h) {
+    // Default landing: dashboard always (per multi-project answer).
+    return { view: 'projects' };
+  }
   const [path, anchor] = h.split('#');
   const parts = path.split('/');
-  if (parts[0] === 'guide' && parts[1]) {
-    return { view: 'phase', phaseId: parts[1], anchor };
-  }
+  if (parts[0] === 'projects' && parts[1] === 'new') return { view: 'project-new' };
+  if (parts[0] === 'projects' && parts[1] === 'edit') return { view: 'project-edit' };
+  if (parts[0] === 'projects') return { view: 'projects' };
+  if (parts[0] === 'project-home') return { view: 'project-home' };
+  if (parts[0] === 'guide' && parts[1]) return { view: 'phase', phaseId: parts[1], anchor };
+  if (parts[0] === 'guide') return { view: 'guide-home' };
   if (parts[0] === 'library') return { view: 'library-home' };
   if (parts[0] === 'sop' && parts[1]) {
     return { view: 'sop', sopId: parts[1], tab: parts[2] || 'procedure', anchor };
   }
-  return { view: 'guide-home' };
+  return { view: 'projects' };
 }
 
 function currentMode(r) {
+  if (r.view === 'projects' || r.view === 'project-new' || r.view === 'project-edit' || r.view === 'project-home') return 'projects';
   if (r.view === 'guide-home' || r.view === 'phase') return 'guide';
   return 'library';
 }
@@ -1573,8 +2320,22 @@ function render() {
   const r = parseHash();
   const mode = currentMode(r);
   updateModeToggle(mode);
+  renderProjectBanner();
 
-  if (r.view === 'guide-home') {
+  if (r.view === 'projects') {
+    renderEmptyNav();
+    renderProjectsDashboard();
+  } else if (r.view === 'project-new') {
+    renderEmptyNav();
+    renderProjectForm(null);
+  } else if (r.view === 'project-edit') {
+    renderEmptyNav();
+    renderProjectForm(activeProject());
+  } else if (r.view === 'project-home') {
+    if (!activeProject()) { route('projects'); return; }
+    renderEmptyNav();
+    renderProjectHome();
+  } else if (r.view === 'guide-home') {
     renderGuideNav(null);
     renderGuideHome();
   } else if (r.view === 'phase') {
@@ -1591,17 +2352,34 @@ function render() {
 }
 window.addEventListener('hashchange', render);
 
-// ---- Checklist persistence (Project Guide phases) ----
-const CHECKLIST_STATE_KEY = 'sop-guide-checklist-state';
-function loadChecklistState() {
-  try { return JSON.parse(localStorage.getItem(CHECKLIST_STATE_KEY) || '{}'); }
-  catch { return {}; }
+function renderEmptyNav() {
+  document.getElementById('nav').innerHTML = '';
 }
-function saveChecklistState(state) {
-  localStorage.setItem(CHECKLIST_STATE_KEY, JSON.stringify(state));
+
+function renderProjectBanner() {
+  const wrap = document.getElementById('project-banner-slot');
+  if (!wrap) return;
+  const proj = activeProject();
+  if (!proj) {
+    wrap.innerHTML = `
+      <div class="project-banner empty" onclick="route('projects')">
+        <div class="project-banner-label">No project active</div>
+        <div class="project-banner-name">Pick or create a project →</div>
+      </div>`;
+    return;
+  }
+  const pct = projectOverallCompletion(proj);
+  wrap.innerHTML = `
+    <div class="project-banner" onclick="route('project-home')">
+      <div class="project-banner-label">Working on</div>
+      <div class="project-banner-name">${escapeHtml(proj.name)}</div>
+      <div class="project-banner-switch">${pct}% complete · <a onclick="event.stopPropagation(); route('projects');" style="color:var(--accent); cursor:pointer; text-decoration:underline;">switch</a></div>
+    </div>`;
 }
+
+// ---- Phase-completion checkbox helpers (project-scoped) ----
 function phaseCompletionPercent(phaseId) {
-  const state = loadChecklistState();
+  const state = loadPhaseChecks();
   const phase = DATA.guide_phases.find(p => p.id === phaseId);
   if (!phase) return 0;
   const matches = phase.content.match(/^- \[[ x]\]/gm) || [];
@@ -1611,17 +2389,287 @@ function phaseCompletionPercent(phaseId) {
   return Math.round((checked / matches.length) * 100);
 }
 function bindPhaseCheckboxes(container, phaseId) {
-  const state = loadChecklistState();
+  const state = loadPhaseChecks();
   const phaseState = state[phaseId] = state[phaseId] || {};
   container.querySelectorAll('input[type="checkbox"]').forEach((cb, idx) => {
     cb.disabled = false;
     cb.checked = phaseState[idx] === true;
     cb.addEventListener('change', () => {
       phaseState[idx] = cb.checked;
-      saveChecklistState(state);
-      renderGuideNav(phaseId); // refresh progress in sidebar
+      savePhaseChecks(state);
+      renderGuideNav(phaseId);
+      renderProjectBanner();
     });
   });
+}
+function projectOverallCompletion(proj) {
+  if (!proj) return 0;
+  const phases = DATA.guide_phases;
+  let total = 0, checked = 0;
+  phases.forEach(ph => {
+    const matches = (ph.content.match(/^- \[[ x]\]/gm) || []).length;
+    total += matches;
+    const phaseState = (proj.phaseChecks || {})[ph.id] || {};
+    checked += Object.values(phaseState).filter(v => v === true).length;
+  });
+  return total ? Math.round((checked / total) * 100) : 0;
+}
+
+// ---- Projects dashboard ----
+function renderProjectsDashboard() {
+  const state = loadProjectsState();
+  const projects = state.projects.slice().sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
+  const activeId = state.activeId;
+
+  document.getElementById('main').innerHTML = `
+    <div class="home-eyebrow">Your Research Projects</div>
+    <h1 class="home-title">Start a project, or pick up where you left off.</h1>
+    <p class="home-lede">
+      Each project tracks its own phase progress, saved checklists, and filled-in templates.
+      Everything lives in your browser — export to JSON if you need to move between devices.
+    </p>
+
+    ${projects.length === 0 ? `
+      <div class="new-project-card" onclick="route('projects/new')" style="margin-top:32px; padding:60px 28px;">
+        <div class="new-project-plus">+</div>
+        <div style="font-family:var(--serif); font-size:18px; font-weight:500;">Create your first project</div>
+        <div style="font-size:13px;">Or <a onclick="event.stopPropagation(); route('guide');" style="color:var(--accent); cursor:pointer; text-decoration:underline;">browse the reference library →</a></div>
+      </div>
+    ` : `
+      <div class="projects-grid">
+        <div class="new-project-card" onclick="route('projects/new')">
+          <div class="new-project-plus">+</div>
+          <div style="font-size:13.5px; font-weight:500;">New project</div>
+        </div>
+        ${projects.map(p => {
+          const pct = projectOverallCompletion(p);
+          const phase = DATA.guide_phases.find(ph => ph.id === p.currentPhase);
+          const updated = formatRelative(p.updatedAt);
+          return `
+            <div class="project-card ${p.id===activeId?'active':''}" onclick="enterProject('${p.id}')">
+              ${p.id===activeId ? '<div class="project-card-active-tag">Active</div>' : ''}
+              <h3 class="project-card-name">${escapeHtml(p.name)}</h3>
+              <p class="project-card-desc">${escapeHtml(p.description || (p.owner ? 'Owner: ' + p.owner : 'No description yet.'))}</p>
+              <div class="project-card-progress"><div class="project-card-progress-bar" style="width:${pct}%"></div></div>
+              <div class="project-card-phase">
+                <span>${phase ? `Phase ${phase.number}: ${phase.title}` : 'Phase 1: Initiation'}</span>
+                <span>${pct}%</span>
+              </div>
+              <div class="project-card-meta" style="margin-top:10px;">
+                <span>${updated}</span>
+                ${p.stakeholder ? `<span>·</span><span>${escapeHtml(p.stakeholder)}</span>` : ''}
+              </div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+
+      <div style="margin-top:36px; color:var(--text-muted); font-size:13px;">
+        Want to browse without a project? <a onclick="setActiveProject(null); render(); route('guide');" style="color:var(--accent); cursor:pointer; text-decoration:underline;">Reference mode →</a>
+      </div>
+    `}
+  `;
+}
+
+function enterProject(id) {
+  setActiveProject(id);
+  route('project-home');
+}
+
+function formatRelative(iso) {
+  if (!iso) return 'just now';
+  const then = new Date(iso).getTime();
+  const diff = Date.now() - then;
+  const min = 60 * 1000, hr = 60 * min, day = 24 * hr;
+  if (diff < hr) return Math.max(1, Math.round(diff / min)) + ' min ago';
+  if (diff < day) return Math.round(diff / hr) + ' hr ago';
+  if (diff < 7 * day) return Math.round(diff / day) + ' days ago';
+  return new Date(iso).toLocaleDateString();
+}
+
+// ---- New / edit project form ----
+function renderProjectForm(existing) {
+  const isEdit = !!existing;
+  const p = existing || {name:'', description:'', owner:'', stakeholder:''};
+  document.getElementById('main').innerHTML = `
+    <div class="breadcrumb">
+      <a onclick="route('projects')">Projects</a>
+      <span class="sep">/</span>
+      <span>${isEdit ? 'Edit project' : 'New project'}</span>
+    </div>
+    <h1 class="home-title" style="font-size:32px;">${isEdit ? 'Edit project' : 'Create a project'}</h1>
+    <p class="home-lede" style="font-size:15px; max-width:560px;">
+      Anything you fill in here can be changed later. The project lives in your browser.
+    </p>
+
+    <form class="pf-form" onsubmit="event.preventDefault(); submitProjectForm(${isEdit ? `'${p.id}'` : 'null'});">
+      <div class="pf-field">
+        <label for="pf-name">Project name *</label>
+        <input id="pf-name" type="text" required value="${escapeHtml(p.name)}" placeholder="e.g. Q2 Industrial CPQ research">
+      </div>
+      <div class="pf-field">
+        <label for="pf-desc">Description</label>
+        <textarea id="pf-desc" placeholder="What's this study about?">${escapeHtml(p.description)}</textarea>
+      </div>
+      <div class="pf-field">
+        <label for="pf-owner">Owner / lead researcher</label>
+        <input id="pf-owner" type="text" value="${escapeHtml(p.owner)}" placeholder="Your name">
+      </div>
+      <div class="pf-field">
+        <label for="pf-stakeholder">Stakeholder / sponsor</label>
+        <input id="pf-stakeholder" type="text" value="${escapeHtml(p.stakeholder)}" placeholder="Who's the audience for findings?">
+        <div class="hint">Often the requester from the Research Brief.</div>
+      </div>
+
+      <div class="pf-actions">
+        <button type="submit" class="pf-btn-primary">${isEdit ? 'Save changes' : 'Create project'}</button>
+        <button type="button" class="pf-btn-secondary" onclick="route('${isEdit ? 'project-home' : 'projects'}')">Cancel</button>
+        ${isEdit ? `<button type="button" class="pf-btn-secondary" style="margin-left:auto; color:#b91c1c;" onclick="deleteCurrentProject()">Delete project</button>` : ''}
+      </div>
+    </form>
+  `;
+}
+
+function submitProjectForm(existingId) {
+  const name = document.getElementById('pf-name').value.trim();
+  if (!name) return;
+  const desc = document.getElementById('pf-desc').value.trim();
+  const owner = document.getElementById('pf-owner').value.trim();
+  const stakeholder = document.getElementById('pf-stakeholder').value.trim();
+  const state = loadProjectsState();
+  if (existingId) {
+    const p = state.projects.find(x => x.id === existingId);
+    if (p) {
+      p.name = name; p.description = desc; p.owner = owner; p.stakeholder = stakeholder;
+      p.updatedAt = new Date().toISOString();
+      saveProjectsState(state);
+    }
+    route('project-home');
+  } else {
+    const p = createProject({name, description: desc, owner, stakeholder});
+    state.projects.push(p);
+    state.activeId = p.id;
+    saveProjectsState(state);
+    route('project-home');
+  }
+}
+
+function deleteCurrentProject() {
+  const proj = activeProject();
+  if (!proj) return;
+  if (!confirm(`Delete "${proj.name}"? This cannot be undone.`)) return;
+  const state = loadProjectsState();
+  state.projects = state.projects.filter(x => x.id !== proj.id);
+  state.activeId = state.projects.length ? state.projects[0].id : null;
+  saveProjectsState(state);
+  route('projects');
+}
+
+// ---- Project home view ----
+function renderProjectHome() {
+  const p = activeProject();
+  if (!p) { route('projects'); return; }
+  const pct = projectOverallCompletion(p);
+  const phase = DATA.guide_phases.find(ph => ph.id === p.currentPhase);
+
+  const artifacts = Object.entries(p.artifactStatus || {})
+    .map(([key, val]) => {
+      const meta = parseArtifactKey(key);
+      if (!meta) return null;
+      return { key, ...meta, ...val };
+    })
+    .filter(Boolean)
+    .sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
+
+  document.getElementById('main').innerHTML = `
+    <div class="breadcrumb">
+      <a onclick="route('projects')">Projects</a>
+      <span class="sep">/</span>
+      <span>${escapeHtml(p.name)}</span>
+    </div>
+    <div class="ph-header">
+      <div>
+        <h1 class="ph-title">${escapeHtml(p.name)}</h1>
+        <div class="ph-meta">
+          ${p.owner ? `Owner: ${escapeHtml(p.owner)} · ` : ''}
+          ${p.stakeholder ? `Stakeholder: ${escapeHtml(p.stakeholder)} · ` : ''}
+          ${pct}% complete · created ${formatRelative(p.createdAt)}
+        </div>
+        ${p.description ? `<p style="color:var(--text-muted); margin-top:12px; max-width:640px; font-size:14.5px;">${escapeHtml(p.description)}</p>` : ''}
+      </div>
+      <div class="ph-actions">
+        <button class="ph-action-btn" onclick="route('guide/${p.currentPhase}')">Continue ${phase ? `Phase ${phase.number}` : ''} →</button>
+        <button class="ph-action-btn" onclick="route('projects/edit')">Edit</button>
+        <button class="ph-action-btn" onclick="exportProjectJson()">Export JSON</button>
+      </div>
+    </div>
+
+    <section class="ph-section">
+      <h2 class="ph-section-title">Phase progress</h2>
+      <p class="ph-section-sub">Click any phase to jump in. Completion is based on the phase-completion checklist.</p>
+      <div class="ph-phase-grid">
+        ${DATA.guide_phases.map(ph => {
+          const phPct = phaseCompletionPercent(ph.id);
+          return `
+            <div class="ph-phase-tile ${ph.id===p.currentPhase?'current':''}" onclick="route('guide/${ph.id}')">
+              <div class="ph-phase-tile-num">Phase ${ph.number}</div>
+              <div class="ph-phase-tile-title">${ph.title}</div>
+              <div class="ph-phase-tile-bar"><div style="width:${phPct}%"></div></div>
+              <div class="ph-phase-tile-pct">${phPct}% complete</div>
+            </div>
+          `;
+        }).join('')}
+      </div>
+    </section>
+
+    <section class="ph-section">
+      <h2 class="ph-section-title">Saved artifacts</h2>
+      <p class="ph-section-sub">Checklists and templates you've worked on for this project.</p>
+      ${artifacts.length === 0 ? `
+        <div style="padding:24px; background:var(--surface-2); border-radius:8px; color:var(--text-muted); font-size:13.5px;">
+          No artifacts yet. Open a checklist or template from a phase or SOP and use <strong>Save to project</strong> to track it here.
+        </div>
+      ` : `
+        <div style="background:var(--surface); border:1px solid var(--border); border-radius:8px; overflow:hidden;">
+          ${artifacts.map(a => `
+            <div class="artifact-row" onclick="route('sop/${a.sopId}/${a.kind}s')">
+              <div class="artifact-row-kind">${a.sopId} · ${a.section}</div>
+              <div class="artifact-row-title">
+                <strong>${escapeHtml(a.label || (a.kind.charAt(0).toUpperCase() + a.kind.slice(1)))}</strong>
+                <span style="color:var(--text-faint); margin-left:6px; font-size:11.5px;">${a.kind}</span>
+              </div>
+              <span class="artifact-row-status status-${a.status || 'todo'}">${(a.status || 'todo').replace('-', ' ')}</span>
+              <span class="artifact-row-date">${formatRelative(a.updatedAt)}</span>
+            </div>
+          `).join('')}
+        </div>
+      `}
+    </section>
+  `;
+}
+
+function parseArtifactKey(key) {
+  // e.g. "UXR-004-template-5.1" → { sopId: 'UXR-004', kind: 'template', section: '5.1', label: '...' }
+  const m = key.match(/^(UXR-\d{3})-(checklist|template)-(.+)$/);
+  if (!m) return null;
+  const [, sopId, kind, section] = m;
+  const sop = SOPS[sopId];
+  const list = kind === 'checklist' ? sop?.checklists : sop?.templates;
+  const item = list?.find(x => x.section === section);
+  return { sopId, kind, section, label: item?.label };
+}
+
+function exportProjectJson() {
+  const p = activeProject();
+  if (!p) return;
+  const blob = new Blob([JSON.stringify(p, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${p.name.replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, ' ').trim()}.json`;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 100);
 }
 
 // ---- Guide home view ----
@@ -1828,23 +2876,183 @@ function renderAttachments(items, kind, sopId) {
     const filename = `${sopId} — ${item.section} ${item.label} ${kindLabel}`;
     const key = `${sopId}-${kind}-${item.section}`;
     registerDownload(key, filename, sopId, item.content);
+    const formSchema = DATA.template_forms[key];
+    const hasForm = kind === 'template' && !!formSchema;
     return `
-    <div class="attach" id="sec-${item.section.replace('.','-')}">
+    <div class="attach" id="sec-${item.section.replace('.','-')}" data-artifact-key="${key}">
       <button class="attach-head" onclick="this.parentElement.classList.toggle('open')">
         <span class="attach-section">${item.section}</span>
         <span class="attach-title">${item.label}</span>
         <span class="attach-chev">›</span>
       </button>
       <div class="attach-body">
-        <div class="prose">${renderMd(item.content)}</div>
+        <div class="attach-content" data-key="${key}" data-kind="${kind}">
+          ${hasForm ? renderTemplateBody(key, item, formSchema) : `<div class="prose">${renderMd(item.content)}</div>`}
+        </div>
         <div class="attach-actions">
+          ${saveToProjectControl(key)}
           <button class="word-btn" onclick="triggerDownload('${key}')">${DOWNLOAD_ICON} Open in Word</button>
-          <span class="attach-hint">Downloads as .doc — save locally and edit in Word.</span>
         </div>
       </div>
     </div>
     `;
   }).join('')}</div>`;
+}
+
+// ---- Save-to-project control on each artifact ----
+function saveToProjectControl(key) {
+  const proj = activeProject();
+  if (!proj) {
+    return `<div class="save-to-project">
+      <span class="save-status-label">Want to track this in a project? <a onclick="route('projects')" style="color:var(--accent); cursor:pointer; text-decoration:underline;">Pick a project →</a></span>
+    </div>`;
+  }
+  const cur = (proj.artifactStatus || {})[key] || {};
+  const status = cur.status || '';
+  return `<div class="save-to-project">
+    <span class="save-status-label">Save to <strong>${escapeHtml(proj.name)}</strong>:</span>
+    <select onchange="onArtifactStatusChange('${key}', this.value)">
+      <option value="" ${!status?'selected':''}>— Not saved —</option>
+      <option value="todo" ${status==='todo'?'selected':''}>To do</option>
+      <option value="in-progress" ${status==='in-progress'?'selected':''}>In progress</option>
+      <option value="done" ${status==='done'?'selected':''}>Done</option>
+    </select>
+    ${cur.updatedAt ? `<span class="save-status-label">Updated ${formatRelative(cur.updatedAt)}</span>` : ''}
+  </div>`;
+}
+
+function onArtifactStatusChange(key, value) {
+  if (!activeProject()) return;
+  if (!value) {
+    updateActiveProject(p => { delete p.artifactStatus[key]; });
+  } else {
+    setArtifactStatus(key, { status: value });
+  }
+  // Re-render just this attachment's actions area
+  const el = document.querySelector(`.attach[data-artifact-key="${key}"] .save-to-project`);
+  if (el) el.outerHTML = saveToProjectControl(key);
+  renderProjectBanner();
+}
+
+// ---- Template form renderer ----
+function renderTemplateBody(key, item, schema) {
+  const proj = activeProject();
+  const useFormByDefault = !!proj;
+  const stored = (proj && proj.artifactStatus[key]) || null;
+  const showForm = stored?.view !== 'markdown' && useFormByDefault;
+  const toggleId = 'toggle-' + key.replace(/[^a-z0-9]/gi, '-');
+  return `
+    <div class="tform-toggle" id="${toggleId}">
+      <button class="${showForm?'active':''}" onclick="setTemplateView('${key}','form')">Fill in</button>
+      <button class="${!showForm?'active':''}" onclick="setTemplateView('${key}','markdown')">Source</button>
+    </div>
+    <div class="tform-body">
+      ${showForm ? renderForm(key, schema) : `<div class="prose">${renderMd(item.content)}</div>`}
+    </div>
+  `;
+}
+
+function setTemplateView(key, view) {
+  if (activeProject()) {
+    updateActiveProject(p => {
+      p.artifactStatus[key] = p.artifactStatus[key] || {};
+      p.artifactStatus[key].view = view;
+    });
+  }
+  render();
+}
+
+function renderForm(key, schema) {
+  const proj = activeProject();
+  const data = (proj && proj.artifactStatus[key]?.data) || {};
+  const intro = schema.intro ? `<div class="tform-intro">${escapeHtml(schema.intro)}</div>` : '';
+  const sections = schema.sections.map(s => renderFormSection(key, s, data)).join('');
+  return intro + sections;
+}
+
+function autofillValue(field, proj) {
+  if (!field.autofill || !proj) return '';
+  if (field.autofill === 'project.name') return proj.name || '';
+  if (field.autofill === 'project.owner') return proj.owner || '';
+  if (field.autofill === 'today') return new Date().toISOString().slice(0, 10);
+  return '';
+}
+
+function renderFormSection(key, section, data) {
+  const proj = activeProject();
+  const fieldsHtml = section.fields.map(f => {
+    const stored = data[f.name];
+    const value = stored !== undefined ? stored : autofillValue(f, proj);
+    const id = `f-${key}-${f.name}`.replace(/[^a-z0-9-]/gi, '_');
+    const onChange = `onFormFieldChange('${key}', '${f.name}', this)`;
+    if (f.type === 'textarea') {
+      return `<div class="tform-field">
+        ${f.label ? `<label for="${id}">${escapeHtml(f.label)}</label>` : ''}
+        <textarea id="${id}" class="form-input" rows="${f.rows || 3}" placeholder="${escapeHtml(f.placeholder || '')}" onblur="${onChange}">${escapeHtml(value || '')}</textarea>
+      </div>`;
+    }
+    if (f.type === 'date') {
+      return `<div class="tform-field">
+        ${f.label ? `<label for="${id}">${escapeHtml(f.label)}</label>` : ''}
+        <input id="${id}" type="date" class="form-input" value="${escapeHtml(value || '')}" onchange="${onChange}">
+      </div>`;
+    }
+    if (f.type === 'checkbox') {
+      const checked = stored === true ? 'checked' : '';
+      return `<div class="tform-field">
+        <label class="tform-checkbox-row" for="${id}">
+          <input id="${id}" type="checkbox" ${checked} onchange="onFormFieldChange('${key}', '${f.name}', this)">
+          ${escapeHtml(f.label || '')}
+        </label>
+      </div>`;
+    }
+    if (f.type === 'radio') {
+      return `<div class="tform-field">
+        ${f.label ? `<label>${escapeHtml(f.label)}</label>` : ''}
+        <div class="tform-radio-group">
+          ${f.options.map(opt => `
+            <label class="tform-radio-option ${value===opt.value?'selected':''}">
+              <input type="radio" name="${id}" value="${opt.value}" ${value===opt.value?'checked':''} onchange="onFormFieldChange('${key}', '${f.name}', this)">
+              ${escapeHtml(opt.label)}
+            </label>
+          `).join('')}
+        </div>
+      </div>`;
+    }
+    // default text
+    return `<div class="tform-field">
+      ${f.label ? `<label for="${id}">${escapeHtml(f.label)}</label>` : ''}
+      <input id="${id}" type="text" class="form-input" value="${escapeHtml(value || '')}" placeholder="${escapeHtml(f.placeholder || '')}" onblur="${onChange}">
+    </div>`;
+  }).join('');
+
+  const multiCol = section.fields.length >= 2 && section.fields.every(f => f.type === 'text' || f.type === 'date');
+  const inner = multiCol ? `<div class="tform-row">${fieldsHtml}</div>` : fieldsHtml;
+
+  return `<div class="tform-section">
+    ${section.title ? `<h3 class="tform-section-title">${escapeHtml(section.title)}</h3>` : ''}
+    ${section.blurb ? `<p class="tform-section-blurb">${escapeHtml(section.blurb)}</p>` : ''}
+    ${inner}
+  </div>`;
+}
+
+function onFormFieldChange(key, fieldName, el) {
+  if (!activeProject()) return;
+  let value;
+  if (el.type === 'checkbox') value = el.checked;
+  else value = el.value;
+  updateActiveProject(p => {
+    const cur = p.artifactStatus[key] || {};
+    cur.data = cur.data || {};
+    cur.data[fieldName] = value;
+    cur.status = cur.status === 'done' ? 'done' : 'in-progress';
+    cur.updatedAt = new Date().toISOString();
+    p.artifactStatus[key] = cur;
+  });
+  // Soft-refresh the status pill in this artifact
+  const el2 = document.querySelector(`.attach[data-artifact-key="${key}"] .save-to-project`);
+  if (el2) el2.outerHTML = saveToProjectControl(key);
+  renderProjectBanner();
 }
 
 function renderAttachmentToc(items) {

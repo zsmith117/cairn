@@ -938,6 +938,644 @@ TEMPLATE_FORMS = {
             },
         ],
     },
+    "UXR-008-template-5.1": {
+        "title": "Research Readout Presentation Outline",
+        "intro": "One outline per study. Plan the slide flow, the time budget, and the messages you want to land. Use the Word export as a slide-deck skeleton.",
+        "sections": [
+            {
+                "id": "header",
+                "title": "Presentation header",
+                "fields": [
+                    {"name": "study_name", "label": "Study", "type": "text", "autofill": "project.name"},
+                    {"name": "presentation_date", "label": "Date", "type": "date"},
+                    {"name": "presenter", "label": "Presenter / research team", "type": "text", "autofill": "project.owner"},
+                    {"name": "audience", "label": "Audience", "type": "text", "autofill": "project.stakeholder"},
+                    {"name": "duration_total", "label": "Total duration", "type": "text", "placeholder": "60 min"},
+                ],
+            },
+            {
+                "id": "context",
+                "title": "Context",
+                "fields": [
+                    {"name": "why_research", "label": "Why this research (business challenge, what prompted it)", "type": "textarea", "rows": 3},
+                    {"name": "rq_primary", "label": "Primary research question", "type": "textarea", "rows": 2},
+                    {"name": "rq_secondary", "label": "Secondary questions", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "approach",
+                "title": "Approach",
+                "fields": [
+                    {"name": "method", "label": "Method", "type": "text"},
+                    {"name": "method_why", "label": "Why this approach", "type": "textarea", "rows": 2},
+                    {"name": "when_conducted", "label": "When conducted", "type": "text"},
+                    {"name": "participants", "label": "Participants (who, how many, how recruited)", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "findings",
+                "title": "Key findings",
+                "blurb": "3–5 findings. For each: statement, evidence, and a representative quote.",
+                "fields": [
+                    {"name": "findings_overview", "label": "Findings overview (one-line list)", "type": "textarea", "rows": 3},
+                    {"name": "f1_statement", "label": "Finding 1 statement", "type": "textarea", "rows": 2},
+                    {"name": "f1_evidence", "label": "Finding 1 supporting evidence", "type": "textarea", "rows": 3},
+                    {"name": "f1_quote", "label": "Finding 1 quote", "type": "textarea", "rows": 2},
+                    {"name": "f2_statement", "label": "Finding 2 statement", "type": "textarea", "rows": 2},
+                    {"name": "f2_evidence", "label": "Finding 2 evidence", "type": "textarea", "rows": 3},
+                    {"name": "f2_quote", "label": "Finding 2 quote", "type": "textarea", "rows": 2},
+                    {"name": "f3_statement", "label": "Finding 3 statement", "type": "textarea", "rows": 2},
+                    {"name": "f3_evidence", "label": "Finding 3 evidence", "type": "textarea", "rows": 3},
+                    {"name": "f3_quote", "label": "Finding 3 quote", "type": "textarea", "rows": 2},
+                    {"name": "f4_statement", "label": "Finding 4 statement (optional)", "type": "textarea", "rows": 2},
+                    {"name": "f4_evidence", "label": "Finding 4 evidence", "type": "textarea", "rows": 3},
+                    {"name": "f4_quote", "label": "Finding 4 quote", "type": "textarea", "rows": 2},
+                    {"name": "f5_statement", "label": "Finding 5 statement (optional)", "type": "textarea", "rows": 2},
+                    {"name": "f5_evidence", "label": "Finding 5 evidence", "type": "textarea", "rows": 3},
+                    {"name": "f5_quote", "label": "Finding 5 quote", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "insights",
+                "title": "Insights",
+                "fields": [
+                    {"name": "how_findings_connect", "label": "How findings connect (patterns, why they exist, what they mean)", "type": "textarea", "rows": 4},
+                    {"name": "ux_implications", "label": "User experience implications", "type": "textarea", "rows": 3},
+                    {"name": "business_implications", "label": "Business implications", "type": "textarea", "rows": 3},
+                    {"name": "strategic", "label": "Strategic considerations", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "recommendations",
+                "title": "Recommendations",
+                "blurb": "3–5 prioritized recommendations. For each: what to do, why, expected impact, implementation considerations.",
+                "fields": [
+                    {"name": "rec_overview", "label": "Recommendations overview", "type": "textarea", "rows": 3},
+                    {"name": "rec_1", "label": "Recommendation 1 (HIGH)", "type": "textarea", "rows": 4},
+                    {"name": "rec_2", "label": "Recommendation 2 (HIGH)", "type": "textarea", "rows": 4},
+                    {"name": "rec_3", "label": "Recommendation 3 (MEDIUM)", "type": "textarea", "rows": 4},
+                    {"name": "rec_4", "label": "Recommendation 4 (optional)", "type": "textarea", "rows": 4},
+                    {"name": "rec_5", "label": "Recommendation 5 (optional)", "type": "textarea", "rows": 4},
+                ],
+            },
+            {
+                "id": "next_steps",
+                "title": "Next steps",
+                "fields": [
+                    {"name": "decisions_needed", "label": "Decisions needed", "type": "textarea", "rows": 3},
+                    {"name": "action_items", "label": "Action items with owners and dates", "type": "textarea", "rows": 4},
+                    {"name": "followup_research", "label": "Follow-up research needs", "type": "textarea", "rows": 2},
+                    {"name": "materials_access", "label": "How to access materials", "type": "text"},
+                ],
+            },
+            {
+                "id": "timing",
+                "title": "Time allocation",
+                "fields": [
+                    {"name": "t_context", "label": "Context & approach (min)", "type": "text", "placeholder": "5"},
+                    {"name": "t_findings", "label": "Key findings (min)", "type": "text", "placeholder": "25"},
+                    {"name": "t_insights", "label": "Insights (min)", "type": "text", "placeholder": "10"},
+                    {"name": "t_recs", "label": "Recommendations (min)", "type": "text", "placeholder": "10"},
+                    {"name": "t_next", "label": "Next steps (min)", "type": "text", "placeholder": "5"},
+                    {"name": "t_qa", "label": "Q&A (min)", "type": "text", "placeholder": "15"},
+                ],
+            },
+            {
+                "id": "messages",
+                "title": "Key messages & prep",
+                "fields": [
+                    {"name": "key_message_1", "label": "Primary takeaway", "type": "textarea", "rows": 2},
+                    {"name": "key_message_2", "label": "Supporting message", "type": "textarea", "rows": 2},
+                    {"name": "key_message_3", "label": "Call to action", "type": "textarea", "rows": 2},
+                    {"name": "anticipated_questions", "label": "Anticipated questions and how you'll answer", "type": "textarea", "rows": 5},
+                    {"name": "stakeholder_considerations", "label": "Stakeholder considerations (name · cares about · may resist · how to address)", "type": "textarea", "rows": 5},
+                ],
+            },
+            {
+                "id": "backup",
+                "title": "Backup slides",
+                "blurb": "What you might need but doesn't fit the main flow.",
+                "fields": [
+                    {"name": "backup_slides", "type": "textarea", "rows": 4},
+                ],
+            },
+        ],
+    },
+    "UXR-008-template-5.2": {
+        "title": "Executive Summary",
+        "intro": "One page (two max) for executives who won't read the full report. Lead with the situation, end with what's at stake.",
+        "sections": [
+            {
+                "id": "header",
+                "title": "Header",
+                "fields": [
+                    {"name": "study_name", "label": "Study", "type": "text", "autofill": "project.name"},
+                    {"name": "summary_date", "label": "Date", "type": "date", "autofill": "today"},
+                    {"name": "research_team", "label": "Research team", "type": "text", "autofill": "project.owner"},
+                ],
+            },
+            {
+                "id": "situation",
+                "title": "The situation",
+                "blurb": "2–3 sentences establishing business context that prompted research.",
+                "fields": [
+                    {"name": "situation", "type": "textarea", "rows": 4},
+                ],
+            },
+            {
+                "id": "approach",
+                "title": "Research approach",
+                "blurb": "1–2 sentences on method and participants.",
+                "fields": [
+                    {"name": "approach", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "findings",
+                "title": "Key findings",
+                "blurb": "3–5 bullet points — the most critical findings only.",
+                "fields": [
+                    {"name": "finding_1", "label": "Finding 1 (statement + evidence/prevalence)", "type": "textarea", "rows": 3},
+                    {"name": "finding_2", "label": "Finding 2", "type": "textarea", "rows": 3},
+                    {"name": "finding_3", "label": "Finding 3", "type": "textarea", "rows": 3},
+                    {"name": "finding_4", "label": "Finding 4 (optional)", "type": "textarea", "rows": 3},
+                    {"name": "finding_5", "label": "Finding 5 (optional)", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "meaning",
+                "title": "What it means",
+                "blurb": "2–3 sentences on business implications.",
+                "fields": [
+                    {"name": "what_it_means", "type": "textarea", "rows": 4},
+                ],
+            },
+            {
+                "id": "recommendations",
+                "title": "Recommendations (prioritized)",
+                "fields": [
+                    {"name": "high_rec_1", "label": "HIGH priority — recommendation 1 (impact + rationale)", "type": "textarea", "rows": 3},
+                    {"name": "high_rec_2", "label": "HIGH priority — recommendation 2", "type": "textarea", "rows": 3},
+                    {"name": "medium_rec_1", "label": "MEDIUM priority — recommendation 1", "type": "textarea", "rows": 3},
+                    {"name": "medium_rec_2", "label": "MEDIUM priority — recommendation 2", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "stakes",
+                "title": "What's at stake",
+                "fields": [
+                    {"name": "if_we_act", "label": "If we act — expected positive outcomes", "type": "textarea", "rows": 4},
+                    {"name": "if_we_dont", "label": "If we don't — expected negative outcomes", "type": "textarea", "rows": 4},
+                ],
+            },
+            {
+                "id": "confidence",
+                "title": "Confidence level",
+                "fields": [
+                    {
+                        "name": "confidence",
+                        "label": "Confidence",
+                        "type": "radio",
+                        "options": [
+                            {"value": "high", "label": "HIGH"},
+                            {"value": "medium", "label": "MEDIUM"},
+                            {"value": "low", "label": "LOW"},
+                        ],
+                    },
+                    {"name": "confidence_reasons", "label": "We are confident because… (one reason per line)", "type": "textarea", "rows": 4},
+                    {"name": "limitations", "label": "Limitations to note", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "next_steps",
+                "title": "Next steps",
+                "fields": [
+                    {"name": "immediate", "label": "Immediate (decisions / actions with owner + date)", "type": "textarea", "rows": 4},
+                    {"name": "thirty_days", "label": "30-day follow-ups", "type": "textarea", "rows": 3},
+                    {"name": "longer_term", "label": "Longer-term research / implementation", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "materials",
+                "title": "Full materials",
+                "fields": [
+                    {"name": "report_link", "label": "Complete research report", "type": "text"},
+                    {"name": "deck_link", "label": "Detailed presentation", "type": "text"},
+                    {"name": "researcher_contact", "label": "Researcher contact (name, email)", "type": "text"},
+                ],
+            },
+        ],
+    },
+    "UXR-008-template-5.3": {
+        "title": "Research Highlight One-Pager",
+        "intro": "A single scannable page for sharing — Slack-friendly, attaches to emails, gets pinned to walls. Lead with the primary finding, end with how to learn more.",
+        "sections": [
+            {
+                "id": "header",
+                "title": "Header",
+                "fields": [
+                    {"name": "study_name", "label": "Study", "type": "text", "autofill": "project.name"},
+                    {"name": "highlight_date", "label": "Date", "type": "date", "autofill": "today"},
+                    {"name": "team", "label": "Team", "type": "text", "autofill": "project.owner"},
+                ],
+            },
+            {
+                "id": "primary",
+                "title": "Primary finding",
+                "blurb": "One sentence capturing the most important insight.",
+                "fields": [
+                    {"name": "primary_finding", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "research",
+                "title": "The research",
+                "fields": [
+                    {"name": "method", "label": "Method", "type": "text"},
+                    {"name": "participants", "label": "Participants (number + role description)", "type": "text"},
+                    {"name": "when", "label": "When", "type": "text", "placeholder": "March 2026"},
+                ],
+            },
+            {
+                "id": "findings",
+                "title": "Key findings",
+                "blurb": "Three findings, each with a representative quote.",
+                "fields": [
+                    {"name": "f1_statement", "label": "Finding 1 (specific statement with evidence)", "type": "textarea", "rows": 2},
+                    {"name": "f1_quote", "label": "Quote", "type": "textarea", "rows": 2},
+                    {"name": "f2_statement", "label": "Finding 2", "type": "textarea", "rows": 2},
+                    {"name": "f2_quote", "label": "Quote", "type": "textarea", "rows": 2},
+                    {"name": "f3_statement", "label": "Finding 3", "type": "textarea", "rows": 2},
+                    {"name": "f3_quote", "label": "Quote", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "meaning",
+                "title": "What it means",
+                "blurb": "2–3 sentence interpretation of implications.",
+                "fields": [
+                    {"name": "what_it_means", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "recommendations",
+                "title": "Top recommendations",
+                "fields": [
+                    {"name": "rec_1", "label": "Recommendation 1 (HIGH) — what + brief rationale", "type": "textarea", "rows": 3},
+                    {"name": "rec_2", "label": "Recommendation 2 (HIGH)", "type": "textarea", "rows": 3},
+                    {"name": "rec_3", "label": "Recommendation 3 (MEDIUM)", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "impact",
+                "title": "Expected impact",
+                "fields": [
+                    {"name": "user_impact", "label": "User impact", "type": "textarea", "rows": 2},
+                    {"name": "business_impact", "label": "Business impact", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "learn_more",
+                "title": "Learn more",
+                "fields": [
+                    {"name": "report_link", "label": "Full report", "type": "text"},
+                    {"name": "contact", "label": "Contact (name, email)", "type": "text"},
+                ],
+            },
+        ],
+    },
+    "UXR-008-template-5.4": {
+        "title": "Stakeholder Workshop Agenda",
+        "multi_instance": True,
+        "instance_singular": "workshop",
+        "instance_plural": "workshops",
+        "intro": "One entry per workshop. Cover the timing, the activities, and the decisions you want to come out with.",
+        "sections": [
+            {
+                "id": "header",
+                "title": "Workshop details",
+                "fields": [
+                    {"name": "study_name", "label": "Study", "type": "text", "autofill": "project.name"},
+                    {"name": "workshop_date", "label": "Date", "type": "date", "autofill": "today"},
+                    {"name": "workshop_time", "label": "Time", "type": "text", "placeholder": "10:00 – 13:15"},
+                    {"name": "duration", "label": "Total duration", "type": "text", "placeholder": "3 hours"},
+                    {"name": "facilitator", "label": "Facilitator", "type": "text", "autofill": "project.owner"},
+                    {"name": "scribe", "label": "Scribe", "type": "text"},
+                ],
+            },
+            {
+                "id": "purpose",
+                "title": "Purpose & participants",
+                "fields": [
+                    {"name": "purpose", "label": "Purpose", "type": "textarea", "rows": 2, "placeholder": "Collaborative synthesis and decision-making based on research findings."},
+                    {"name": "research_team", "label": "Research team", "type": "text"},
+                    {"name": "product_design", "label": "Product / design", "type": "text"},
+                    {"name": "engineering", "label": "Engineering", "type": "text"},
+                    {"name": "stakeholders", "label": "Other stakeholders", "type": "text"},
+                ],
+            },
+            {
+                "id": "materials",
+                "title": "Materials needed",
+                "fields": [
+                    {"name": "m_findings", "label": "Research findings presentation", "type": "checkbox"},
+                    {"name": "m_quotes", "label": "Printed key quotes", "type": "checkbox"},
+                    {"name": "m_board", "label": "Whiteboard or digital board (Miro/Mural)", "type": "checkbox"},
+                    {"name": "m_stickies", "label": "Sticky notes and markers (if in-person)", "type": "checkbox"},
+                    {"name": "m_preread", "label": "Pre-read: research summary sent 2 days before", "type": "checkbox"},
+                    {"name": "m_other", "label": "Other materials", "type": "text"},
+                ],
+            },
+            {
+                "id": "agenda",
+                "title": "Agenda blocks",
+                "blurb": "Standard 3-hour shape — adjust to your session.",
+                "fields": [
+                    {"name": "block_intro", "label": "Introduction & context (15 min)", "type": "textarea", "rows": 3, "placeholder": "Goals, brief research overview, how today will work, ground rules"},
+                    {"name": "block_findings", "label": "Key findings presentation (30 min)", "type": "textarea", "rows": 3, "placeholder": "Main findings, evidence, initial reactions"},
+                    {"name": "block_break1", "label": "Break (15 min)", "type": "text"},
+                    {"name": "block_insights", "label": "Insights exploration (30 min)", "type": "textarea", "rows": 4, "placeholder": "Small-group discussion: what surprised you, what confirms, what raises questions"},
+                    {"name": "block_ideation", "label": "Collaborative ideation — How Might We (45 min)", "type": "textarea", "rows": 4, "placeholder": "Silent idea generation (10), share & group (15), discuss & prioritize (20)"},
+                    {"name": "block_break2", "label": "Break (15 min)", "type": "text"},
+                    {"name": "block_decisions", "label": "Decision-making — roadmap implications (30 min)", "type": "textarea", "rows": 4, "placeholder": "Immediate actions, roadmap impact, open questions"},
+                    {"name": "block_close", "label": "Next steps & closing (15 min)", "type": "textarea", "rows": 3, "placeholder": "Recap decisions, action items with owners + dates, follow-up plans, thanks"},
+                ],
+            },
+            {
+                "id": "pre_workshop",
+                "title": "Pre-workshop preparation",
+                "fields": [
+                    {"name": "pre_summary", "label": "Sent research summary 2 days before", "type": "checkbox"},
+                    {"name": "pre_room", "label": "Booked room / set up video call", "type": "checkbox"},
+                    {"name": "pre_materials", "label": "Prepared materials (presentation, supplies)", "type": "checkbox"},
+                    {"name": "pre_board", "label": "Set up digital board if remote", "type": "checkbox"},
+                    {"name": "pre_prints", "label": "Printed key quotes and findings", "type": "checkbox"},
+                ],
+            },
+            {
+                "id": "facilitation",
+                "title": "Facilitation reminders",
+                "fields": [
+                    {"name": "facilitation_notes", "type": "textarea", "rows": 6, "placeholder": "Keep to time · encourage all voices · capture everything · stay neutral · focus on user needs (not solutions, initially) · create safe space for dissent"},
+                ],
+            },
+            {
+                "id": "post_workshop",
+                "title": "Post-workshop tasks",
+                "fields": [
+                    {"name": "post_decisions", "label": "Documented decisions and action items", "type": "checkbox"},
+                    {"name": "post_summary", "label": "Sent summary within 24 hours", "type": "checkbox"},
+                    {"name": "post_followup", "label": "Followed up on action items", "type": "checkbox"},
+                    {"name": "post_impact", "label": "Tracking impact of decisions made", "type": "checkbox"},
+                ],
+            },
+            {
+                "id": "outcomes",
+                "title": "Outcomes captured",
+                "fields": [
+                    {"name": "decisions_made", "label": "Decisions made", "type": "textarea", "rows": 4},
+                    {"name": "action_items", "label": "Action items (one per line · owner · date)", "type": "textarea", "rows": 4},
+                    {"name": "open_questions", "label": "Open questions raised", "type": "textarea", "rows": 3},
+                ],
+            },
+        ],
+    },
+    "UXR-008-template-5.5": {
+        "title": "Research Impact Assessment",
+        "intro": "Run this 1–3 months after the readout to see what the research actually changed. Captures both the soft impact (awareness, decisions) and hard impact (metrics, ROI).",
+        "sections": [
+            {
+                "id": "header",
+                "title": "Assessment header",
+                "fields": [
+                    {"name": "study_name", "label": "Study", "type": "text", "autofill": "project.name"},
+                    {"name": "study_completed", "label": "Study completed", "type": "date"},
+                    {"name": "primary_stakeholders", "label": "Primary stakeholder(s)", "type": "text", "autofill": "project.stakeholder"},
+                    {"name": "assessor", "label": "Impact assessment by", "type": "text", "autofill": "project.owner"},
+                    {"name": "assessment_date", "label": "Assessment date", "type": "date", "autofill": "today"},
+                    {"name": "months_after", "label": "Months after research", "type": "text", "placeholder": "3"},
+                ],
+            },
+            {
+                "id": "overview",
+                "title": "Research overview",
+                "fields": [
+                    {"name": "purpose", "label": "Purpose (what the research aimed to learn)", "type": "textarea", "rows": 2},
+                    {"name": "finding_1", "label": "Finding 1", "type": "textarea", "rows": 2},
+                    {"name": "finding_2", "label": "Finding 2", "type": "textarea", "rows": 2},
+                    {"name": "finding_3", "label": "Finding 3", "type": "textarea", "rows": 2},
+                    {"name": "rec_1", "label": "Recommendation 1 (with priority)", "type": "textarea", "rows": 2},
+                    {"name": "rec_2", "label": "Recommendation 2", "type": "textarea", "rows": 2},
+                    {"name": "rec_3", "label": "Recommendation 3", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "comm_activities",
+                "title": "Communication activities",
+                "fields": [
+                    {"name": "readout_date", "label": "Primary readout date", "type": "date"},
+                    {"name": "readout_attendees", "label": "Readout attendees (count + roles)", "type": "text"},
+                    {"name": "readout_format", "label": "Format", "type": "text", "placeholder": "Presentation · workshop"},
+                    {"name": "readout_duration", "label": "Duration (min)", "type": "text"},
+                    {"name": "additional_shareouts", "label": "Additional shareouts (one per line: activity · date · attendees)", "type": "textarea", "rows": 4},
+                    {"name": "materials_distributed", "label": "Materials distributed (full report views · exec summary · highlight · repository views)", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "awareness",
+                "title": "Awareness & understanding",
+                "fields": [
+                    {"name": "total_awareness", "label": "Total people who saw / heard research (approx)", "type": "text"},
+                    {"name": "awareness_evidence", "label": "Evidence of awareness", "type": "textarea", "rows": 3},
+                    {
+                        "name": "understanding_quality",
+                        "label": "Quality of Q&A / discussion",
+                        "type": "radio",
+                        "options": [
+                            {"value": "high", "label": "High"},
+                            {"value": "medium", "label": "Medium"},
+                            {"value": "low", "label": "Low"},
+                        ],
+                    },
+                    {"name": "understanding_evidence", "label": "Evidence of understanding", "type": "textarea", "rows": 3},
+                    {"name": "misunderstandings", "label": "Misunderstandings corrected", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "consideration",
+                "title": "Consideration in decisions",
+                "fields": [
+                    {"name": "meetings_referenced", "label": "Meetings where research was referenced (one per line: meeting · date · how used)", "type": "textarea", "rows": 4},
+                    {"name": "stakeholder_quotes", "label": "Stakeholder quotes (one per line)", "type": "textarea", "rows": 4},
+                ],
+            },
+            {
+                "id": "decision_1",
+                "title": "Decision 1 influenced",
+                "fields": [
+                    {"name": "d1_description", "label": "Description of decision made", "type": "textarea", "rows": 2},
+                    {
+                        "name": "d1_influence",
+                        "label": "Influence of research",
+                        "type": "radio",
+                        "options": [
+                            {"value": "direct", "label": "Direct — primary factor"},
+                            {"value": "strong", "label": "Strong — significant among several"},
+                            {"value": "moderate", "label": "Moderate — one of many considerations"},
+                            {"value": "weak", "label": "Weak — mentioned but other factors dominated"},
+                            {"value": "none", "label": "No influence"},
+                            {"value": "unknown", "label": "Unknown"},
+                        ],
+                    },
+                    {"name": "d1_before", "label": "Before research (what was planned)", "type": "textarea", "rows": 2},
+                    {"name": "d1_after", "label": "After research (what actually happened)", "type": "textarea", "rows": 2},
+                    {"name": "d1_how", "label": "How research changed it", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "decision_2",
+                "title": "Decision 2 influenced (optional)",
+                "fields": [
+                    {"name": "d2_description", "label": "Description", "type": "textarea", "rows": 2},
+                    {
+                        "name": "d2_influence",
+                        "label": "Influence",
+                        "type": "radio",
+                        "options": [
+                            {"value": "direct", "label": "Direct"},
+                            {"value": "strong", "label": "Strong"},
+                            {"value": "moderate", "label": "Moderate"},
+                            {"value": "weak", "label": "Weak"},
+                            {"value": "none", "label": "None"},
+                        ],
+                    },
+                    {"name": "d2_before_after", "label": "Before → After", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "actions_taken",
+                "title": "Actions taken (by recommendation)",
+                "fields": [
+                    {
+                        "name": "rec1_status",
+                        "label": "Recommendation 1 status",
+                        "type": "radio",
+                        "options": [
+                            {"value": "completed", "label": "Completed"},
+                            {"value": "in_progress", "label": "In progress"},
+                            {"value": "planned", "label": "Planned"},
+                            {"value": "not_pursued", "label": "Not pursued"},
+                        ],
+                    },
+                    {"name": "rec1_action", "label": "Action taken (or reason not pursued)", "type": "textarea", "rows": 3},
+                    {"name": "rec1_owner", "label": "Owner", "type": "text"},
+                    {
+                        "name": "rec2_status",
+                        "label": "Recommendation 2 status",
+                        "type": "radio",
+                        "options": [
+                            {"value": "completed", "label": "Completed"},
+                            {"value": "in_progress", "label": "In progress"},
+                            {"value": "planned", "label": "Planned"},
+                            {"value": "not_pursued", "label": "Not pursued"},
+                        ],
+                    },
+                    {"name": "rec2_action", "label": "Action taken", "type": "textarea", "rows": 3},
+                    {"name": "rec2_owner", "label": "Owner", "type": "text"},
+                    {
+                        "name": "rec3_status",
+                        "label": "Recommendation 3 status",
+                        "type": "radio",
+                        "options": [
+                            {"value": "completed", "label": "Completed"},
+                            {"value": "in_progress", "label": "In progress"},
+                            {"value": "planned", "label": "Planned"},
+                            {"value": "not_pursued", "label": "Not pursued"},
+                        ],
+                    },
+                    {"name": "rec3_action", "label": "Action taken", "type": "textarea", "rows": 3},
+                    {"name": "rec3_owner", "label": "Owner", "type": "text"},
+                ],
+            },
+            {
+                "id": "metrics",
+                "title": "Measurable outcomes",
+                "blurb": "Per metric: name · baseline · current · change · attribution to research.",
+                "fields": [
+                    {"name": "ux_metrics", "label": "User experience metrics", "type": "textarea", "rows": 5},
+                    {"name": "business_metrics", "label": "Business metrics", "type": "textarea", "rows": 5},
+                ],
+            },
+            {
+                "id": "qualitative",
+                "title": "Qualitative impact",
+                "fields": [
+                    {"name": "user_impact", "label": "User impact (how UX improved + examples / quotes)", "type": "textarea", "rows": 4},
+                    {"name": "team_impact", "label": "Team impact (how research affected team thinking / process)", "type": "textarea", "rows": 4},
+                    {"name": "org_impact", "label": "Organizational impact (cultural / strategic shifts)", "type": "textarea", "rows": 4},
+                ],
+            },
+            {
+                "id": "roi",
+                "title": "Research ROI estimate",
+                "fields": [
+                    {"name": "research_hours", "label": "Research hours", "type": "text"},
+                    {"name": "hourly_rate", "label": "Hourly rate", "type": "text"},
+                    {"name": "incentives_cost", "label": "Participant incentives ($)", "type": "text"},
+                    {"name": "tools_cost", "label": "Tools / resources ($)", "type": "text"},
+                    {"name": "total_investment", "label": "Total investment ($)", "type": "text"},
+                    {"name": "value_created", "label": "Value created (engineering time saved, support cost reduction, revenue impact, etc.)", "type": "textarea", "rows": 5},
+                    {"name": "estimated_total_value", "label": "Estimated total value ($)", "type": "text"},
+                    {"name": "roi_ratio", "label": "ROI ratio (value : investment)", "type": "text", "placeholder": "8:1"},
+                ],
+            },
+            {
+                "id": "lessons",
+                "title": "Lessons learned",
+                "fields": [
+                    {"name": "worked_well", "label": "What worked well in communication (one per line)", "type": "textarea", "rows": 4},
+                    {"name": "could_improve", "label": "What could improve", "type": "textarea", "rows": 4},
+                    {"name": "increase_impact", "label": "How to increase impact next time", "type": "textarea", "rows": 4},
+                ],
+            },
+            {
+                "id": "followup",
+                "title": "Follow-up research needs",
+                "fields": [
+                    {"name": "immediate_needs", "label": "Immediate needs (follow-up questions raised)", "type": "textarea", "rows": 3},
+                    {"name": "longer_term", "label": "Longer-term areas for future exploration", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "rating",
+                "title": "Overall impact rating",
+                "fields": [
+                    {
+                        "name": "rating",
+                        "label": "Research impact",
+                        "type": "radio",
+                        "options": [
+                            {"value": "high", "label": "High"},
+                            {"value": "medium", "label": "Medium"},
+                            {"value": "low", "label": "Low"},
+                            {"value": "too_early", "label": "Too early to tell"},
+                        ],
+                    },
+                    {"name": "rating_justification", "label": "Justification (based on evidence above)", "type": "textarea", "rows": 4},
+                ],
+            },
+            {
+                "id": "signoff",
+                "title": "Sign-off",
+                "fields": [
+                    {"name": "completed_by", "label": "Completed by", "type": "text", "autofill": "project.owner"},
+                    {"name": "completed_date", "label": "Completed date", "type": "date"},
+                    {"name": "reviewed_by", "label": "Reviewed by research lead", "type": "text"},
+                    {"name": "reviewed_date", "label": "Review date", "type": "date"},
+                ],
+            },
+        ],
+    },
     "UXR-007-template-5.1": {
         "title": "Analysis Plan",
         "intro": "One per study. Locks in your approach, timeline, and deliverables before you dive into coding. Share with the team so everyone knows the shape of analysis.",

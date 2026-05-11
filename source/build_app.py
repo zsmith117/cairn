@@ -619,6 +619,142 @@ TEMPLATE_FORMS = {
             },
         ],
     },
+    "UXR-006-template-5.1": {
+        "title": "Interview Session Notes",
+        "intro": "One session at a time. Fill in during or right after the interview, then export to Word and save the file with the session ID. Reset the form for the next session.",
+        "sections": [
+            {
+                "id": "header",
+                "title": "Session header",
+                "fields": [
+                    {"name": "study_name", "label": "Study", "type": "text", "autofill": "project.name"},
+                    {"name": "session_number", "label": "Session #", "type": "text", "placeholder": "S03"},
+                    {"name": "participant_id", "label": "Participant ID (code, not real name)", "type": "text", "placeholder": "P03"},
+                    {"name": "session_date", "label": "Date", "type": "date", "autofill": "today"},
+                    {"name": "start_time", "label": "Start time", "type": "text", "placeholder": "10:00"},
+                    {"name": "end_time", "label": "End time", "type": "text", "placeholder": "10:55"},
+                    {"name": "duration", "label": "Actual duration", "type": "text", "placeholder": "55 min"},
+                    {"name": "location", "label": "Location", "type": "text", "placeholder": "Remote via Zoom"},
+                    {"name": "moderator", "label": "Moderator", "type": "text", "autofill": "project.owner"},
+                    {"name": "notetaker", "label": "Notetaker", "type": "text"},
+                    {"name": "observers", "label": "Other observers", "type": "text"},
+                ],
+            },
+            {
+                "id": "context",
+                "title": "Participant context",
+                "blurb": "Relevant background from the screener that shapes how you interpret what they say.",
+                "fields": [
+                    {"name": "p_role", "label": "Role", "type": "text"},
+                    {"name": "p_experience", "label": "Experience level", "type": "text"},
+                    {"name": "p_characteristics", "label": "Key characteristics relevant to this study", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "research_questions",
+                "title": "Research questions this session should help answer",
+                "fields": [
+                    {"name": "rq_1", "label": "Question 1", "type": "textarea", "rows": 2},
+                    {"name": "rq_2", "label": "Question 2", "type": "textarea", "rows": 2},
+                    {"name": "rq_3", "label": "Question 3", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "warmup_notes",
+                "title": "Warm-up notes",
+                "fields": [
+                    {"name": "warmup_notes", "type": "textarea", "rows": 3, "placeholder": "Quick context-setting; rapport notes."},
+                ],
+            },
+            {
+                "id": "topic1_notes",
+                "title": "Topic area 1",
+                "fields": [
+                    {"name": "t1_name", "label": "Topic name", "type": "text"},
+                    {"name": "t1_notes", "label": "Notes (questions, responses, observations)", "type": "textarea", "rows": 8},
+                    {"name": "t1_key_moment", "label": "Key moment (with timestamp if recording)", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "topic2_notes",
+                "title": "Topic area 2",
+                "fields": [
+                    {"name": "t2_name", "label": "Topic name", "type": "text"},
+                    {"name": "t2_notes", "label": "Notes", "type": "textarea", "rows": 8},
+                    {"name": "t2_key_moment", "label": "Key moment", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "closing_notes",
+                "title": "Closing notes",
+                "fields": [
+                    {"name": "closing_notes", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "quotes",
+                "title": "Key quotes",
+                "blurb": "Verbatim quotes worth surfacing later in analysis or the readout.",
+                "fields": [
+                    {"name": "quote_1", "label": "Quote 1", "type": "textarea", "rows": 2},
+                    {"name": "quote_1_context", "label": "Context", "type": "text"},
+                    {"name": "quote_2", "label": "Quote 2", "type": "textarea", "rows": 2},
+                    {"name": "quote_2_context", "label": "Context", "type": "text"},
+                    {"name": "quote_3", "label": "Quote 3", "type": "textarea", "rows": 2},
+                    {"name": "quote_3_context", "label": "Context", "type": "text"},
+                ],
+            },
+            {
+                "id": "reflections",
+                "title": "Observer notes & reflections",
+                "fields": [
+                    {"name": "patterns", "label": "Patterns observed (how this connects to other sessions)", "type": "textarea", "rows": 3},
+                    {"name": "surprises", "label": "Surprises (unexpected findings)", "type": "textarea", "rows": 3},
+                    {"name": "questions_raised", "label": "Questions raised for future sessions", "type": "textarea", "rows": 3},
+                    {"name": "method_notes", "label": "Methodological notes (guide issues, timing, technical)", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "post_session",
+                "title": "Post-session tasks",
+                "fields": [
+                    {"name": "ps_recording", "label": "Recording saved and backed up", "type": "checkbox"},
+                    {"name": "ps_summary", "label": "Session summary completed", "type": "checkbox"},
+                    {"name": "ps_notes_clean", "label": "Notes cleaned up and readable", "type": "checkbox"},
+                    {"name": "ps_shared", "label": "Key insights shared with team", "type": "checkbox"},
+                    {"name": "ps_followups", "label": "Follow-up questions documented", "type": "checkbox"},
+                    {"name": "ps_filed", "label": "Files properly named and stored", "type": "checkbox"},
+                ],
+            },
+        ],
+    },
+    "UXR-003-template-5.4": {
+        "title": "Recruitment Outreach Email",
+        "intro": "Fill in the variables once; the Word export generates three ready-to-send email versions (cold-professional, warm-customer, reminder) with your values substituted.",
+        "sections": [
+            {
+                "id": "header",
+                "title": "Variables",
+                "blurb": "These are the placeholders that get substituted across all three email versions.",
+                "fields": [
+                    {"name": "recipient_name", "label": "Recipient name", "type": "text", "placeholder": "Sarah"},
+                    {"name": "researcher_name", "label": "Researcher (your name)", "type": "text", "autofill": "project.owner"},
+                    {"name": "researcher_title", "label": "Researcher title", "type": "text", "placeholder": "UX Researcher"},
+                    {"name": "company", "label": "Company", "type": "text"},
+                    {"name": "topic", "label": "Research topic", "type": "text", "placeholder": "industrial inventory workflows"},
+                    {"name": "challenge", "label": "Specific challenge (cold version)", "type": "text", "placeholder": "managing parts across multiple warehouses"},
+                    {"name": "product", "label": "Product name (warm version)", "type": "text"},
+                    {"name": "area", "label": "Specific area of interest (warm version)", "type": "text"},
+                    {"name": "duration", "label": "Session duration", "type": "text", "placeholder": "30-minute"},
+                    {"name": "incentive", "label": "Incentive", "type": "text", "placeholder": "$75 Amazon gift card"},
+                    {"name": "date_range", "label": "Date range for sessions", "type": "text", "placeholder": "May 20–June 5"},
+                    {"name": "screener_link", "label": "Screener link", "type": "text"},
+                    {"name": "contact_email", "label": "Contact email", "type": "text"},
+                    {"name": "days_since", "label": "Days since first email (reminder version)", "type": "text", "placeholder": "5"},
+                ],
+            },
+        ],
+    },
     "UXR-005-template-5.1": {
         "title": "Generative Interview Guide",
         "intro": "Build your interview script section by section. Fields autosave to the project. Export to Word for a printable guide you can take into sessions.",
@@ -2431,15 +2567,89 @@ function triggerDownload(key) {
   const proj = activeProject();
   const stored = proj?.artifactStatus[key]?.data;
   if (schema && stored && Object.values(stored).some(v => v !== '' && v !== false && v != null)) {
-    downloadFilledForm(d, schema, proj, stored);
+    // Merge autofills as fallbacks so unedited fields still get populated
+    const merged = {};
+    schema.sections.forEach(s => s.fields.forEach(f => {
+      const fill = autofillValue(f, proj);
+      if (fill) merged[f.name] = fill;
+    }));
+    Object.assign(merged, stored);
+    downloadFilledForm(d, schema, proj, merged);
   } else {
     downloadAsWord(d.title, d.sopId, d.markdown);
   }
 }
 
+// Custom Word renderers for templates whose output is a formatted document
+// (not a labelled list of fields).
+const CUSTOM_WORD_RENDERERS = {
+  'UXR-003-template-5.4': function(meta, schema, proj, data) {
+    const v = (k, fallback = '') => (data[k] && String(data[k]).trim()) || fallback;
+    const name = v('recipient_name', '[Name]');
+    const yourName = v('researcher_name', '[Your name]');
+    const title = v('researcher_title', '[Title]');
+    const company = v('company', '[Company]');
+    const topic = v('topic', '[topic]');
+    const challenge = v('challenge', '[specific challenge]');
+    const product = v('product', '[Product]');
+    const area = v('area', '[specific area]');
+    const duration = v('duration', '[duration]');
+    const incentive = v('incentive', '[incentive]');
+    const dateRange = v('date_range', '[date range]');
+    const link = v('screener_link', '[Screener link]');
+    const email = v('contact_email', '[email]');
+    const daysSince = v('days_since', '[X]');
+    const p = s => '<p>' + escapeHtml(s).replace(/\n/g, '<br>') + '</p>';
+    return `
+      <h2>Cold Outreach — Professional</h2>
+      <p><strong>Subject:</strong> Your expertise on ${escapeHtml(topic)} — quick research opportunity</p>
+      ${p(`Hi ${name},`)}
+      ${p(`I'm ${yourName}, a ${title} at ${company}. We're conducting a study to better understand how professionals handle ${challenge}, and your experience would be incredibly valuable.`)}
+      <p><strong>What's involved:</strong></p>
+      <ul>
+        <li>${escapeHtml(duration)} video conversation</li>
+        <li>Discuss your experience with ${escapeHtml(topic)}</li>
+        <li>${escapeHtml(incentive)} as a thank-you for your time</li>
+      </ul>
+      ${p(`Why you: [Brief personalization — their role, company, background]`)}
+      ${p(`If you're interested, please complete this 3-minute screener: ${link}`)}
+      ${p(`I'm scheduling sessions for ${dateRange}. Happy to answer any questions at ${email}.`)}
+      ${p(`Thank you for considering,\n${yourName}\n${title}, ${company}`)}
+
+      <h2 style="margin-top:32pt;">Warm Outreach — Customer</h2>
+      <p><strong>Subject:</strong> Help shape the future of ${escapeHtml(product)} — research opportunity</p>
+      ${p(`Hi ${name},`)}
+      ${p(`I'm reaching out because you're a ${product} user, and we'd love to learn from your experience.`)}
+      ${p(`We're conducting research to improve ${area}, and your insights would directly influence what we build next.`)}
+      <p><strong>Details:</strong></p>
+      <ul>
+        <li>${escapeHtml(duration)} video conversation</li>
+        <li>Share your workflow and challenges</li>
+        <li>${escapeHtml(incentive)} thank-you gift</li>
+      </ul>
+      ${p(`Interested? Here's a quick screener: ${link}`)}
+      ${p(`Feel free to reach out with any questions.`)}
+      ${p(`Best,\n${yourName}\n${title}, ${company}`)}
+
+      <h2 style="margin-top:32pt;">Reminder — First</h2>
+      <p><strong>Subject:</strong> Quick reminder: research opportunity closing soon</p>
+      ${p(`Hi ${name},`)}
+      ${p(`Just a friendly reminder about the research opportunity I shared ${daysSince} days ago. We have a few spots remaining for ${dateRange}.`)}
+      ${p(`Quick screener: ${link}`)}
+      ${p(`Let me know if you have any questions!`)}
+      ${p(yourName)}
+    `;
+  },
+};
+
 function downloadFilledForm(meta, schema, proj, data) {
-  let body = '';
-  schema.sections.forEach(s => {
+  const custom = CUSTOM_WORD_RENDERERS[Object.keys(DATA.template_forms).find(k => DATA.template_forms[k] === schema)];
+  let body;
+  if (custom) {
+    body = custom(meta, schema, proj, data);
+  } else {
+    body = '';
+    schema.sections.forEach(s => {
     if (s.title) body += `<h2>${escapeHtml(s.title)}</h2>`;
     if (s.blurb) body += `<p style="color:#666;font-style:italic;">${escapeHtml(s.blurb)}</p>`;
     s.fields.forEach(f => {
@@ -2458,7 +2668,8 @@ function downloadFilledForm(meta, schema, proj, data) {
         body += `<p><strong>${escapeHtml(f.label || f.name)}:</strong> ${escapeHtml(display)}</p>`;
       }
     });
-  });
+    });
+  }
   const today = new Date().toISOString().slice(0, 10);
   const projName = proj ? proj.name : '';
   const filename = (projName ? projName + ' — ' : '') + meta.title;

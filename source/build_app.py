@@ -938,6 +938,868 @@ TEMPLATE_FORMS = {
             },
         ],
     },
+    "UXR-007-template-5.1": {
+        "title": "Analysis Plan",
+        "intro": "One per study. Locks in your approach, timeline, and deliverables before you dive into coding. Share with the team so everyone knows the shape of analysis.",
+        "sections": [
+            {
+                "id": "header",
+                "title": "Study details",
+                "fields": [
+                    {"name": "study_name", "label": "Study", "type": "text", "autofill": "project.name"},
+                    {"name": "analysis_lead", "label": "Analysis lead", "type": "text", "autofill": "project.owner"},
+                    {"name": "analysis_team", "label": "Analysis team", "type": "text"},
+                    {"name": "timeline_start", "label": "Start", "type": "date"},
+                    {"name": "timeline_end", "label": "End", "type": "date"},
+                ],
+            },
+            {
+                "id": "questions",
+                "title": "Research questions",
+                "fields": [
+                    {"name": "rq_1", "label": "Primary question", "type": "textarea", "rows": 2},
+                    {"name": "rq_2", "label": "Secondary question", "type": "textarea", "rows": 2},
+                    {"name": "rq_3", "label": "Additional questions", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "approach",
+                "title": "Analysis approach",
+                "fields": [
+                    {"name": "method", "label": "Primary method", "type": "text", "placeholder": "Inductive thematic analysis"},
+                    {"name": "rationale", "label": "Rationale (why this approach for this study)", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "data",
+                "title": "Data to analyze",
+                "fields": [
+                    {"name": "session_notes_count", "label": "Session notes (count)", "type": "text"},
+                    {"name": "transcripts_count", "label": "Transcripts (count)", "type": "text"},
+                    {"name": "summaries_count", "label": "Session summaries (count)", "type": "text"},
+                    {"name": "journal", "label": "Research journal included?", "type": "checkbox"},
+                    {"name": "other_data", "label": "Other data sources", "type": "text"},
+                    {"name": "total_volume", "label": "Total volume", "type": "text", "placeholder": "12 sessions · 12 participants · 240 pages"},
+                    {"name": "qc_documentation", "label": "All documentation complete per UXR-006", "type": "checkbox"},
+                    {"name": "qc_anonymization", "label": "Anonymization complete per UXR-002", "type": "checkbox"},
+                    {"name": "qc_access", "label": "All files accessible to analysis team", "type": "checkbox"},
+                ],
+            },
+            {
+                "id": "phases",
+                "title": "Analysis process",
+                "blurb": "Six phases with their owners and target dates.",
+                "fields": [
+                    {"name": "p1_familiarization_owner", "label": "Phase 1 — Familiarization · owner", "type": "text"},
+                    {"name": "p1_familiarization_date", "label": "Phase 1 due", "type": "date"},
+                    {"name": "p2_coding_owner", "label": "Phase 2 — Coding · owner", "type": "text"},
+                    {"name": "p2_coding_date", "label": "Phase 2 due", "type": "date"},
+                    {"name": "p3_patterns_owner", "label": "Phase 3 — Pattern identification · owner", "type": "text"},
+                    {"name": "p3_patterns_date", "label": "Phase 3 due", "type": "date"},
+                    {"name": "p4_themes_owner", "label": "Phase 4 — Theme development · owner", "type": "text"},
+                    {"name": "p4_themes_date", "label": "Phase 4 due", "type": "date"},
+                    {"name": "p5_insights_owner", "label": "Phase 5 — Insight synthesis · owner", "type": "text"},
+                    {"name": "p5_insights_date", "label": "Phase 5 due", "type": "date"},
+                    {"name": "p6_validation_owner", "label": "Phase 6 — Validation · owner", "type": "text"},
+                    {"name": "p6_validation_date", "label": "Phase 6 due", "type": "date"},
+                ],
+            },
+            {
+                "id": "sessions",
+                "title": "Collaborative sessions",
+                "blurb": "One block per session: date · duration · participants · goal.",
+                "fields": [
+                    {"name": "collab_session_1", "label": "Session 1 — Initial review", "type": "textarea", "rows": 3},
+                    {"name": "collab_session_2", "label": "Session 2 — Affinity mapping", "type": "textarea", "rows": 3},
+                    {"name": "collab_session_3", "label": "Session 3 — Validation", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "tools",
+                "title": "Tools",
+                "fields": [
+                    {"name": "tool_coding", "label": "Coding", "type": "text", "placeholder": "Excel · Notion · NVivo"},
+                    {"name": "tool_collab", "label": "Collaboration", "type": "text", "placeholder": "Miro · Mural"},
+                    {"name": "tool_docs", "label": "Documentation", "type": "text"},
+                ],
+            },
+            {
+                "id": "deliverables",
+                "title": "Deliverables",
+                "fields": [
+                    {"name": "d_codebook", "label": "Codebook (final)", "type": "checkbox"},
+                    {"name": "d_thematic_map", "label": "Thematic map", "type": "checkbox"},
+                    {"name": "d_findings_doc", "label": "Key findings document", "type": "checkbox"},
+                    {"name": "d_insights", "label": "Insights and recommendations", "type": "checkbox"},
+                    {"name": "d_evidence", "label": "Evidence repository", "type": "checkbox"},
+                    {"name": "d_audit_trail", "label": "Analysis audit trail", "type": "checkbox"},
+                    {"name": "d_report", "label": "Final report (per UXR-008)", "type": "checkbox"},
+                ],
+            },
+            {
+                "id": "success",
+                "title": "Success criteria",
+                "fields": [
+                    {"name": "sc_questions", "label": "All research questions answered with evidence", "type": "checkbox"},
+                    {"name": "sc_validated", "label": "Findings validated and defensible", "type": "checkbox"},
+                    {"name": "sc_meaningful", "label": "Insights are meaningful and actionable", "type": "checkbox"},
+                    {"name": "sc_prioritized", "label": "Recommendations are specific and prioritized", "type": "checkbox"},
+                    {"name": "sc_documented", "label": "Analysis process is documented", "type": "checkbox"},
+                    {"name": "sc_ontime", "label": "Deliverables completed on time", "type": "checkbox"},
+                ],
+            },
+            {
+                "id": "risks",
+                "title": "Risks & mitigation",
+                "blurb": "One risk per line: risk · mitigation.",
+                "fields": [
+                    {"name": "risks", "type": "textarea", "rows": 4},
+                ],
+            },
+        ],
+    },
+    "UXR-007-template-5.2": {
+        "title": "Affinity Mapping Facilitation Guide",
+        "intro": "Prep sheet for running a collaborative affinity mapping session. Fill it in once before the session so you can run it without thinking.",
+        "sections": [
+            {
+                "id": "header",
+                "title": "Session details",
+                "fields": [
+                    {"name": "study_name", "label": "Study", "type": "text", "autofill": "project.name"},
+                    {"name": "session_date", "label": "Date", "type": "date", "autofill": "today"},
+                    {"name": "facilitator", "label": "Facilitator", "type": "text", "autofill": "project.owner"},
+                    {"name": "scribe", "label": "Scribe", "type": "text"},
+                    {"name": "participants", "label": "Participants", "type": "text"},
+                ],
+            },
+            {
+                "id": "materials",
+                "title": "Materials",
+                "fields": [
+                    {"name": "m_stickies", "label": "Sticky notes (3–4 colors)", "type": "checkbox"},
+                    {"name": "m_sharpies", "label": "Sharpies (1 per person)", "type": "checkbox"},
+                    {"name": "m_wall", "label": "Large wall space or digital board ready", "type": "checkbox"},
+                    {"name": "m_notes", "label": "Printed session notes available", "type": "checkbox"},
+                    {"name": "m_timer", "label": "Timer", "type": "checkbox"},
+                    {"name": "m_snacks", "label": "Snacks and water", "type": "checkbox"},
+                    {"name": "m_camera", "label": "Camera for documentation", "type": "checkbox"},
+                ],
+            },
+            {
+                "id": "room",
+                "title": "Room setup",
+                "fields": [
+                    {"name": "r_wall", "label": "Wall space cleared", "type": "checkbox"},
+                    {"name": "r_tables", "label": "Tables for writing", "type": "checkbox"},
+                    {"name": "r_notes", "label": "Notes accessible", "type": "checkbox"},
+                    {"name": "r_breaks", "label": "Breaks planned", "type": "checkbox"},
+                ],
+            },
+            {
+                "id": "schedule",
+                "title": "Schedule",
+                "blurb": "Standard times — adjust to your session length.",
+                "fields": [
+                    {"name": "intro_min", "label": "Introduction", "type": "text", "placeholder": "5 min"},
+                    {"name": "data_review_min", "label": "Data review", "type": "text", "placeholder": "10 min"},
+                    {"name": "capture_min", "label": "Observation capture", "type": "text", "placeholder": "45–60 min"},
+                    {"name": "silent_posting_min", "label": "Silent posting", "type": "text", "placeholder": "15 min"},
+                    {"name": "break_min", "label": "Break", "type": "text", "placeholder": "10 min"},
+                    {"name": "silent_grouping_min", "label": "Silent grouping", "type": "text", "placeholder": "30–45 min"},
+                    {"name": "labeling_min", "label": "Group discussion & labeling", "type": "text", "placeholder": "45–60 min"},
+                    {"name": "refinement_min", "label": "Refinement", "type": "text", "placeholder": "20–30 min"},
+                    {"name": "docs_min", "label": "Documentation", "type": "text", "placeholder": "15 min"},
+                    {"name": "closing_min", "label": "Closing", "type": "text", "placeholder": "5 min"},
+                ],
+            },
+            {
+                "id": "groundrules",
+                "title": "Ground rules to communicate",
+                "fields": [
+                    {"name": "groundrules", "type": "textarea", "rows": 6, "placeholder": "One observation per sticky note · use participant quotes when possible · stay grounded in data · silent grouping before discussion · anyone can move any note · no judgment — all observations are valid"},
+                ],
+            },
+            {
+                "id": "voting",
+                "title": "Optional dot voting",
+                "fields": [
+                    {"name": "voting_enabled", "label": "Include dot voting for priority themes", "type": "checkbox"},
+                    {"name": "dots_per_person", "label": "Dots per person", "type": "text", "placeholder": "3"},
+                ],
+            },
+            {
+                "id": "post",
+                "title": "Post-session tasks",
+                "fields": [
+                    {"name": "post_photos", "label": "Transfer photos to project folder", "type": "checkbox"},
+                    {"name": "post_digital", "label": "Document themes in digital format", "type": "checkbox"},
+                    {"name": "post_distribute", "label": "Distribute notes to team", "type": "checkbox"},
+                    {"name": "post_followup", "label": "Schedule follow-up if needed", "type": "checkbox"},
+                    {"name": "post_thanks", "label": "Thank participants", "type": "checkbox"},
+                ],
+            },
+            {
+                "id": "outcome",
+                "title": "Outcome notes",
+                "fields": [
+                    {"name": "themes_identified", "label": "Themes identified (one per line)", "type": "textarea", "rows": 5},
+                    {"name": "key_takeaways", "label": "Key takeaways from the session", "type": "textarea", "rows": 4},
+                    {"name": "questions_raised", "label": "Questions raised for further analysis", "type": "textarea", "rows": 3},
+                ],
+            },
+        ],
+    },
+    "UXR-007-template-5.3": {
+        "title": "Theme Development Worksheet",
+        "multi_instance": True,
+        "instance_singular": "theme",
+        "instance_plural": "themes",
+        "intro": "One worksheet per theme. Use this to develop, validate, and document each theme before turning it into a finding or insight.",
+        "sections": [
+            {
+                "id": "header",
+                "title": "Theme header",
+                "fields": [
+                    {"name": "study_name", "label": "Study", "type": "text", "autofill": "project.name"},
+                    {"name": "theme_number", "label": "Theme #", "type": "text"},
+                    {"name": "analyst", "label": "Analyst", "type": "text", "autofill": "project.owner"},
+                    {"name": "theme_date", "label": "Date", "type": "date", "autofill": "today"},
+                    {"name": "working_name", "label": "Working theme name", "type": "text"},
+                ],
+            },
+            {
+                "id": "codes",
+                "title": "Codes & patterns",
+                "fields": [
+                    {"name": "codes_included", "label": "Codes included (one per line: name · # instances)", "type": "textarea", "rows": 6},
+                    {"name": "total_segments", "label": "Total coded segments", "type": "text"},
+                    {"name": "patterns", "label": "Patterns represented (per pattern: name · description · frequency)", "type": "textarea", "rows": 6},
+                ],
+            },
+            {
+                "id": "statement",
+                "title": "Theme statement",
+                "blurb": "One or two sentences capturing what this theme is about.",
+                "fields": [
+                    {"name": "theme_statement", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "evidence",
+                "title": "Supporting evidence",
+                "fields": [
+                    {"name": "prevalence_seen_in", "label": "Seen in (count)", "type": "text"},
+                    {"name": "prevalence_total", "label": "Out of (total)", "type": "text"},
+                    {"name": "quote_1", "label": "Quote 1", "type": "textarea", "rows": 2},
+                    {"name": "quote_1_context", "label": "Context (participant + session)", "type": "text"},
+                    {"name": "quote_2", "label": "Quote 2", "type": "textarea", "rows": 2},
+                    {"name": "quote_2_context", "label": "Context", "type": "text"},
+                    {"name": "quote_3", "label": "Quote 3", "type": "textarea", "rows": 2},
+                    {"name": "quote_3_context", "label": "Context", "type": "text"},
+                    {"name": "quote_4", "label": "Quote 4", "type": "textarea", "rows": 2},
+                    {"name": "quote_4_context", "label": "Context", "type": "text"},
+                    {"name": "quote_5", "label": "Quote 5", "type": "textarea", "rows": 2},
+                    {"name": "quote_5_context", "label": "Context", "type": "text"},
+                    {"name": "behavioral_evidence", "label": "Behavioral evidence (one per line, with participant)", "type": "textarea", "rows": 4},
+                ],
+            },
+            {
+                "id": "narrative",
+                "title": "Narrative description",
+                "blurb": "2–4 paragraphs telling the story of this theme.",
+                "fields": [
+                    {"name": "narrative_what", "label": "What is happening?", "type": "textarea", "rows": 4},
+                    {"name": "narrative_why", "label": "Why is it happening? What drives this?", "type": "textarea", "rows": 4},
+                    {"name": "narrative_impact", "label": "What does it mean for users? Impact?", "type": "textarea", "rows": 4},
+                    {"name": "narrative_nuances", "label": "Nuances, variations, context", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "variations",
+                "title": "Variations",
+                "fields": [
+                    {"name": "variations_segments", "label": "How does this theme appear across segments?", "type": "textarea", "rows": 3},
+                    {"name": "variations_contexts", "label": "How does it vary across contexts?", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "negative",
+                "title": "Contradictory / negative evidence",
+                "fields": [
+                    {"name": "contradictions", "label": "Data that doesn't fit this theme", "type": "textarea", "rows": 4},
+                    {
+                        "name": "how_addressed",
+                        "label": "How addressed",
+                        "type": "radio",
+                        "options": [
+                            {"value": "refine", "label": "Refine theme to accommodate"},
+                            {"value": "boundary", "label": "Note as boundary condition"},
+                            {"value": "sub_theme", "label": "Identify as separate sub-theme"},
+                        ],
+                    },
+                ],
+            },
+            {
+                "id": "relationships",
+                "title": "Relationship to other themes",
+                "fields": [
+                    {"name": "relationships", "type": "textarea", "rows": 4, "placeholder": "Related to Theme X — nature of relationship\nContrasts with Theme Y — how they differ\nMay cause Theme Z — causal relationship"},
+                ],
+            },
+            {
+                "id": "insight_dev",
+                "title": "Insight development",
+                "blurb": "Move from observation to interpretation to insight.",
+                "fields": [
+                    {"name": "observation_level", "label": "Observation (what we observed — factual)", "type": "textarea", "rows": 3},
+                    {"name": "interpretation", "label": "Interpretation (what it means — why)", "type": "textarea", "rows": 3},
+                    {"name": "insight", "label": "Insight (higher-level understanding — 'this tells us that…')", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "implications",
+                "title": "Implications",
+                "fields": [
+                    {"name": "user_impact", "label": "User impact", "type": "textarea", "rows": 3},
+                    {"name": "business_impact", "label": "Business impact", "type": "textarea", "rows": 3},
+                    {"name": "design_implications", "label": "Design implications", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "recommendations",
+                "title": "Preliminary recommendations",
+                "fields": [
+                    {"name": "recommendations", "type": "textarea", "rows": 5, "placeholder": "Recommendation · priority (high/med/low) · rationale\n— one per line —"},
+                ],
+            },
+            {
+                "id": "confidence",
+                "title": "Confidence assessment",
+                "fields": [
+                    {
+                        "name": "evidence_strength",
+                        "label": "Strength of evidence",
+                        "type": "radio",
+                        "options": [
+                            {"value": "strong", "label": "Strong — consistent across majority; clear pattern"},
+                            {"value": "moderate", "label": "Moderate — present in substantial portion; some variation"},
+                            {"value": "emerging", "label": "Emerging — present but needs more data"},
+                            {"value": "weak", "label": "Weak — limited evidence; tentative"},
+                        ],
+                    },
+                    {
+                        "name": "internal_coherence",
+                        "label": "Internal coherence",
+                        "type": "radio",
+                        "options": [
+                            {"value": "high", "label": "High — theme is clear and distinct"},
+                            {"value": "medium", "label": "Medium — identifiable but some overlap"},
+                            {"value": "low", "label": "Low — theme needs refinement"},
+                        ],
+                    },
+                    {
+                        "name": "external_validity",
+                        "label": "External validity",
+                        "type": "radio",
+                        "options": [
+                            {"value": "generalizable", "label": "Likely generalizable"},
+                            {"value": "context", "label": "Context-specific"},
+                            {"value": "unknown", "label": "Unknown — need more data or different methods"},
+                        ],
+                    },
+                ],
+            },
+            {
+                "id": "validation",
+                "title": "Validation checklist",
+                "fields": [
+                    {"name": "v_distinct", "label": "Theme is distinct from other themes", "type": "checkbox"},
+                    {"name": "v_coherent", "label": "Theme is internally coherent", "type": "checkbox"},
+                    {"name": "v_grounded", "label": "Theme is grounded in data with examples", "type": "checkbox"},
+                    {"name": "v_addresses_rq", "label": "Theme addresses research questions", "type": "checkbox"},
+                    {"name": "v_meaningful", "label": "Theme is meaningful (not obvious or trivial)", "type": "checkbox"},
+                    {"name": "v_negative", "label": "Negative cases considered", "type": "checkbox"},
+                    {"name": "v_variations", "label": "Variations across segments noted", "type": "checkbox"},
+                    {"name": "v_relationships", "label": "Relationship to other themes identified", "type": "checkbox"},
+                ],
+            },
+            {
+                "id": "notes",
+                "title": "Notes / questions",
+                "fields": [
+                    {"name": "notes", "type": "textarea", "rows": 4},
+                ],
+            },
+        ],
+    },
+    "UXR-007-template-5.4": {
+        "title": "Finding Validation Checklist",
+        "multi_instance": True,
+        "instance_singular": "finding",
+        "instance_plural": "findings",
+        "intro": "One per finding. Validate before reporting — make sure each finding will survive a skeptical stakeholder.",
+        "sections": [
+            {
+                "id": "header",
+                "title": "Finding header",
+                "fields": [
+                    {"name": "study_name", "label": "Study", "type": "text", "autofill": "project.name"},
+                    {"name": "finding_number", "label": "Finding #", "type": "text"},
+                    {"name": "validator", "label": "Validator", "type": "text", "autofill": "project.owner"},
+                    {"name": "validation_date", "label": "Date", "type": "date", "autofill": "today"},
+                ],
+            },
+            {
+                "id": "statement",
+                "title": "Finding statement",
+                "fields": [
+                    {"name": "finding_statement", "type": "textarea", "rows": 4},
+                ],
+            },
+            {
+                "id": "strength",
+                "title": "Evidence strength",
+                "fields": [
+                    {"name": "prevalence_count", "label": "How many participants/sessions showed this pattern (N)", "type": "text"},
+                    {"name": "prevalence_total", "label": "Out of (total)", "type": "text"},
+                    {
+                        "name": "frequency_assessment",
+                        "label": "Frequency assessment",
+                        "type": "radio",
+                        "options": [
+                            {"value": "strong", "label": "Strong (>75% of participants)"},
+                            {"value": "moderate", "label": "Moderate (50–75%)"},
+                            {"value": "emerging", "label": "Emerging (25–50%)"},
+                            {"value": "weak", "label": "Weak (<25%)"},
+                        ],
+                    },
+                    {
+                        "name": "consistency",
+                        "label": "Consistency",
+                        "type": "radio",
+                        "options": [
+                            {"value": "very", "label": "Very consistent — expressed similarly by all"},
+                            {"value": "mostly", "label": "Mostly consistent — core similarity, some variation"},
+                            {"value": "moderate", "label": "Moderate — recognizable pattern with variation"},
+                            {"value": "inconsistent", "label": "Inconsistent — widely varied expressions"},
+                        ],
+                    },
+                    {
+                        "name": "intensity",
+                        "label": "Intensity / impact",
+                        "type": "radio",
+                        "options": [
+                            {"value": "high", "label": "High — strongly emphasized; clearly important"},
+                            {"value": "medium", "label": "Medium — notable but not primary focus"},
+                            {"value": "low", "label": "Low — mentioned but not emphasized"},
+                        ],
+                    },
+                    {"name": "intensity_evidence", "label": "Evidence of intensity (emotional response, time discussing, unsolicited mentions)", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "quality",
+                "title": "Evidence quality",
+                "fields": [
+                    {"name": "q_quotes", "label": "Have at least 3 verbatim quotes supporting this", "type": "checkbox"},
+                    {"name": "q_behavioral", "label": "Have behavioral observations supporting this", "type": "checkbox"},
+                    {"name": "q_contextual", "label": "Have contextual data explaining this pattern", "type": "checkbox"},
+                    {"name": "q_multi_source", "label": "Multiple data sources support this (notes + transcript + observation)", "type": "checkbox"},
+                    {"name": "q_context", "label": "Context preserved in interpretation", "type": "checkbox"},
+                    {"name": "q_conditions", "label": "Conditions under which this occurs are documented", "type": "checkbox"},
+                    {"name": "q_why", "label": "Understand why this pattern exists (not just that it does)", "type": "checkbox"},
+                ],
+            },
+            {
+                "id": "validity",
+                "title": "Validity checks",
+                "fields": [
+                    {"name": "negative_searched", "label": "Actively searched for counter-examples", "type": "checkbox"},
+                    {
+                        "name": "contradictions_found",
+                        "label": "Contradictions found?",
+                        "type": "radio",
+                        "options": [
+                            {"value": "none", "label": "None found"},
+                            {"value": "minor", "label": "Minor — do not invalidate finding"},
+                            {"value": "significant", "label": "Significant — finding needs revision"},
+                        ],
+                    },
+                    {"name": "contradiction_detail", "label": "Description of contradictory evidence (if any)", "type": "textarea", "rows": 3},
+                    {
+                        "name": "bias_direction",
+                        "label": "Confirmation bias check",
+                        "type": "radio",
+                        "options": [
+                            {"value": "contradicts", "label": "Contradicts my expectations (less bias risk)"},
+                            {"value": "confirms", "label": "Confirms my expectations (examined extra carefully)"},
+                        ],
+                    },
+                    {"name": "alternative", "label": "Alternative interpretation considered", "type": "textarea", "rows": 3},
+                    {"name": "preferred_rationale", "label": "Why primary interpretation is preferred", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "alignment",
+                "title": "Research question alignment",
+                "fields": [
+                    {
+                        "name": "relevance",
+                        "label": "Relevance",
+                        "type": "radio",
+                        "options": [
+                            {"value": "primary", "label": "Directly addresses primary research question"},
+                            {"value": "secondary", "label": "Addresses secondary research question"},
+                            {"value": "tangential", "label": "Tangential — document but deprioritize"},
+                            {"value": "off_topic", "label": "Off-topic — exclude from primary findings"},
+                        ],
+                    },
+                    {"name": "rq_specified", "label": "Which research question", "type": "text"},
+                ],
+            },
+            {
+                "id": "actionability",
+                "title": "Actionability",
+                "fields": [
+                    {
+                        "name": "clarity",
+                        "label": "Clarity",
+                        "type": "radio",
+                        "options": [
+                            {"value": "yes", "label": "Yes — clear what we learned"},
+                            {"value": "somewhat", "label": "Somewhat — needs clarification"},
+                            {"value": "no", "label": "No — too vague or ambiguous"},
+                        ],
+                    },
+                    {"name": "clarification_needed", "label": "If unclear, what needs clarification", "type": "textarea", "rows": 2},
+                    {
+                        "name": "meaningfulness",
+                        "label": "Meaningfulness",
+                        "type": "radio",
+                        "options": [
+                            {"value": "yes", "label": "Yes — reveals something new and important"},
+                            {"value": "somewhat", "label": "Somewhat — some value but limited novelty"},
+                            {"value": "no", "label": "No — states the obvious"},
+                        ],
+                    },
+                    {"name": "why_matters", "label": "Why this matters", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "defensibility",
+                "title": "Defensibility",
+                "fields": [
+                    {
+                        "name": "traceability",
+                        "label": "Traceability",
+                        "type": "radio",
+                        "options": [
+                            {"value": "yes", "label": "Yes — have specific quotes and observations"},
+                            {"value": "partial", "label": "Partially — some evidence but gaps"},
+                            {"value": "no", "label": "No — would struggle to defend"},
+                        ],
+                    },
+                    {"name": "evidence_location", "label": "Evidence location (link or reference)", "type": "text"},
+                    {"name": "challenge_quotes", "label": "Can show multiple quotes supporting it", "type": "checkbox"},
+                    {"name": "challenge_examples", "label": "Can explain the pattern with specific examples", "type": "checkbox"},
+                    {"name": "challenge_consistency", "label": "Can demonstrate consistency across participants", "type": "checkbox"},
+                    {"name": "challenge_contradictions", "label": "Can explain contradictory data and why finding still holds", "type": "checkbox"},
+                ],
+            },
+            {
+                "id": "overall",
+                "title": "Overall validation",
+                "fields": [
+                    {
+                        "name": "strength",
+                        "label": "Strength of finding",
+                        "type": "radio",
+                        "options": [
+                            {"value": "strong", "label": "Strong — well-supported, consistent, validated"},
+                            {"value": "moderate", "label": "Moderate — supported but some limitations"},
+                            {"value": "weak", "label": "Weak — limited support or significant issues"},
+                        ],
+                    },
+                    {
+                        "name": "confidence",
+                        "label": "Confidence level",
+                        "type": "radio",
+                        "options": [
+                            {"value": "high", "label": "High — ready to communicate"},
+                            {"value": "medium", "label": "Medium — communicate with caveats"},
+                            {"value": "low", "label": "Low — needs more work or more data"},
+                        ],
+                    },
+                    {
+                        "name": "ready",
+                        "label": "Ready to report",
+                        "type": "radio",
+                        "options": [
+                            {"value": "yes", "label": "Yes — validated and ready"},
+                            {"value": "revisions", "label": "With revisions"},
+                            {"value": "no", "label": "No — more work needed"},
+                        ],
+                    },
+                ],
+            },
+            {
+                "id": "summary",
+                "title": "Validation summary",
+                "fields": [
+                    {"name": "strengths", "label": "Strengths of this finding (one per line)", "type": "textarea", "rows": 4},
+                    {"name": "limitations", "label": "Limitations to note", "type": "textarea", "rows": 4},
+                    {"name": "caveats", "label": "Caveats for reporting", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "actions",
+                "title": "Actions required",
+                "fields": [
+                    {"name": "a_validated", "label": "No action — finding validated", "type": "checkbox"},
+                    {"name": "a_refine", "label": "Refine finding statement", "type": "checkbox"},
+                    {"name": "a_evidence", "label": "Gather additional supporting evidence", "type": "checkbox"},
+                    {"name": "a_negative", "label": "Conduct negative case analysis", "type": "checkbox"},
+                    {"name": "a_discuss", "label": "Discuss with team", "type": "checkbox"},
+                    {"name": "a_revisit", "label": "Revisit interpretation", "type": "checkbox"},
+                    {"name": "a_flag", "label": "Flag as low confidence and note limitations", "type": "checkbox"},
+                    {"name": "action_notes", "label": "Action notes", "type": "textarea", "rows": 3},
+                ],
+            },
+        ],
+    },
+    "UXR-007-template-5.5": {
+        "title": "Insight Development",
+        "multi_instance": True,
+        "instance_singular": "insight",
+        "instance_plural": "insights",
+        "intro": "One worksheet per insight. Move from observation up the pyramid to recommendation — and pressure-test that each insight is genuinely explanatory.",
+        "sections": [
+            {
+                "id": "header",
+                "title": "Insight header",
+                "fields": [
+                    {"name": "study_name", "label": "Study", "type": "text", "autofill": "project.name"},
+                    {"name": "insight_number", "label": "Insight #", "type": "text"},
+                    {"name": "analyst", "label": "Analyst", "type": "text", "autofill": "project.owner"},
+                    {"name": "insight_date", "label": "Date", "type": "date", "autofill": "today"},
+                ],
+            },
+            {
+                "id": "statement",
+                "title": "Insight statement",
+                "blurb": "One clear sentence capturing the insight.",
+                "fields": [
+                    {"name": "insight_statement", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "pyramid",
+                "title": "The analysis pyramid",
+                "blurb": "From observation up to recommendation.",
+                "fields": [
+                    {"name": "observations", "label": "Observations (what we saw / heard — one per line)", "type": "textarea", "rows": 4},
+                    {"name": "findings", "label": "Findings (pattern from analysis · prevalence · supporting quotes)", "type": "textarea", "rows": 5},
+                    {"name": "insight_interpretation", "label": "Insight (interpretive explanation)", "type": "textarea", "rows": 4},
+                    {"name": "recommendation_ref", "label": "Recommendation (developed separately — reference)", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "components",
+                "title": "Insight components",
+                "fields": [
+                    {"name": "what_happening", "label": "What is happening", "type": "textarea", "rows": 3},
+                    {"name": "why_happening", "label": "Why it's happening (root causes, motivations, context)", "type": "textarea", "rows": 3},
+                    {"name": "why_matters", "label": "Why it matters (impact on users, business, product)", "type": "textarea", "rows": 3},
+                    {"name": "what_means", "label": "What it means (implications and opportunities)", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "evidence",
+                "title": "Supporting evidence",
+                "fields": [
+                    {"name": "themes_supporting", "label": "Themes/patterns supporting this insight (one per line with key evidence)", "type": "textarea", "rows": 5},
+                    {"name": "quote_1", "label": "Strongest quote", "type": "textarea", "rows": 2},
+                    {"name": "quote_1_context", "label": "Context (participant + why it matters)", "type": "text"},
+                    {"name": "quote_2", "label": "Quote 2", "type": "textarea", "rows": 2},
+                    {"name": "quote_2_context", "label": "Context", "type": "text"},
+                    {"name": "quote_3", "label": "Quote 3", "type": "textarea", "rows": 2},
+                    {"name": "quote_3_context", "label": "Context", "type": "text"},
+                    {"name": "behavioral_evidence", "label": "Behavioral evidence", "type": "textarea", "rows": 4},
+                ],
+            },
+            {
+                "id": "quality",
+                "title": "Insight quality checks",
+                "fields": [
+                    {
+                        "name": "explanatory",
+                        "label": "Explanatory — does this explain WHY?",
+                        "type": "radio",
+                        "options": [
+                            {"value": "yes", "label": "Yes — explains underlying reasons"},
+                            {"value": "no", "label": "No — only describes WHAT"},
+                        ],
+                    },
+                    {
+                        "name": "non_obvious",
+                        "label": "Non-obvious — is this revealing something new?",
+                        "type": "radio",
+                        "options": [
+                            {"value": "yes", "label": "Yes — new understanding"},
+                            {"value": "somewhat", "label": "Somewhat — confirms with new depth"},
+                            {"value": "no", "label": "No — states the obvious"},
+                        ],
+                    },
+                    {
+                        "name": "actionable",
+                        "label": "Actionable — does this suggest direction?",
+                        "type": "radio",
+                        "options": [
+                            {"value": "yes", "label": "Yes — clear implications for action"},
+                            {"value": "somewhat", "label": "Somewhat — general direction"},
+                            {"value": "no", "label": "No — interesting but not actionable"},
+                        ],
+                    },
+                    {
+                        "name": "evidence_based",
+                        "label": "Evidence-based — grounded in data?",
+                        "type": "radio",
+                        "options": [
+                            {"value": "yes", "label": "Yes — multiple data points"},
+                            {"value": "somewhat", "label": "Somewhat — some evidence but limited"},
+                            {"value": "no", "label": "No — speculation"},
+                        ],
+                    },
+                    {
+                        "name": "connected",
+                        "label": "Connected — links multiple data points?",
+                        "type": "radio",
+                        "options": [
+                            {"value": "yes", "label": "Yes — synthesizes across themes/participants"},
+                            {"value": "somewhat", "label": "Somewhat — limited connection"},
+                            {"value": "no", "label": "No — single observation"},
+                        ],
+                    },
+                ],
+            },
+            {
+                "id": "stakeholders",
+                "title": "Stakeholder relevance",
+                "fields": [
+                    {"name": "primary_stakeholder", "label": "Primary stakeholder (role)", "type": "text", "autofill": "project.stakeholder"},
+                    {"name": "primary_why", "label": "Why they care", "type": "textarea", "rows": 2},
+                    {"name": "secondary_stakeholders", "label": "Secondary stakeholders", "type": "text"},
+                    {"name": "secondary_why", "label": "Why they care", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "implications",
+                "title": "Implications",
+                "fields": [
+                    {"name": "ux_implications", "label": "User experience implications", "type": "textarea", "rows": 3},
+                    {"name": "product_implications", "label": "Product implications", "type": "textarea", "rows": 3},
+                    {"name": "business_implications", "label": "Business implications", "type": "textarea", "rows": 3},
+                    {"name": "design_implications", "label": "Design implications", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "confidence",
+                "title": "Confidence assessment",
+                "fields": [
+                    {
+                        "name": "evidence_quality",
+                        "label": "Evidence quality",
+                        "type": "radio",
+                        "options": [
+                            {"value": "strong", "label": "Strong"},
+                            {"value": "moderate", "label": "Moderate"},
+                            {"value": "weak", "label": "Weak"},
+                        ],
+                    },
+                    {
+                        "name": "interpretive_confidence",
+                        "label": "Interpretive confidence",
+                        "type": "radio",
+                        "options": [
+                            {"value": "high", "label": "High"},
+                            {"value": "medium", "label": "Medium"},
+                            {"value": "low", "label": "Low"},
+                        ],
+                    },
+                    {
+                        "name": "generalizability",
+                        "label": "Generalizability",
+                        "type": "radio",
+                        "options": [
+                            {"value": "likely", "label": "Likely"},
+                            {"value": "context", "label": "Context-specific"},
+                            {"value": "unknown", "label": "Unknown"},
+                        ],
+                    },
+                    {"name": "limitations", "label": "Limitations (boundaries, where it might not apply, what would increase confidence)", "type": "textarea", "rows": 4},
+                ],
+            },
+            {
+                "id": "opportunities",
+                "title": "Opportunities suggested",
+                "blurb": "One per line: description · type (quick win / strategic / innovation) · potential impact · complexity.",
+                "fields": [
+                    {"name": "opportunities", "type": "textarea", "rows": 5},
+                ],
+            },
+            {
+                "id": "risks",
+                "title": "Risks if unaddressed",
+                "fields": [
+                    {"name": "short_term_risks", "label": "Short-term risks", "type": "textarea", "rows": 3},
+                    {"name": "long_term_risks", "label": "Long-term risks", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "related",
+                "title": "Related insights",
+                "fields": [
+                    {"name": "complementary", "label": "Complementary insights (add dimension)", "type": "textarea", "rows": 2},
+                    {"name": "contrasting", "label": "Contrasting insights (tension or different perspective)", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "communication",
+                "title": "How to communicate this insight",
+                "fields": [
+                    {"name": "key_message", "label": "Key message (one sentence for executive summary)", "type": "textarea", "rows": 2},
+                    {"name": "story_to_tell", "label": "Story to tell (narrative form)", "type": "textarea", "rows": 4},
+                    {"name": "visual_opportunity", "label": "Visual opportunity (journey map, diagram, etc.)", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "validation",
+                "title": "Validation",
+                "fields": [
+                    {"name": "peer_reviewer", "label": "Peer reviewer", "type": "text"},
+                    {"name": "peer_review_date", "label": "Peer review date", "type": "date"},
+                    {"name": "peer_feedback", "label": "Peer feedback incorporated", "type": "checkbox"},
+                    {"name": "stakeholder_preview", "label": "Stakeholder previewed with", "type": "text"},
+                    {"name": "stakeholder_preview_date", "label": "Stakeholder preview date", "type": "date"},
+                    {"name": "stakeholder_resonated", "label": "Resonated with stakeholder", "type": "checkbox"},
+                    {"name": "stakeholder_feedback", "label": "Stakeholder feedback summary", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "next",
+                "title": "Next steps",
+                "fields": [
+                    {"name": "ns_recommendation", "label": "Develop into recommendation(s)", "type": "checkbox"},
+                    {"name": "ns_visuals", "label": "Create supporting visuals", "type": "checkbox"},
+                    {"name": "ns_report", "label": "Include in research report", "type": "checkbox"},
+                    {"name": "ns_deepdive", "label": "Schedule deep-dive with stakeholder", "type": "checkbox"},
+                    {"name": "ns_more_evidence", "label": "Gather additional evidence if needed", "type": "checkbox"},
+                    {"name": "next_notes", "label": "Notes", "type": "textarea", "rows": 3},
+                ],
+            },
+        ],
+    },
     "UXR-006-template-5.3": {
         "title": "Contextual Inquiry Field Notes",
         "multi_instance": True,

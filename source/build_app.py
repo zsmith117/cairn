@@ -5341,6 +5341,18 @@ TEMPLATE = r"""<!doctype html>
   }
   .ph-action-btn:hover { border-color: var(--accent); color: var(--accent-ink); background: var(--accent-soft); }
   html[data-theme="dark"] .ph-action-btn:hover { color: var(--accent); }
+  .ph-action-primary {
+    background: var(--accent);
+    color: var(--surface);
+    border-color: var(--accent);
+  }
+  html[data-theme="dark"] .ph-action-primary { color: var(--bg); }
+  .ph-action-primary:hover {
+    background: color-mix(in srgb, var(--accent) 88%, black);
+    color: var(--surface);
+    border-color: var(--accent);
+  }
+  html[data-theme="dark"] .ph-action-primary:hover { color: var(--bg); }
 
   .ph-section {
     margin-top: 36px;
@@ -6048,8 +6060,9 @@ const WORD_CSS = `
   .meta { color: #666; font-size: 9.5pt; margin-bottom: 18pt; padding-bottom: 10pt; border-bottom: 1pt solid #ddd; }
 `;
 
-function downloadAsWord(title, sopId, markdown, artifactState) {
-  // artifactState (optional) may contain: checklistState, textFields, tableCells
+// Render markdown for an artifact into Word-ready HTML, substituting any
+// saved state (checklist state, text fields, table cells).
+function markdownBodyHTML(markdown, artifactState) {
   const tmp = document.createElement('div');
   tmp.innerHTML = marked.parse(markdown);
 
@@ -6110,7 +6123,11 @@ function downloadAsWord(title, sopId, markdown, artifactState) {
   let html = tmp.innerHTML;
   // Remove the bullet on task-list items so the box stands alone
   html = html.replace(/<li>(\s*☐|\s*☑)/g, '<li style="list-style:none; margin-left:-18pt;">$1');
+  return html;
+}
 
+function downloadAsWord(title, sopId, markdown, artifactState) {
+  const html = markdownBodyHTML(markdown, artifactState);
   const today = new Date().toISOString().slice(0, 10);
   const doc = `<!DOCTYPE html>
 <html xmlns:o="urn:schemas-microsoft-com:office:office"
@@ -6124,7 +6141,10 @@ function downloadAsWord(title, sopId, markdown, artifactState) {
 <div class="meta">Source: ${escapeHtml(sopId)} · Exported ${today}</div>
 ${html}
 </body></html>`;
+  saveBlobAsDoc(doc, title);
+}
 
+function saveBlobAsDoc(doc, title) {
   const filename = (title.replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, ' ').trim()) + '.doc';
   const blob = new Blob(['﻿', doc], { type: 'application/msword' });
   const url = URL.createObjectURL(blob);
@@ -6232,15 +6252,15 @@ const CUSTOM_WORD_RENDERERS = {
   },
 };
 
-function downloadFilledForm(meta, schema, proj, data) {
+// Render a filled-form schema into Word-ready HTML body. Accepts an optional
+// heading level so sections can demote (h2 → h3) when bundled into a readout.
+function formBodyHTML(meta, schema, proj, data, opts) {
+  const sectionTag = (opts && opts.sectionTag) || 'h2';
   const custom = CUSTOM_WORD_RENDERERS[Object.keys(DATA.template_forms).find(k => DATA.template_forms[k] === schema)];
-  let body;
-  if (custom) {
-    body = custom(meta, schema, proj, data);
-  } else {
-    body = '';
-    schema.sections.forEach(s => {
-    if (s.title) body += `<h2>${escapeHtml(s.title)}</h2>`;
+  if (custom) return custom(meta, schema, proj, data);
+  let body = '';
+  schema.sections.forEach(s => {
+    if (s.title) body += `<${sectionTag}>${escapeHtml(s.title)}</${sectionTag}>`;
     if (s.blurb) body += `<p style="color:#666;font-style:italic;">${escapeHtml(s.blurb)}</p>`;
     s.fields.forEach(f => {
       const v = data[f.name];
@@ -6258,12 +6278,15 @@ function downloadFilledForm(meta, schema, proj, data) {
         body += `<p><strong>${escapeHtml(f.label || f.name)}:</strong> ${escapeHtml(display)}</p>`;
       }
     });
-    });
-  }
+  });
+  return body;
+}
+
+function downloadFilledForm(meta, schema, proj, data) {
+  const body = formBodyHTML(meta, schema, proj, data);
   const today = new Date().toISOString().slice(0, 10);
   const projName = proj ? proj.name : '';
   const filename = (projName ? projName + ' — ' : '') + meta.title;
-  const safeName = filename.replace(/[\\/:*?"<>|]+/g, '').replace(/\s+/g, ' ').trim() + '.doc';
   const doc = `<!DOCTYPE html>
 <html xmlns:o="urn:schemas-microsoft-com:office:office"
       xmlns:w="urn:schemas-microsoft-com:office:word"
@@ -6275,17 +6298,174 @@ function downloadFilledForm(meta, schema, proj, data) {
 <div class="meta">${projName ? `Project: ${escapeHtml(projName)} · ` : ''}Source: ${escapeHtml(meta.sopId)} · Exported ${today}</div>
 ${body}
 </body></html>`;
-  const blob = new Blob(['﻿', doc], { type: 'application/msword' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = safeName;
-  document.body.appendChild(a);
-  a.click();
-  setTimeout(() => { URL.revokeObjectURL(url); a.remove(); }, 100);
+  saveBlobAsDoc(doc, filename);
 }
 
 const DOWNLOAD_ICON = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>';
+
+// ---- Project readout (one Word doc bundling every saved artifact) ----
+
+function getArtifactMarkdown(key) {
+  const m = key.match(/^(UXR-\d{3})-(checklist|template)-(.+)$/);
+  if (!m) return null;
+  const sop = SOPS[m[1]];
+  const list = m[2] === 'checklist' ? sop?.checklists : sop?.templates;
+  return list?.find(x => x.section === m[3]);
+}
+
+function artifactHasContent(val) {
+  if (!val) return false;
+  if (val.multi && val.instances) return val.instances.some(i => i.data && Object.values(i.data).some(v => v !== '' && v != null && v !== false));
+  return !!(
+    (val.data && Object.values(val.data).some(v => v !== '' && v != null && v !== false)) ||
+    (val.checklistState && Object.values(val.checklistState).some(v => v === true)) ||
+    (val.textFields && Object.values(val.textFields).some(v => v)) ||
+    (val.tableCells && Object.values(val.tableCells).some(v => v))
+  );
+}
+
+function renderInstanceBodyForReadout(key, schema, proj, inst) {
+  // Merge autofills under the instance's data
+  const merged = {};
+  if (schema) {
+    schema.sections.forEach(s => s.fields.forEach(f => {
+      const fill = autofillValue(f, proj);
+      if (fill) merged[f.name] = fill;
+    }));
+    Object.assign(merged, inst.data || {});
+    return formBodyHTML({sopId: '', title: ''}, schema, proj, merged, {sectionTag: 'h4'});
+  }
+  return '';
+}
+
+function renderArtifactSectionForReadout(key, val, proj) {
+  const meta = parseArtifactKey(key);
+  if (!meta) return '';
+  const item = getArtifactMarkdown(key);
+  const schema = DATA.template_forms[key];
+  const sopId = meta.sopId;
+  const title = meta.label || item?.label || `${sopId} ${meta.section}`;
+
+  let body = `
+    <h3 style="margin-top:24pt;">${escapeHtml(title)}</h3>
+    <p style="color:#999; font-size:10pt; margin-top:0;">${escapeHtml(sopId)} · ${escapeHtml(meta.section)} · ${meta.kind}</p>
+  `;
+
+  // Multi-instance: each instance gets its own subsection
+  if (val.multi && Array.isArray(val.instances) && val.instances.length) {
+    val.instances.forEach(inst => {
+      if (!inst.data || !Object.values(inst.data).some(v => v !== '' && v != null && v !== false)) return;
+      body += `<h4 style="margin-top:16pt;">${escapeHtml(inst.label || 'Entry')}</h4>`;
+      body += renderInstanceBodyForReadout(key, schema, proj, inst);
+    });
+    return body;
+  }
+
+  // Single-instance with form data
+  if (schema && val.data && Object.values(val.data).some(v => v !== '' && v != null && v !== false)) {
+    const merged = {};
+    schema.sections.forEach(s => s.fields.forEach(f => {
+      const fill = autofillValue(f, proj);
+      if (fill) merged[f.name] = fill;
+    }));
+    Object.assign(merged, val.data);
+    body += formBodyHTML({sopId, title}, schema, proj, merged, {sectionTag: 'h4'});
+    return body;
+  }
+
+  // Markdown-based artifact with checklist / text / table state
+  if (item && (val.checklistState || val.textFields || val.tableCells)) {
+    body += markdownBodyHTML(item.content, val);
+    return body;
+  }
+
+  // Status-only — skip rendering content; surface the status
+  body += `<p style="color:#666;">Status: ${escapeHtml((val.status || 'todo').replace('-', ' '))}</p>`;
+  return body;
+}
+
+function compileProjectReadout() {
+  const proj = activeProject();
+  if (!proj) { alert('No active project.'); return; }
+  const status = proj.artifactStatus || {};
+  const haveAny = Object.values(status).some(artifactHasContent);
+  if (!haveAny) {
+    alert('Nothing to compile yet — fill in a few templates or check off some items first.');
+    return;
+  }
+
+  // Group artifacts by guide phase (using SOP→phase map)
+  const sopToPhase = {};
+  DATA.guide_phases.forEach(ph => {
+    ph.sops.forEach(s => {
+      if (!sopToPhase[s]) sopToPhase[s] = ph;
+    });
+  });
+  const grouped = new Map();
+  Object.entries(status).forEach(([key, val]) => {
+    if (!artifactHasContent(val)) return;
+    const sopMatch = key.match(/^(UXR-\d{3})/);
+    const ph = sopMatch ? sopToPhase[sopMatch[1]] : null;
+    const groupId = ph ? ph.id : 'other';
+    if (!grouped.has(groupId)) grouped.set(groupId, { phase: ph, items: [] });
+    grouped.get(groupId).items.push({ key, val, updatedAt: val.updatedAt || '' });
+  });
+  // Sort items within each group by updatedAt desc
+  grouped.forEach(g => g.items.sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || '')));
+
+  const today = new Date().toISOString().slice(0, 10);
+  const todayDisplay = new Date().toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' });
+
+  // Cover page
+  let body = `<div style="text-align:center; padding: 80pt 40pt 60pt;">
+    <div style="font-family: 'Cambria',Georgia,serif; font-size: 11pt; color: #666; letter-spacing: 2pt; text-transform: uppercase; margin-bottom: 24pt;">Research Readout</div>
+    <h1 style="font-size: 32pt; margin: 0 0 14pt; line-height: 1.1;">${escapeHtml(proj.name)}</h1>
+    ${proj.description ? `<p style="font-family: 'Cambria',Georgia,serif; font-size: 13pt; color: #444; max-width: 480pt; margin: 0 auto 28pt;">${escapeHtml(proj.description)}</p>` : ''}
+    <table style="margin: 32pt auto 0; border: none; font-size: 11pt; color: #444;">
+      ${proj.owner ? `<tr><td style="border:none; padding: 3pt 12pt 3pt 0; color:#888;">Owner</td><td style="border:none;">${escapeHtml(proj.owner)}</td></tr>` : ''}
+      ${proj.stakeholder ? `<tr><td style="border:none; padding: 3pt 12pt 3pt 0; color:#888;">Stakeholder</td><td style="border:none;">${escapeHtml(proj.stakeholder)}</td></tr>` : ''}
+      <tr><td style="border:none; padding: 3pt 12pt 3pt 0; color:#888;">Generated</td><td style="border:none;">${escapeHtml(todayDisplay)}</td></tr>
+      <tr><td style="border:none; padding: 3pt 12pt 3pt 0; color:#888;">Completion</td><td style="border:none;">${projectOverallCompletion(proj)}%</td></tr>
+    </table>
+  </div>`;
+
+  // Each phase
+  DATA.guide_phases.forEach(ph => {
+    const group = grouped.get(ph.id);
+    if (!group || !group.items.length) return;
+    body += `<div style="page-break-before: always;"></div>`;
+    body += `<div style="font-family: 'Cambria',Georgia,serif; font-size: 10pt; color: #888; letter-spacing: 2pt; text-transform: uppercase; margin-bottom: 4pt;">Phase ${ph.number} of ${DATA.guide_phases.length}</div>`;
+    body += `<h1 style="font-size: 26pt; margin: 0 0 6pt;">${escapeHtml(ph.title)}</h1>`;
+    body += `<p style="color: #666; font-size: 12pt; margin: 0 0 18pt;">${escapeHtml(ph.blurb)}</p>`;
+    group.items.forEach(({key, val}) => {
+      body += renderArtifactSectionForReadout(key, val, proj);
+    });
+  });
+
+  // Other artifacts (no phase membership)
+  const other = grouped.get('other');
+  if (other && other.items.length) {
+    body += `<div style="page-break-before: always;"></div>`;
+    body += `<h1 style="font-size: 26pt;">Additional artifacts</h1>`;
+    other.items.forEach(({key, val}) => {
+      body += renderArtifactSectionForReadout(key, val, proj);
+    });
+  }
+
+  const filename = `${proj.name} — Project Readout — ${today}`;
+  const doc = `<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+      xmlns:w="urn:schemas-microsoft-com:office:word"
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head><meta charset="utf-8"><title>${escapeHtml(filename)}</title>
+<!--[if gte mso 9]><xml><w:WordDocument><w:View>Print</w:View><w:Zoom>100</w:Zoom></w:WordDocument></xml><![endif]-->
+<style>${WORD_CSS}
+  h3 { font-family: 'Cambria',Georgia,serif; font-size: 16pt; font-weight: 500; margin: 22pt 0 4pt; border-top: 1pt solid #ddd; padding-top: 14pt; }
+  h4 { font-family: 'Cambria',Georgia,serif; font-size: 13pt; font-weight: 500; margin: 16pt 0 6pt; text-transform: none; letter-spacing: 0; color: #333; }
+</style></head>
+<body>${body}</body></html>`;
+  saveBlobAsDoc(doc, filename);
+}
 
 // ---- Theme ----
 function applyTheme(t) {
@@ -7069,6 +7249,7 @@ function renderProjectHome() {
       <div class="ph-actions">
         <button class="ph-action-btn" onclick="route('projects/edit')">Edit</button>
         <button class="ph-action-btn" onclick="exportProjectJson()">Export JSON</button>
+        <button class="ph-action-btn ph-action-primary" onclick="compileProjectReadout()" title="Bundle every filled-in artifact into one Word doc">Compile readout</button>
       </div>
     </div>
 

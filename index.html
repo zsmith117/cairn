@@ -243,6 +243,46 @@
   .celebrate-toast-cta:hover { background: rgba(255,255,255,.28); }
   html[data-theme="dark"] .celebrate-toast-cta:hover { background: rgba(0,0,0,.28); }
 
+  /* Undo toast (medium, has action button) */
+  .undo-toast {
+    position: fixed;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%) translateY(12px);
+    background: var(--text);
+    color: var(--surface);
+    border-radius: 8px;
+    padding: 10px 14px 10px 18px;
+    box-shadow: 0 8px 28px rgba(0,0,0,.18);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s, transform .2s;
+    z-index: 210;
+  }
+  html[data-theme="dark"] .undo-toast { color: var(--bg); }
+  .undo-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+  }
+  .undo-toast button {
+    background: transparent;
+    border: 1px solid color-mix(in srgb, var(--surface) 30%, transparent);
+    color: var(--surface);
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-family: var(--sans);
+    font-size: 12.5px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  html[data-theme="dark"] .undo-toast button { color: var(--bg); border-color: color-mix(in srgb, var(--bg) 30%, transparent); }
+  .undo-toast button:hover { background: color-mix(in srgb, var(--surface) 14%, transparent); }
+
   /* Search result group headers */
   .search-group-header {
     font-family: var(--mono);
@@ -1115,7 +1155,7 @@
     border-radius: 999px;
     flex-shrink: 0;
   }
-  .status-not-started { background: var(--surface-2); color: var(--text-faint); }
+  .status-not-started { background: var(--surface-2); color: var(--text-muted); }
   .work-row-progress {
     font-size: 11px;
     color: var(--text-faint);
@@ -1542,9 +1582,10 @@
     border-radius: 999px;
     flex-shrink: 0;
   }
-  .status-todo { background: var(--surface-2); color: var(--text-faint); }
-  .status-in-progress { background: #fef3c7; color: #92400e; }
-  html[data-theme="dark"] .status-in-progress { background: #443a1a; color: #fcd34d; }
+  /* Status pills — colours meet WCAG AA contrast against their backgrounds */
+  .status-todo { background: var(--surface-2); color: var(--text-muted); }
+  .status-in-progress { background: #fde68a; color: #78350f; }
+  html[data-theme="dark"] .status-in-progress { background: #4d3f1c; color: #fde68a; }
   .status-done { background: var(--accent-soft); color: var(--accent-ink); }
   html[data-theme="dark"] .status-done { color: var(--accent); }
   .artifact-row-date { font-size: 11px; color: var(--text-faint); flex-shrink: 0; }
@@ -1659,6 +1700,21 @@
     font-weight: 500;
     margin: 0 0 6px;
     letter-spacing: -.005em;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    justify-content: space-between;
+  }
+  .tform-section-count {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--text-faint);
+    font-weight: 500;
+    letter-spacing: .04em;
+    flex-shrink: 0;
+  }
+  .tform-section-count.complete {
+    color: var(--accent);
   }
   .tform-section-blurb {
     color: var(--text-muted);
@@ -2068,6 +2124,10 @@
   <button class="celebrate-toast-cta" id="celebrate-toast-cta" onclick="onCelebrateCta()">Open</button>
 </div>
 <div class="sr-only" id="sr-announcer" aria-live="polite" aria-atomic="true"></div>
+<div class="undo-toast" id="undo-toast" role="status">
+  <span id="undo-toast-text"></span>
+  <button onclick="onUndoClick()" id="undo-toast-button">Undo</button>
+</div>
 
 <div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeSearch()">
   <div class="modal">
@@ -2659,6 +2719,31 @@ function onCelebrateCta() {
     route(_celebrateRoute);
     document.getElementById('celebrate-toast').classList.remove('show');
   }
+}
+
+// ---- Undo-toast for soft delete ----
+let _undoPending = null;
+let _undoTimer = null;
+function showUndoToast(message, undoFn) {
+  const t = document.getElementById('undo-toast');
+  document.getElementById('undo-toast-text').textContent = message;
+  _undoPending = undoFn;
+  t.classList.add('show');
+  clearTimeout(_undoTimer);
+  _undoTimer = setTimeout(() => {
+    t.classList.remove('show');
+    _undoPending = null;
+  }, 8000);
+  const a = document.getElementById('sr-announcer');
+  if (a) a.textContent = message + ' — undo available for 8 seconds';
+}
+function onUndoClick() {
+  if (_undoPending) {
+    _undoPending();
+    _undoPending = null;
+  }
+  document.getElementById('undo-toast').classList.remove('show');
+  clearTimeout(_undoTimer);
 }
 
 // ---- Project state model ----
@@ -3309,12 +3394,21 @@ function submitProjectForm(existingId) {
 function deleteCurrentProject() {
   const proj = activeProject();
   if (!proj) return;
-  if (!confirm(`Delete "${proj.name}"? This cannot be undone.`)) return;
+  const snapshot = JSON.parse(JSON.stringify(proj));
   const state = loadProjectsState();
+  const idx = state.projects.findIndex(x => x.id === proj.id);
   state.projects = state.projects.filter(x => x.id !== proj.id);
   state.activeId = state.projects.length ? state.projects[0].id : null;
   saveProjectsState(state);
   route('projects');
+  showUndoToast(`Deleted project "${snapshot.name}"`, () => {
+    const s = loadProjectsState();
+    // Restore at original index if possible
+    s.projects.splice(Math.min(idx, s.projects.length), 0, snapshot);
+    s.activeId = snapshot.id;
+    saveProjectsState(s);
+    route('project-home');
+  });
 }
 
 // ---- Project home view ----
@@ -4156,9 +4250,17 @@ function renameInstance(key, instanceId, newLabel) {
 function removeInstance(key, instanceId) {
   const inst = getInstance(key, instanceId);
   if (!inst) return;
-  if (!confirm(`Delete "${inst.label}"? This cannot be undone.`)) return;
+  const snapshot = JSON.parse(JSON.stringify(inst));
   deleteInstance(key, instanceId);
   rerenderAttach(key);
+  showUndoToast(`Deleted "${snapshot.label}"`, () => {
+    updateActiveProject(p => {
+      const a = ensureMultiContainer(p, key);
+      a.instances.push(snapshot);
+    });
+    rerenderAttach(key);
+    renderProjectBanner();
+  });
 }
 
 function rerenderAttach(key) {
@@ -4270,8 +4372,20 @@ function renderFormSection(key, section, data, instanceId) {
   const multiCol = section.fields.length >= 2 && section.fields.every(f => f.type === 'text' || f.type === 'date');
   const inner = multiCol ? `<div class="tform-row">${fieldsHtml}</div>` : fieldsHtml;
 
+  // Section completeness: count fields that have a non-empty value (including autofills)
+  let filled = 0;
+  section.fields.forEach(f => {
+    const stored = data[f.name];
+    const v = stored !== undefined ? stored : autofillValue(f, proj);
+    if (v === true) filled++;
+    else if (typeof v === 'string' && v.trim()) filled++;
+  });
+  const total = section.fields.length;
+  const isComplete = filled === total && total > 0;
+  const countLabel = total > 0 ? `<span class="tform-section-count ${isComplete ? 'complete' : ''}" aria-label="${filled} of ${total} fields filled">${filled}/${total}${isComplete ? ' ✓' : ''}</span>` : '';
+
   return `<div class="tform-section">
-    ${section.title ? `<h3 class="tform-section-title">${escapeHtml(section.title)}</h3>` : ''}
+    ${section.title ? `<h3 class="tform-section-title">${escapeHtml(section.title)}${countLabel}</h3>` : ''}
     ${section.blurb ? `<p class="tform-section-blurb">${escapeHtml(section.blurb)}</p>` : ''}
     ${inner}
   </div>`;

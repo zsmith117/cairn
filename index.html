@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Throughline</title>
+<title>Cairn</title>
 <style>
   :root {
     --bg: #fbfaf7;
@@ -2076,15 +2076,15 @@
     <button class="hamburger" onclick="openSidebar()" aria-label="Open navigation">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
     </button>
-    <div class="mobile-header-title" id="mobile-title">Throughline</div>
+    <div class="mobile-header-title" id="mobile-title">Cairn</div>
     <button class="hamburger" onclick="openSearch()" aria-label="Search">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
     </button>
   </header>
   <aside class="sidebar" id="sidebar">
     <div class="brand" onclick="goHome(); closeSidebar();">
-      <div class="brand-mark">TL</div>
-      <div class="brand-name">Throughline</div>
+      <div class="brand-mark">CN</div>
+      <div class="brand-name">Cairn</div>
     </div>
     <div class="brand-sub">UX Research Operations</div>
 
@@ -3029,7 +3029,7 @@ function renderEmptyNav() {
 function updateMobileTitle(r) {
   const el = document.getElementById('mobile-title');
   if (!el) return;
-  let title = 'Throughline';
+  let title = 'Cairn';
   if (r.view === 'projects') title = 'Projects';
   else if (r.view === 'project-home') title = activeProject()?.name || 'Project';
   else if (r.view === 'phase') {

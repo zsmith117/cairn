@@ -1,14 +1,14 @@
-# Throughline
+# Cairn
 
 A working project workspace and reference library for UX research operations.
 Built for B2B industrial research where evidence has to survive procurement,
 engineering, and the C-suite.
 
-Live demo: **https://zsmith117.github.io/throughline/**
+Live demo: **https://zsmith117.github.io/cairn/**
 
 ## Open it
 
-Visit the URL above, or double-click `Throughline.html` to run it locally
+Visit the URL above, or double-click `Cairn.html` to run it locally
 in your browser. No install, no server, no account — everything saves in
 `localStorage` and stays on your device.
 
@@ -85,7 +85,7 @@ The source markdown files live in `source/`. To update an SOP:
    ```
 
 3. Copy the regenerated `source/index.html` over the top-level
-   `Throughline.html`.
+   `Cairn.html`.
 
 Python 3.8+ is the only dependency. The first build downloads
 `marked.min.js` (~30 KB) and caches it.
@@ -93,7 +93,7 @@ Python 3.8+ is the only dependency. The first build downloads
 ## File map
 
 ```
-Throughline.html        ← the app (drop into any browser, no server)
+Cairn.html        ← the app (drop into any browser, no server)
 README.md
 source/
   build_app.py         ← bundles markdown + form schemas → HTML

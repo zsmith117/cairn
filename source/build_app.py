@@ -3948,9 +3948,235 @@ TEMPLATE = r"""<!doctype html>
     grid-template-columns: 280px 1fr;
     min-height: 100vh;
   }
+  .mobile-header, .sidebar-backdrop { display: none; }
   @media (max-width: 880px) {
     .app { grid-template-columns: 1fr; }
-    .sidebar { position: static !important; height: auto !important; border-right: none !important; border-bottom: 1px solid var(--border); }
+    .sidebar {
+      position: fixed !important;
+      top: 0; left: 0; bottom: 0;
+      width: 280px; max-width: 85vw;
+      z-index: 100;
+      transform: translateX(-100%);
+      transition: transform .25s ease;
+      box-shadow: 4px 0 20px rgba(0,0,0,.15);
+    }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(20,20,20,.4);
+      z-index: 99;
+      display: block;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .2s;
+    }
+    .sidebar-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .mobile-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 50;
+    }
+    .hamburger {
+      background: transparent;
+      border: 1px solid var(--border-strong);
+      color: var(--text);
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: grid;
+      place-items: center;
+      min-width: 36px;
+      min-height: 36px;
+    }
+    .mobile-header-title {
+      font-family: var(--serif);
+      font-size: 15px;
+      font-weight: 500;
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .main { padding: 18px 16px 64px; }
+    .stat-row { flex-wrap: wrap; gap: 16px 24px; padding: 14px 0 18px; margin-bottom: 24px; }
+    .stat .n { font-size: 22px; }
+    .home-title { font-size: 30px; }
+    .sop-title, .ph-title, .phase-title-detail { font-size: 28px; }
+    .ph-header { flex-direction: column; gap: 8px; }
+    .ph-actions { width: 100%; flex-wrap: wrap; }
+    .sop-detail-grid { gap: 24px; }
+    .toc { display: none; }
+    .attach-head { padding: 12px; gap: 8px; }
+    .attach-body { padding: 6px 14px 18px 14px; }
+    .tform-section { padding: 16px 18px; }
+    .tform-row { grid-template-columns: 1fr; }
+    .guide-card { grid-template-columns: 44px 1fr auto; padding: 18px 18px; gap: 16px; }
+    .guide-card-num { font-size: 28px; }
+    .projects-grid { grid-template-columns: 1fr; }
+    .next-action { padding: 16px 18px; gap: 14px; }
+    .next-action-icon { width: 38px; height: 38px; font-size: 18px; }
+    .next-action-title { font-size: 17px; }
+    .ph-phase-grid { grid-template-columns: 1fr 1fr; }
+    .artifact-row { flex-wrap: wrap; padding: 12px; gap: 8px; }
+    .artifact-row-kind { width: auto; }
+    .work-row { flex-wrap: wrap; gap: 8px; }
+    .work-row-kind { width: auto; }
+    .save-to-project { gap: 8px; }
+    .save-status-label { font-size: 11px; }
+    .attach-actions { flex-direction: column; align-items: stretch; gap: 10px; }
+    .save-to-project { flex-wrap: wrap; }
+  }
+  @media (max-width: 480px) {
+    .ph-phase-grid { grid-template-columns: 1fr; }
+    .home-title { font-size: 26px; }
+    .pf-form { padding: 22px 18px; }
+  }
+
+  /* Save toast (top right) */
+  .save-toast {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    transform: translateY(-6px);
+    pointer-events: none;
+    transition: opacity .2s, transform .2s;
+    z-index: 200;
+  }
+  .save-toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .save-toast-dot {
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .sr-only {
+    position: absolute !important;
+    width: 1px; height: 1px;
+    padding: 0; margin: -1px;
+    overflow: hidden;
+    clip: rect(0,0,0,0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Welcome banner on project home */
+  .welcome-banner {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--accent);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-top: 24px;
+    margin-bottom: 8px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .welcome-banner-body { flex: 1; }
+  .welcome-banner-title {
+    font-family: var(--serif);
+    font-size: 16px;
+    font-weight: 500;
+    margin: 0 0 4px;
+  }
+  .welcome-banner-text {
+    color: var(--text-muted);
+    font-size: 13px;
+    line-height: 1.5;
+    margin: 0;
+  }
+  .welcome-banner-dismiss {
+    background: transparent;
+    border: none;
+    color: var(--text-faint);
+    cursor: pointer;
+    padding: 2px 6px;
+    font-size: 16px;
+    line-height: 1;
+  }
+  .welcome-banner-dismiss:hover { color: var(--text); }
+
+  /* Empty-state phase preview on dashboard */
+  .phase-preview-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 24px;
+    margin-bottom: 8px;
+  }
+  @media (max-width: 600px) { .phase-preview-row { grid-template-columns: repeat(2, 1fr); } }
+  .phase-preview {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 14px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .phase-preview-num {
+    width: 26px; height: 26px;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    border-radius: 50%;
+    display: grid; place-items: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+  }
+  html[data-theme="dark"] .phase-preview-num { color: var(--accent); }
+  .phase-preview-title {
+    font-family: var(--serif);
+    font-size: 13.5px;
+    font-weight: 500;
+    line-height: 1.25;
+  }
+
+  /* Phase-grouped artifacts on project home */
+  .artifact-group {
+    margin-bottom: 16px;
+  }
+  .artifact-group-header {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--text-faint);
+    margin: 0 0 8px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .artifact-group-list {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
   }
 
   /* Sidebar */
@@ -5594,9 +5820,19 @@ TEMPLATE = r"""<!doctype html>
 </style>
 </head>
 <body>
+<div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeSidebar()"></div>
 <div class="app">
-  <aside class="sidebar">
-    <div class="brand" onclick="goHome()">
+  <header class="mobile-header">
+    <button class="hamburger" onclick="openSidebar()" aria-label="Open navigation">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="mobile-header-title" id="mobile-title">SOP Library</div>
+    <button class="hamburger" onclick="openSearch()" aria-label="Search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    </button>
+  </header>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand" onclick="goHome(); closeSidebar();">
       <div class="brand-mark">UX</div>
       <div class="brand-name">SOP Library</div>
     </div>
@@ -5627,6 +5863,9 @@ TEMPLATE = r"""<!doctype html>
 
   <main class="main" id="main"></main>
 </div>
+
+<div class="save-toast" id="save-toast" role="status" aria-live="off"><span class="save-toast-dot"></span><span id="save-toast-text">Saved</span></div>
+<div class="sr-only" id="sr-announcer" aria-live="polite" aria-atomic="true"></div>
 
 <div class="modal-bg" id="modal-bg" onclick="if(event.target===this)closeSearch()">
   <div class="modal">
@@ -5983,6 +6222,38 @@ function toggleTheme() {
 }
 applyTheme(localStorage.getItem('sop-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
 
+// ---- Mobile sidebar drawer ----
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebar-backdrop').classList.add('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-backdrop').classList.remove('open');
+}
+// Close drawer after any nav click in the sidebar
+document.addEventListener('click', (e) => {
+  const onMobile = window.matchMedia('(max-width: 880px)').matches;
+  if (!onMobile) return;
+  const target = e.target.closest('.nav-link, .nav-phase-link, .mode-toggle button, .search-btn');
+  if (target && target.closest('.sidebar')) {
+    setTimeout(closeSidebar, 80);
+  }
+});
+
+// ---- Save toast / a11y announcer ----
+let _saveToastTimer = null;
+function showSaveToast(text) {
+  const t = document.getElementById('save-toast');
+  if (!t) return;
+  document.getElementById('save-toast-text').textContent = text || 'Saved';
+  t.classList.add('show');
+  clearTimeout(_saveToastTimer);
+  _saveToastTimer = setTimeout(() => t.classList.remove('show'), 1800);
+  const a = document.getElementById('sr-announcer');
+  if (a) a.textContent = text || 'Saved';
+}
+
 // ---- Project state model ----
 const PROJECTS_KEY = 'sop-projects-v1';
 const LEGACY_CHECKLIST_KEY = 'sop-guide-checklist-state';
@@ -6233,6 +6504,7 @@ function render() {
   const mode = currentMode(r);
   updateModeToggle(mode);
   renderProjectBanner();
+  updateMobileTitle(r);
 
   if (r.view === 'projects') {
     renderEmptyNav();
@@ -6266,6 +6538,25 @@ window.addEventListener('hashchange', render);
 
 function renderEmptyNav() {
   document.getElementById('nav').innerHTML = '';
+}
+
+function updateMobileTitle(r) {
+  const el = document.getElementById('mobile-title');
+  if (!el) return;
+  let title = 'SOP Library';
+  if (r.view === 'projects') title = 'Projects';
+  else if (r.view === 'project-home') title = activeProject()?.name || 'Project';
+  else if (r.view === 'phase') {
+    const ph = DATA.guide_phases.find(p => p.id === r.phaseId);
+    title = ph ? `Phase ${ph.number}: ${ph.title}` : 'Phase';
+  }
+  else if (r.view === 'guide-home') title = 'Project Guide';
+  else if (r.view === 'library-home') title = 'SOP Library';
+  else if (r.view === 'sop') {
+    const sop = SOPS[r.sopId];
+    title = sop ? sop.display : 'SOP';
+  }
+  el.textContent = title;
 }
 
 function renderProjectBanner() {
@@ -6312,6 +6603,7 @@ function bindPhaseCheckboxes(container, phaseId) {
       maybeAdvanceCurrentPhase();
       renderGuideNav(phaseId);
       renderProjectBanner();
+      showSaveToast();
     });
   });
 }
@@ -6465,7 +6757,16 @@ function renderProjectsDashboard() {
     </p>
 
     ${projects.length === 0 ? `
-      <div class="new-project-card" onclick="route('projects/new')" style="margin-top:32px; padding:60px 28px;">
+      <div class="phase-preview-row" aria-hidden="true">
+        ${DATA.guide_phases.map(ph => `
+          <div class="phase-preview">
+            <div class="phase-preview-num">${ph.number}</div>
+            <div class="phase-preview-title">${ph.title}</div>
+          </div>
+        `).join('')}
+      </div>
+      <p style="color:var(--text-muted); font-size:13.5px; margin: 12px 0 24px;">Your project moves through five phases. Each phase suggests the right artifact to start, tracks what you've completed, and exports to Word when you're ready.</p>
+      <div class="new-project-card" onclick="route('projects/new')" style="padding:48px 28px;">
         <div class="new-project-plus">+</div>
         <div style="font-family:var(--serif); font-size:18px; font-weight:500;">Create your first project</div>
         <div style="font-size:13px;">Or <a onclick="event.stopPropagation(); route('guide');" style="color:var(--accent); cursor:pointer; text-decoration:underline;">browse the reference library →</a></div>
@@ -6509,6 +6810,11 @@ function renderProjectsDashboard() {
 function enterProject(id) {
   setActiveProject(id);
   route('project-home');
+}
+
+function dismissWelcome() {
+  localStorage.setItem('sop-welcome-dismissed', '1');
+  render();
 }
 
 function formatRelative(iso) {
@@ -6649,8 +6955,20 @@ function renderProjectHome() {
       </div>
     </div>
 
+    ${!localStorage.getItem('sop-welcome-dismissed') ? `
+      <div class="welcome-banner">
+        <div class="welcome-banner-body">
+          <div class="welcome-banner-title">Welcome to your project workspace</div>
+          <p class="welcome-banner-text">
+            The card below tells you what to do next. Phase tiles show where you are. Saved artifacts collect everything you've worked on — and every artifact exports to Word with your data filled in. Your work autosaves locally as you go.
+          </p>
+        </div>
+        <button class="welcome-banner-dismiss" onclick="dismissWelcome()" aria-label="Dismiss welcome">×</button>
+      </div>
+    ` : ''}
+
     ${next ? `
-      <div class="next-action" onclick="route('${next.route}')" style="margin-top:32px;">
+      <div class="next-action" onclick="route('${next.route}')" style="margin-top:24px;">
         <div class="next-action-icon">${next.number}</div>
         <div class="next-action-body">
           <div class="next-action-eyebrow">${escapeHtml(next.eyebrow)}</div>
@@ -6686,26 +7004,57 @@ function renderProjectHome() {
         <div style="padding:24px; background:var(--surface-2); border-radius:8px; color:var(--text-muted); font-size:13.5px;">
           No artifacts yet. Open a checklist or template from a phase or SOP and use <strong>Save to project</strong> to track it here.
         </div>
-      ` : `
-        <div style="background:var(--surface); border:1px solid var(--border); border-radius:8px; overflow:hidden;">
-          ${artifacts.map(a => `
-            <div class="artifact-row" onclick="route('sop/${a.sopId}/${a.kind}s#sec-${a.section.replace('.','-')}')">
-              <div class="artifact-row-kind">${a.sopId} · ${a.section}</div>
-              <div class="artifact-row-title">
-                <strong>${escapeHtml(a.instanceLabel || a.label || (a.kind.charAt(0).toUpperCase() + a.kind.slice(1)))}</strong>
-                <span style="color:var(--text-faint); margin-left:6px; font-size:11.5px;">${a.instanceLabel ? escapeHtml(a.label || a.kind) : a.kind}</span>
-                ${a.checklistTotal ? `<span style="color:var(--text-faint); margin-left:8px; font-size:11.5px;">${a.checklistCompleted}/${a.checklistTotal} items</span>` : ''}
-                ${a.filledFields ? `<span style="color:var(--text-faint); margin-left:8px; font-size:11.5px;">${a.filledFields} fields</span>` : ''}
-                ${a.editedCells ? `<span style="color:var(--text-faint); margin-left:8px; font-size:11.5px;">${a.editedCells} cells</span>` : ''}
-              </div>
-              <span class="artifact-row-status status-${a.status || 'todo'}">${(a.status || 'todo').replace('-', ' ')}</span>
-              <span class="artifact-row-date">${formatRelative(a.updatedAt)}</span>
-            </div>
-          `).join('')}
-        </div>
-      `}
+      ` : renderArtifactsByPhase(artifacts)}
     </section>
   `;
+}
+
+function renderArtifactsByPhase(artifacts) {
+  // Build a phase index: each SOP maps to its first guide phase
+  const sopToPhase = {};
+  DATA.guide_phases.forEach(ph => {
+    ph.sops.forEach(s => {
+      if (!sopToPhase[s]) sopToPhase[s] = ph;
+    });
+  });
+  const groups = new Map();
+  artifacts.forEach(a => {
+    const ph = sopToPhase[a.sopId];
+    const key = ph ? ph.id : 'other';
+    if (!groups.has(key)) groups.set(key, { phase: ph, items: [] });
+    groups.get(key).items.push(a);
+  });
+  // Sort: phase 1 → 5, then 'other'
+  const ordered = DATA.guide_phases.map(ph => groups.get(ph.id)).filter(Boolean);
+  if (groups.has('other')) ordered.push(groups.get('other'));
+
+  const row = (a) => `
+    <div class="artifact-row" onclick="route('sop/${a.sopId}/${a.kind}s#sec-${a.section.replace('.','-')}')">
+      <div class="artifact-row-kind">${a.sopId} · ${a.section}</div>
+      <div class="artifact-row-title">
+        <strong>${escapeHtml(a.instanceLabel || a.label || (a.kind.charAt(0).toUpperCase() + a.kind.slice(1)))}</strong>
+        <span style="color:var(--text-faint); margin-left:6px; font-size:11.5px;">${a.instanceLabel ? escapeHtml(a.label || a.kind) : a.kind}</span>
+        ${a.checklistTotal ? `<span style="color:var(--text-faint); margin-left:8px; font-size:11.5px;">${a.checklistCompleted}/${a.checklistTotal} items</span>` : ''}
+        ${a.filledFields ? `<span style="color:var(--text-faint); margin-left:8px; font-size:11.5px;">${a.filledFields} fields</span>` : ''}
+        ${a.editedCells ? `<span style="color:var(--text-faint); margin-left:8px; font-size:11.5px;">${a.editedCells} cells</span>` : ''}
+      </div>
+      <span class="artifact-row-status status-${a.status || 'todo'}">${(a.status || 'todo').replace('-', ' ')}</span>
+      <span class="artifact-row-date">${formatRelative(a.updatedAt)}</span>
+    </div>
+  `;
+
+  return ordered.map(g => {
+    const header = g.phase ? `Phase ${g.phase.number} · ${g.phase.title}` : 'Other SOPs';
+    return `
+      <div class="artifact-group">
+        <div class="artifact-group-header">
+          <span>${escapeHtml(header)}</span>
+          <span style="font-family:var(--sans); text-transform:none; letter-spacing:0; color:var(--text-faint); font-size:11.5px;">${g.items.length} item${g.items.length === 1 ? '' : 's'}</span>
+        </div>
+        <div class="artifact-group-list">${g.items.map(row).join('')}</div>
+      </div>
+    `;
+  }).join('');
 }
 
 function parseArtifactKey(key) {
@@ -7102,7 +7451,8 @@ function bindAttachTextFields(attach, key) {
   targets.forEach(textNode => {
     const parts = textNode.nodeValue.split(/(_{3,})/);
     const frag = document.createDocumentFragment();
-    parts.forEach(part => {
+    let runningLabelHint = '';
+    parts.forEach((part, partIdx) => {
       if (/^_{3,}$/.test(part)) {
         const idx = counter++;
         const input = document.createElement('input');
@@ -7112,17 +7462,43 @@ function bindAttachTextFields(attach, key) {
         input.value = state[idx] || '';
         input.disabled = !proj;
         input.style.minWidth = Math.max(80, Math.min(280, part.length * 6)) + 'px';
+        // Derive an accessible label from the most recent "Label:" pattern in
+        // this text node, plus any prior siblings within the same line block.
+        const preceding = (parts.slice(0, partIdx).join('') || '') + runningLabelHint;
+        const labelText = deriveFieldLabel(preceding, textNode);
+        input.setAttribute('aria-label', labelText || ('Field ' + (idx + 1)));
+        input.title = labelText || ('Field ' + (idx + 1));
         if (proj) {
           input.addEventListener('blur', () => onTextFieldChange(key, idx, input.value));
         }
         frag.appendChild(input);
       } else {
+        runningLabelHint = part;
         frag.appendChild(document.createTextNode(part));
       }
     });
     textNode.parentNode.replaceChild(frag, textNode);
   });
   attach.dataset.textFieldCount = String(counter);
+}
+
+// Pull the most recent "Label:" pattern out of a chunk of preceding text.
+// Falls back to nearby <strong> text from the same paragraph.
+function deriveFieldLabel(precedingText, anchorNode) {
+  // Prefer "Some Label:" right before the underscore run
+  const m = precedingText.match(/([A-Za-z][A-Za-z0-9 \-/&]{1,40}):\s*$/);
+  if (m) return m[1].trim();
+  // Walk up to the parent paragraph/list-item and look for a leading bold
+  let p = anchorNode.parentNode;
+  while (p && !['P', 'LI', 'TD', 'TH', 'DIV'].includes(p.tagName)) p = p.parentNode;
+  if (p) {
+    const strong = p.querySelector('strong, b');
+    if (strong) return strong.textContent.replace(/[:：]\s*$/, '').trim();
+    // Last resort: first 4 words of the block text
+    const txt = p.textContent.replace(/_{3,}/g, '').trim();
+    if (txt) return txt.split(/\s+/).slice(0, 4).join(' ');
+  }
+  return '';
 }
 
 function bindAttachTableCells(attach, key) {
@@ -7190,6 +7566,7 @@ function refreshAttachSave(key) {
   const saveEl = document.querySelector(`.attach[data-artifact-key="${key}"] .save-to-project`);
   if (saveEl) saveEl.outerHTML = saveToProjectControl(key);
   renderProjectBanner();
+  showSaveToast();
 }
 
 function bindAttachChecklist(attach, key) {
@@ -7225,6 +7602,7 @@ function onChecklistCheckboxChange(key, idx, checked) {
   const saveEl = document.querySelector(`.attach[data-artifact-key="${key}"] .save-to-project`);
   if (saveEl) saveEl.outerHTML = saveToProjectControl(key);
   renderProjectBanner();
+  showSaveToast();
 }
 
 function countChecklistItems(key) {
@@ -7262,6 +7640,7 @@ function onArtifactStatusChange(key, value) {
   const el = document.querySelector(`.attach[data-artifact-key="${key}"] .save-to-project`);
   if (el) el.outerHTML = saveToProjectControl(key);
   renderProjectBanner();
+  showSaveToast();
 }
 
 // ---- Template form renderer ----
@@ -7391,6 +7770,7 @@ function rerenderAttach(key) {
   const save = attach.querySelector('.save-to-project');
   if (save) save.outerHTML = saveToProjectControl(key);
   renderProjectBanner();
+  showSaveToast();
 }
 function onInstanceStatusChange(key, instanceId, status) {
   updateInstance(key, instanceId, i => { i.status = status; });
@@ -7538,6 +7918,7 @@ function onFormFieldChange(key, fieldName, el, instanceId) {
     if (el2) el2.outerHTML = saveToProjectControl(key);
   }
   renderProjectBanner();
+  showSaveToast();
 }
 
 function renderAttachmentToc(items) {

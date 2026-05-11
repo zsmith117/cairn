@@ -440,7 +440,183 @@ TEMPLATE_FORMS = {
                 ],
             },
         ],
-    }
+    },
+    "UXR-005-template-5.1": {
+        "title": "Generative Interview Guide",
+        "intro": "Build your interview script section by section. Fields autosave to the project. Export to Word for a printable guide you can take into sessions.",
+        "sections": [
+            {
+                "id": "header",
+                "title": "Study details",
+                "fields": [
+                    {"name": "study_name", "label": "Study name", "type": "text", "autofill": "project.name"},
+                    {"name": "date", "label": "Date", "type": "date", "autofill": "today"},
+                    {"name": "researcher", "label": "Researcher", "type": "text", "autofill": "project.owner"},
+                    {"name": "document_id", "label": "Document ID", "type": "text"},
+                    {"name": "version", "label": "Version", "type": "text", "placeholder": "1.0"},
+                ],
+            },
+            {
+                "id": "overview",
+                "title": "Session overview",
+                "fields": [
+                    {"name": "purpose", "label": "Purpose", "type": "textarea", "rows": 3, "placeholder": "What this study aims to learn"},
+                    {"name": "duration", "label": "Duration (minutes)", "type": "text", "placeholder": "60"},
+                    {
+                        "name": "format",
+                        "label": "Session format",
+                        "type": "radio",
+                        "options": [
+                            {"value": "remote", "label": "Remote"},
+                            {"value": "in_person", "label": "In-person"},
+                        ],
+                    },
+                    {"name": "rec_audio", "label": "Recording: Audio", "type": "checkbox"},
+                    {"name": "rec_video", "label": "Recording: Video", "type": "checkbox"},
+                    {"name": "rec_screen", "label": "Recording: Screen share", "type": "checkbox"},
+                ],
+            },
+            {
+                "id": "research_questions",
+                "title": "Research questions",
+                "blurb": "The questions your analysis will answer (these are different from your interview questions).",
+                "fields": [
+                    {"name": "rq_1", "label": "Research question 1", "type": "textarea", "rows": 2},
+                    {"name": "rq_2", "label": "Research question 2", "type": "textarea", "rows": 2},
+                    {"name": "rq_3", "label": "Research question 3", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "warmup",
+                "title": "Warm-up (≈5 min)",
+                "blurb": "Quick rapport-building questions before the real conversation.",
+                "fields": [
+                    {"name": "warmup_q1", "label": "Warm-up question 1", "type": "textarea", "rows": 2, "placeholder": "Can you tell me about your current role?"},
+                    {"name": "warmup_q2", "label": "Warm-up question 2", "type": "textarea", "rows": 2, "placeholder": "What does a typical day look like for you?"},
+                ],
+            },
+            {
+                "id": "topic1",
+                "title": "Topic area 1",
+                "fields": [
+                    {"name": "t1_name", "label": "Topic name", "type": "text"},
+                    {"name": "t1_duration", "label": "Time (min)", "type": "text", "placeholder": "15"},
+                    {"name": "t1_goal", "label": "What you want to learn (moderator goal)", "type": "textarea", "rows": 2},
+                    {"name": "t1_q1", "label": "Question 1 (opening, narrative)", "type": "textarea", "rows": 2},
+                    {"name": "t1_q2", "label": "Question 2", "type": "textarea", "rows": 2},
+                    {"name": "t1_q3", "label": "Question 3", "type": "textarea", "rows": 2},
+                    {"name": "t1_q4", "label": "Question 4 (if time permits)", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "topic2",
+                "title": "Topic area 2",
+                "fields": [
+                    {"name": "t2_name", "label": "Topic name", "type": "text"},
+                    {"name": "t2_duration", "label": "Time (min)", "type": "text", "placeholder": "15"},
+                    {"name": "t2_goal", "label": "What you want to learn", "type": "textarea", "rows": 2},
+                    {"name": "t2_q1", "label": "Question 1", "type": "textarea", "rows": 2},
+                    {"name": "t2_q2", "label": "Question 2", "type": "textarea", "rows": 2},
+                    {"name": "t2_q3", "label": "Question 3", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "closing",
+                "title": "Closing (≈5 min)",
+                "fields": [
+                    {"name": "closing_q1", "label": "Final wrap-up question", "type": "textarea", "rows": 2, "placeholder": "Anything important we didn't discuss?"},
+                    {"name": "closing_q2", "label": "Anything you'd like to ask me?", "type": "textarea", "rows": 2},
+                    {"name": "incentive", "label": "Incentive details (for closing script)", "type": "text"},
+                ],
+            },
+            {
+                "id": "notes",
+                "title": "Moderator notes",
+                "fields": [
+                    {"name": "key_reminders", "label": "Key reminders to yourself", "type": "textarea", "rows": 3},
+                    {"name": "sensitive_topics", "label": "Sensitive areas to navigate carefully", "type": "textarea", "rows": 2},
+                ],
+            },
+        ],
+    },
+    "UXR-003-template-5.2": {
+        "title": "Screener",
+        "intro": "Design your participant screener. Export to Word for a clean spec you can drop into Typeform, Qualtrics, or Google Forms.",
+        "sections": [
+            {
+                "id": "header",
+                "title": "Study details",
+                "fields": [
+                    {"name": "study_name", "label": "Study name", "type": "text", "autofill": "project.name"},
+                    {"name": "company", "label": "Company name (for intro)", "type": "text"},
+                    {"name": "general_topic", "label": "General topic (don't reveal specifics)", "type": "text", "placeholder": "e.g. how teams plan inventory"},
+                    {"name": "duration_minutes", "label": "Screener takes (min)", "type": "text", "placeholder": "5"},
+                    {"name": "incentive", "label": "Incentive", "type": "text", "placeholder": "$75 Amazon gift card"},
+                ],
+            },
+            {
+                "id": "disqualifiers",
+                "title": "Disqualification industries",
+                "blurb": "Industries that signal a professional respondent or competitor employee.",
+                "fields": [
+                    {"name": "dq_industry_1", "label": "Industry 1", "type": "text", "placeholder": "Market research"},
+                    {"name": "dq_industry_2", "label": "Industry 2", "type": "text", "placeholder": "Advertising / PR"},
+                    {"name": "dq_industry_3", "label": "Industry 3", "type": "text", "placeholder": "UX design / user research"},
+                    {"name": "dq_industry_4", "label": "Industry 4 (competitor)", "type": "text"},
+                    {"name": "past_studies_threshold", "label": "Disqualify if participated in more than N studies in past 6 months", "type": "text", "placeholder": "3"},
+                ],
+            },
+            {
+                "id": "primary_criteria",
+                "title": "Primary criteria",
+                "blurb": "Must-have qualifications. Each question identifies who continues vs. who's thanked.",
+                "fields": [
+                    {"name": "pc_q1", "label": "Primary criterion 1 — question", "type": "textarea", "rows": 2, "placeholder": "How often do you use [system X] in your work?"},
+                    {"name": "pc_q1_pass", "label": "Passing answers (continues)", "type": "text", "placeholder": "Daily, Several times a week, Weekly"},
+                    {"name": "pc_q2", "label": "Primary criterion 2 — question", "type": "textarea", "rows": 2},
+                    {"name": "pc_q2_pass", "label": "Passing answers", "type": "text"},
+                    {"name": "pc_q3", "label": "Primary criterion 3 — question", "type": "textarea", "rows": 2},
+                    {"name": "pc_q3_pass", "label": "Passing answers", "type": "text"},
+                ],
+            },
+            {
+                "id": "quotas",
+                "title": "Quota / secondary criteria",
+                "blurb": "Nice-to-have qualifications to ensure sample diversity.",
+                "fields": [
+                    {"name": "quota_q1", "label": "Quota dimension", "type": "text", "placeholder": "Company size"},
+                    {"name": "quota_q1_options", "label": "Options (one per line, with target counts)", "type": "textarea", "rows": 3, "placeholder": "1–50 employees [5]\n51–500 employees [5]\n500+ employees [5]"},
+                ],
+            },
+            {
+                "id": "articulation",
+                "title": "Articulation check",
+                "blurb": "Open-ended question to filter for thoughtfulness (interviews only).",
+                "fields": [
+                    {"name": "articulation_q", "label": "Articulation question", "type": "textarea", "rows": 3, "placeholder": "In a few sentences, describe [task]. What makes it difficult?"},
+                    {"name": "min_chars", "label": "Minimum response length", "type": "text", "placeholder": "50 characters"},
+                ],
+            },
+            {
+                "id": "logistics",
+                "title": "Logistics",
+                "fields": [
+                    {"name": "session_type", "label": "Session type", "type": "text", "placeholder": "60-min remote interview"},
+                    {"name": "date_range", "label": "Date range available", "type": "text"},
+                    {"name": "needs_timezone", "label": "Collect timezone", "type": "checkbox"},
+                    {"name": "needs_phone", "label": "Collect phone (optional)", "type": "checkbox"},
+                ],
+            },
+            {
+                "id": "messaging",
+                "title": "Confirmation messages",
+                "fields": [
+                    {"name": "qualified_msg", "label": "Message for qualified respondents", "type": "textarea", "rows": 3},
+                    {"name": "not_qualified_msg", "label": "Message for not-qualified", "type": "textarea", "rows": 3},
+                ],
+            },
+        ],
+    },
 }
 
 

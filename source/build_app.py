@@ -621,7 +621,10 @@ TEMPLATE_FORMS = {
     },
     "UXR-006-template-5.1": {
         "title": "Interview Session Notes",
-        "intro": "One session at a time. Fill in during or right after the interview, then export to Word and save the file with the session ID. Reset the form for the next session.",
+        "multi_instance": True,
+        "instance_singular": "session",
+        "instance_plural": "sessions",
+        "intro": "One entry per interview. Add a session, fill in notes, then add another when the next interview is done. Each session exports to its own Word doc.",
         "sections": [
             {
                 "id": "header",
@@ -2276,6 +2279,123 @@ TEMPLATE = r"""<!doctype html>
     align-self: center;
   }
 
+  /* Multi-instance template UI */
+  .instance-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .instance-empty {
+    padding: 24px;
+    text-align: center;
+    background: var(--surface-2);
+    border-radius: 8px;
+    color: var(--text-muted);
+    font-size: 13.5px;
+  }
+  .instance-card {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--bg);
+    overflow: hidden;
+  }
+  .instance-head {
+    width: 100%;
+    background: transparent;
+    border: none;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+    cursor: pointer;
+    color: var(--text);
+    transition: background .15s;
+  }
+  .instance-head:hover { background: var(--surface-2); }
+  .instance-chev {
+    color: var(--text-faint);
+    transition: transform .2s;
+    flex-shrink: 0;
+  }
+  .instance-card.open .instance-chev { transform: rotate(90deg); }
+  .instance-label-input {
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-family: var(--serif);
+    font-size: 15px;
+    font-weight: 500;
+    padding: 2px 4px;
+    border-radius: 4px;
+    flex: 1;
+    min-width: 0;
+  }
+  .instance-label-input:hover { background: var(--surface); }
+  .instance-label-input:focus { outline: 1px solid var(--accent); background: var(--surface); }
+  .instance-meta {
+    font-size: 11.5px;
+    color: var(--text-faint);
+    flex-shrink: 0;
+  }
+  .instance-status-pill {
+    font-size: 10.5px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    flex-shrink: 0;
+    font-weight: 500;
+  }
+  .instance-delete {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-faint);
+    width: 24px; height: 24px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    transition: background .15s, color .15s, border-color .15s;
+  }
+  .instance-delete:hover {
+    color: #b91c1c;
+    border-color: var(--border-strong);
+  }
+  .instance-body {
+    display: none;
+    padding: 8px 16px 18px;
+    border-top: 1px solid var(--border);
+    background: var(--bg);
+  }
+  .instance-card.open .instance-body { display: block; }
+  .instance-actions {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+  }
+  .new-instance-btn {
+    background: transparent;
+    border: 1px dashed var(--border-strong);
+    color: var(--text-muted);
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: border-color .15s, color .15s, background .15s;
+    align-self: flex-start;
+  }
+  .new-instance-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+  }
+  html[data-theme="dark"] .new-instance-btn:hover { color: var(--accent); }
+
   /* TOC */
   .toc {
     position: sticky;
@@ -2560,21 +2680,28 @@ const DOWNLOAD_REGISTRY = new Map();
 function registerDownload(key, title, sopId, markdown) {
   DOWNLOAD_REGISTRY.set(key, { title, sopId, markdown });
 }
-function triggerDownload(key) {
+function triggerDownload(key, instanceId) {
   const d = DOWNLOAD_REGISTRY.get(key);
   if (!d) return;
   const schema = DATA.template_forms[key];
   const proj = activeProject();
-  const stored = proj?.artifactStatus[key]?.data;
+  let stored = null;
+  let instanceLabel = '';
+  if (instanceId) {
+    const inst = getInstance(key, instanceId);
+    if (inst) { stored = inst.data; instanceLabel = inst.label; }
+  } else {
+    stored = proj?.artifactStatus[key]?.data;
+  }
   if (schema && stored && Object.values(stored).some(v => v !== '' && v !== false && v != null)) {
-    // Merge autofills as fallbacks so unedited fields still get populated
     const merged = {};
     schema.sections.forEach(s => s.fields.forEach(f => {
       const fill = autofillValue(f, proj);
       if (fill) merged[f.name] = fill;
     }));
     Object.assign(merged, stored);
-    downloadFilledForm(d, schema, proj, merged);
+    const titledMeta = {...d, title: instanceLabel ? `${d.title} — ${instanceLabel}` : d.title};
+    downloadFilledForm(titledMeta, schema, proj, merged);
   } else {
     downloadAsWord(d.title, d.sopId, d.markdown);
   }
@@ -2773,6 +2900,73 @@ function setArtifactData(key, data) {
   updateActiveProject(p => {
     const cur = p.artifactStatus[key] || {status: 'in-progress'};
     p.artifactStatus[key] = {...cur, data, status: cur.status === 'done' ? 'done' : 'in-progress', updatedAt: new Date().toISOString()};
+  });
+}
+
+// ---- Multi-instance artifact helpers ----
+function isMultiInstance(key) {
+  return !!(DATA.template_forms[key] && DATA.template_forms[key].multi_instance);
+}
+function ensureMultiContainer(p, key) {
+  let a = p.artifactStatus[key];
+  if (a && a.multi) return a;
+  if (a && !a.multi && (a.data || a.status)) {
+    // Migrate the legacy single-instance into the first instance
+    a = p.artifactStatus[key] = {
+      multi: true,
+      instances: [{
+        id: 'i-' + Math.random().toString(36).slice(2, 8),
+        label: 'Session 1',
+        status: a.status || 'in-progress',
+        data: a.data || {},
+        updatedAt: a.updatedAt || new Date().toISOString(),
+      }],
+    };
+    return a;
+  }
+  a = p.artifactStatus[key] = { multi: true, instances: [] };
+  return a;
+}
+function getInstances(key) {
+  const proj = activeProject();
+  if (!proj) return [];
+  const a = proj.artifactStatus[key];
+  if (!a || !a.multi) return [];
+  return a.instances || [];
+}
+function getInstance(key, instanceId) {
+  return getInstances(key).find(i => i.id === instanceId) || null;
+}
+function createInstance(key) {
+  if (!activeProject()) return null;
+  let newId = 'i-' + Math.random().toString(36).slice(2, 8);
+  updateActiveProject(p => {
+    const a = ensureMultiContainer(p, key);
+    const num = a.instances.length + 1;
+    const schema = DATA.template_forms[key] || {};
+    const singular = schema.instance_singular ? schema.instance_singular[0].toUpperCase() + schema.instance_singular.slice(1) : 'Entry';
+    a.instances.push({
+      id: newId,
+      label: `${singular} ${num}`,
+      status: 'in-progress',
+      data: {},
+      updatedAt: new Date().toISOString(),
+    });
+  });
+  return newId;
+}
+function updateInstance(key, instanceId, mutator) {
+  updateActiveProject(p => {
+    const a = p.artifactStatus[key];
+    if (!a || !a.instances) return;
+    const inst = a.instances.find(i => i.id === instanceId);
+    if (inst) { mutator(inst); inst.updatedAt = new Date().toISOString(); }
+  });
+}
+function deleteInstance(key, instanceId) {
+  updateActiveProject(p => {
+    const a = p.artifactStatus[key];
+    if (a && a.instances) a.instances = a.instances.filter(i => i.id !== instanceId);
   });
 }
 
@@ -3137,14 +3331,19 @@ function renderProjectHome() {
   const pct = projectOverallCompletion(p);
   const phase = DATA.guide_phases.find(ph => ph.id === p.currentPhase);
 
-  const artifacts = Object.entries(p.artifactStatus || {})
-    .map(([key, val]) => {
-      const meta = parseArtifactKey(key);
-      if (!meta) return null;
-      return { key, ...meta, ...val };
-    })
-    .filter(Boolean)
-    .sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
+  const artifacts = [];
+  Object.entries(p.artifactStatus || {}).forEach(([key, val]) => {
+    const meta = parseArtifactKey(key);
+    if (!meta) return;
+    if (val.multi && val.instances) {
+      val.instances.forEach(inst => {
+        artifacts.push({ key, ...meta, status: inst.status, updatedAt: inst.updatedAt, instanceLabel: inst.label, instanceId: inst.id });
+      });
+    } else if (val.status || val.data) {
+      artifacts.push({ key, ...meta, ...val });
+    }
+  });
+  artifacts.sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
 
   document.getElementById('main').innerHTML = `
     <div class="breadcrumb">
@@ -3200,8 +3399,8 @@ function renderProjectHome() {
             <div class="artifact-row" onclick="route('sop/${a.sopId}/${a.kind}s')">
               <div class="artifact-row-kind">${a.sopId} · ${a.section}</div>
               <div class="artifact-row-title">
-                <strong>${escapeHtml(a.label || (a.kind.charAt(0).toUpperCase() + a.kind.slice(1)))}</strong>
-                <span style="color:var(--text-faint); margin-left:6px; font-size:11.5px;">${a.kind}</span>
+                <strong>${escapeHtml(a.instanceLabel || a.label || (a.kind.charAt(0).toUpperCase() + a.kind.slice(1)))}</strong>
+                <span style="color:var(--text-faint); margin-left:6px; font-size:11.5px;">${a.instanceLabel ? escapeHtml(a.label || a.kind) : a.kind}</span>
               </div>
               <span class="artifact-row-status status-${a.status || 'todo'}">${(a.status || 'todo').replace('-', ' ')}</span>
               <span class="artifact-row-date">${formatRelative(a.updatedAt)}</span>
@@ -3472,6 +3671,15 @@ function saveToProjectControl(key) {
       <span class="save-status-label">Want to track this in a project? <a onclick="route('projects')" style="color:var(--accent); cursor:pointer; text-decoration:underline;">Pick a project →</a></span>
     </div>`;
   }
+  // Multi-instance templates manage status per instance, so suppress top-level dropdown
+  if (isMultiInstance(key)) {
+    const count = getInstances(key).length;
+    const schema = DATA.template_forms[key];
+    const noun = count === 1 ? (schema.instance_singular || 'entry') : (schema.instance_plural || 'entries');
+    return `<div class="save-to-project">
+      <span class="save-status-label">${count} ${noun} in <strong>${escapeHtml(proj.name)}</strong></span>
+    </div>`;
+  }
   const cur = (proj.artifactStatus || {})[key] || {};
   const status = cur.status || '';
   return `<div class="save-to-project">
@@ -3505,9 +3713,23 @@ function renderTemplateBody(key, item, schema) {
   const useFormByDefault = !!proj;
   const stored = (proj && proj.artifactStatus[key]) || null;
   const showForm = stored?.view !== 'markdown' && useFormByDefault;
-  const toggleId = 'toggle-' + key.replace(/[^a-z0-9]/gi, '-');
+
+  // Multi-instance branch: instance list instead of single form
+  if (schema.multi_instance && showForm) {
+    return `
+      <div class="tform-toggle">
+        <button class="active" onclick="setTemplateView('${key}','form')">Entries</button>
+        <button onclick="setTemplateView('${key}','markdown')">Source</button>
+      </div>
+      <div class="tform-body">
+        ${schema.intro ? `<div class="tform-intro">${escapeHtml(schema.intro)}</div>` : ''}
+        ${renderInstanceList(key, schema)}
+      </div>
+    `;
+  }
+
   return `
-    <div class="tform-toggle" id="${toggleId}">
+    <div class="tform-toggle">
       <button class="${showForm?'active':''}" onclick="setTemplateView('${key}','form')">Fill in</button>
       <button class="${!showForm?'active':''}" onclick="setTemplateView('${key}','markdown')">Source</button>
     </div>
@@ -3527,11 +3749,108 @@ function setTemplateView(key, view) {
   render();
 }
 
-function renderForm(key, schema) {
+// ---- Multi-instance list ----
+function renderInstanceList(key, schema) {
+  const instances = getInstances(key);
+  const singular = schema.instance_singular || 'entry';
+  const plural = schema.instance_plural || 'entries';
+  if (!instances.length) {
+    return `
+      <div class="instance-empty">
+        No ${plural} yet. Add one to start filling in.
+      </div>
+      <button class="new-instance-btn" onclick="addInstance('${key}')" style="margin-top:14px;">+ Add ${singular}</button>
+    `;
+  }
+  return `
+    <div class="instance-list">
+      ${instances.map((inst, idx) => renderInstance(key, schema, inst, idx)).join('')}
+    </div>
+    <button class="new-instance-btn" onclick="addInstance('${key}')" style="margin-top:14px;">+ Add ${singular}</button>
+  `;
+}
+
+function renderInstance(key, schema, inst, idx) {
+  const open = inst.open ? 'open' : '';
+  const status = inst.status || 'in-progress';
+  return `
+    <div class="instance-card ${open}" data-instance-id="${inst.id}">
+      <button class="instance-head" onclick="toggleInstance('${key}', '${inst.id}', event)">
+        <span class="instance-chev">›</span>
+        <input class="instance-label-input" type="text" value="${escapeHtml(inst.label || '')}" onblur="renameInstance('${key}','${inst.id}', this.value)" onclick="event.stopPropagation()">
+        <span class="instance-status-pill status-${status}">${status.replace('-', ' ')}</span>
+        <span class="instance-meta">${formatRelative(inst.updatedAt)}</span>
+        <button class="instance-delete" onclick="event.stopPropagation(); removeInstance('${key}', '${inst.id}')" title="Delete">×</button>
+      </button>
+      <div class="instance-body">
+        ${renderForm(key, schema, inst.id)}
+        <div class="instance-actions">
+          <select onchange="onInstanceStatusChange('${key}','${inst.id}', this.value)">
+            <option value="todo" ${status==='todo'?'selected':''}>To do</option>
+            <option value="in-progress" ${status==='in-progress'?'selected':''}>In progress</option>
+            <option value="done" ${status==='done'?'selected':''}>Done</option>
+          </select>
+          <button class="word-btn" onclick="triggerDownload('${key}', '${inst.id}')">${DOWNLOAD_ICON} Open in Word</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function toggleInstance(key, instanceId, event) {
+  // Don't toggle when clicking on the inline label input
+  if (event && event.target && event.target.classList && event.target.classList.contains('instance-label-input')) return;
+  updateInstance(key, instanceId, i => { i.open = !i.open; });
+  const card = document.querySelector(`.instance-card[data-instance-id="${instanceId}"]`);
+  if (card) card.classList.toggle('open');
+}
+function addInstance(key) {
+  const id = createInstance(key);
+  if (id) {
+    updateInstance(key, id, i => { i.open = true; });
+    render();
+  }
+}
+function renameInstance(key, instanceId, newLabel) {
+  updateInstance(key, instanceId, i => { i.label = newLabel.trim() || i.label; });
+}
+function removeInstance(key, instanceId) {
+  const inst = getInstance(key, instanceId);
+  if (!inst) return;
+  if (!confirm(`Delete "${inst.label}"? This cannot be undone.`)) return;
+  deleteInstance(key, instanceId);
+  render();
+}
+function onInstanceStatusChange(key, instanceId, status) {
+  updateInstance(key, instanceId, i => { i.status = status; });
+  // Refresh the pill in place
+  const card = document.querySelector(`.instance-card[data-instance-id="${instanceId}"]`);
+  if (card) {
+    const pill = card.querySelector('.instance-status-pill');
+    if (pill) {
+      pill.className = 'instance-status-pill status-' + status;
+      pill.textContent = status.replace('-', ' ');
+    }
+  }
+}
+
+// ---- Form rendering (now instance-aware) ----
+function getFormData(key, instanceId) {
   const proj = activeProject();
-  const data = (proj && proj.artifactStatus[key]?.data) || {};
-  const intro = schema.intro ? `<div class="tform-intro">${escapeHtml(schema.intro)}</div>` : '';
-  const sections = schema.sections.map(s => renderFormSection(key, s, data)).join('');
+  if (!proj) return {};
+  const a = proj.artifactStatus[key];
+  if (!a) return {};
+  if (instanceId) {
+    const inst = (a.instances || []).find(i => i.id === instanceId);
+    return (inst && inst.data) || {};
+  }
+  return a.data || {};
+}
+
+function renderForm(key, schema, instanceId) {
+  const data = getFormData(key, instanceId);
+  const intro = !instanceId && schema.intro ? `<div class="tform-intro">${escapeHtml(schema.intro)}</div>` : '';
+  const sections = schema.sections.map(s => renderFormSection(key, s, data, instanceId)).join('');
   return intro + sections;
 }
 
@@ -3545,13 +3864,14 @@ function autofillValue(field, proj) {
   return '';
 }
 
-function renderFormSection(key, section, data) {
+function renderFormSection(key, section, data, instanceId) {
   const proj = activeProject();
+  const instArg = instanceId ? `, '${instanceId}'` : '';
   const fieldsHtml = section.fields.map(f => {
     const stored = data[f.name];
     const value = stored !== undefined ? stored : autofillValue(f, proj);
-    const id = `f-${key}-${f.name}`.replace(/[^a-z0-9-]/gi, '_');
-    const onChange = `onFormFieldChange('${key}', '${f.name}', this)`;
+    const id = `f-${key}-${instanceId || 'root'}-${f.name}`.replace(/[^a-z0-9-]/gi, '_');
+    const onChange = `onFormFieldChange('${key}', '${f.name}', this${instArg})`;
     if (f.type === 'textarea') {
       return `<div class="tform-field">
         ${f.label ? `<label for="${id}">${escapeHtml(f.label)}</label>` : ''}
@@ -3568,7 +3888,7 @@ function renderFormSection(key, section, data) {
       const checked = stored === true ? 'checked' : '';
       return `<div class="tform-field">
         <label class="tform-checkbox-row" for="${id}">
-          <input id="${id}" type="checkbox" ${checked} onchange="onFormFieldChange('${key}', '${f.name}', this)">
+          <input id="${id}" type="checkbox" ${checked} onchange="${onChange}">
           ${escapeHtml(f.label || '')}
         </label>
       </div>`;
@@ -3579,7 +3899,7 @@ function renderFormSection(key, section, data) {
         <div class="tform-radio-group">
           ${f.options.map(opt => `
             <label class="tform-radio-option ${value===opt.value?'selected':''}">
-              <input type="radio" name="${id}" value="${opt.value}" ${value===opt.value?'checked':''} onchange="onFormFieldChange('${key}', '${f.name}', this)">
+              <input type="radio" name="${id}" value="${opt.value}" ${value===opt.value?'checked':''} onchange="${onChange}">
               ${escapeHtml(opt.label)}
             </label>
           `).join('')}
@@ -3603,22 +3923,49 @@ function renderFormSection(key, section, data) {
   </div>`;
 }
 
-function onFormFieldChange(key, fieldName, el) {
+function onFormFieldChange(key, fieldName, el, instanceId) {
   if (!activeProject()) return;
   let value;
   if (el.type === 'checkbox') value = el.checked;
   else value = el.value;
   updateActiveProject(p => {
-    const cur = p.artifactStatus[key] || {};
-    cur.data = cur.data || {};
-    cur.data[fieldName] = value;
-    cur.status = cur.status === 'done' ? 'done' : 'in-progress';
-    cur.updatedAt = new Date().toISOString();
-    p.artifactStatus[key] = cur;
+    if (instanceId) {
+      const a = p.artifactStatus[key];
+      if (!a || !a.instances) return;
+      const inst = a.instances.find(i => i.id === instanceId);
+      if (!inst) return;
+      inst.data = inst.data || {};
+      inst.data[fieldName] = value;
+      if (inst.status !== 'done') inst.status = 'in-progress';
+      inst.updatedAt = new Date().toISOString();
+    } else {
+      const cur = p.artifactStatus[key] || {};
+      cur.data = cur.data || {};
+      cur.data[fieldName] = value;
+      cur.status = cur.status === 'done' ? 'done' : 'in-progress';
+      cur.updatedAt = new Date().toISOString();
+      p.artifactStatus[key] = cur;
+    }
   });
-  // Soft-refresh the status pill in this artifact
-  const el2 = document.querySelector(`.attach[data-artifact-key="${key}"] .save-to-project`);
-  if (el2) el2.outerHTML = saveToProjectControl(key);
+  if (instanceId) {
+    // Update the instance status pill + timestamp in place
+    const card = document.querySelector(`.instance-card[data-instance-id="${instanceId}"]`);
+    if (card) {
+      const inst = getInstance(key, instanceId);
+      if (inst) {
+        const pill = card.querySelector('.instance-status-pill');
+        if (pill && pill.textContent.trim() !== inst.status.replace('-', ' ')) {
+          pill.className = 'instance-status-pill status-' + inst.status;
+          pill.textContent = inst.status.replace('-', ' ');
+        }
+        const meta = card.querySelector('.instance-meta');
+        if (meta) meta.textContent = formatRelative(inst.updatedAt);
+      }
+    }
+  } else {
+    const el2 = document.querySelector(`.attach[data-artifact-key="${key}"] .save-to-project`);
+    if (el2) el2.outerHTML = saveToProjectControl(key);
+  }
   renderProjectBanner();
 }
 

@@ -1377,6 +1377,47 @@
   }
   html[data-theme="dark"] .new-instance-btn:hover { color: var(--accent); }
 
+  /* Inline fill-in fields (replacing _____ underscore runs) */
+  .inline-field {
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border-strong);
+    padding: 1px 4px;
+    font: inherit;
+    color: var(--text);
+    min-width: 80px;
+    max-width: 320px;
+    margin: 0 1px;
+    transition: border-color .15s, background .15s;
+  }
+  .inline-field:focus {
+    outline: none;
+    border-bottom-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  html[data-theme="dark"] .inline-field:focus { background: color-mix(in srgb, var(--accent) 18%, var(--surface)); }
+  .inline-field:disabled {
+    border-bottom-style: dashed;
+    color: var(--text-faint);
+    background: transparent;
+  }
+
+  /* Editable table cells */
+  .prose td[contenteditable="true"] {
+    cursor: text;
+    transition: background .15s, outline .15s;
+    min-width: 40px;
+  }
+  .prose td[contenteditable="true"]:hover {
+    background: var(--surface-2);
+  }
+  .prose td[contenteditable="true"]:focus {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
+    background: var(--accent-soft);
+  }
+  html[data-theme="dark"] .prose td[contenteditable="true"]:focus { background: color-mix(in srgb, var(--accent) 15%, var(--surface)); }
+
   /* TOC */
   .toc {
     position: sticky;
@@ -1629,21 +1670,66 @@ const WORD_CSS = `
   .meta { color: #666; font-size: 9.5pt; margin-bottom: 18pt; padding-bottom: 10pt; border-bottom: 1pt solid #ddd; }
 `;
 
-function downloadAsWord(title, sopId, markdown, checklistState) {
-  let html = marked.parse(markdown);
-  // Word-friendly checkboxes: replace marked's <input> with Unicode glyphs,
-  // honoring per-project checklist state when provided.
+function downloadAsWord(title, sopId, markdown, artifactState) {
+  // artifactState (optional) may contain: checklistState, textFields, tableCells
+  const tmp = document.createElement('div');
+  tmp.innerHTML = marked.parse(markdown);
+
+  // 1. Checkboxes → Unicode glyphs honoring saved state
+  const checklistState = artifactState?.checklistState;
   if (checklistState) {
     let idx = 0;
-    html = html.replace(/<input[^>]*type="checkbox"[^>]*>\s*/gi, () => {
+    tmp.querySelectorAll('input[type="checkbox"]').forEach(cb => {
       const checked = checklistState[idx] === true;
       idx++;
-      return checked ? '☑ ' : '☐ ';
+      cb.outerHTML = checked ? '☑ ' : '☐ ';
     });
   } else {
-    html = html.replace(/<input[^>]*type="checkbox"[^>]*checked[^>]*>\s*/gi, '☑ ');
-    html = html.replace(/<input[^>]*type="checkbox"[^>]*>\s*/gi, '☐ ');
+    tmp.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+      cb.outerHTML = cb.hasAttribute('checked') ? '☑ ' : '☐ ';
+    });
   }
+
+  // 2. Substitute filled-in text fields (underscore-run placeholders) in order
+  const textFields = artifactState?.textFields;
+  if (textFields && Object.keys(textFields).some(k => textFields[k])) {
+    let fieldIdx = 0;
+    const walker = document.createTreeWalker(tmp, NodeFilter.SHOW_TEXT, {
+      acceptNode: (node) => {
+        let p = node.parentNode;
+        while (p && p !== tmp) {
+          if (p.tagName && ['PRE', 'CODE', 'TH'].includes(p.tagName)) return NodeFilter.FILTER_REJECT;
+          p = p.parentNode;
+        }
+        return /_{3,}/.test(node.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+      }
+    });
+    const nodes = [];
+    let n; while ((n = walker.nextNode())) nodes.push(n);
+    nodes.forEach(textNode => {
+      textNode.nodeValue = textNode.nodeValue.replace(/_{3,}/g, () => {
+        const val = textFields[fieldIdx];
+        fieldIdx++;
+        return val || '_______________';
+      });
+    });
+  }
+
+  // 3. Substitute filled-in table cells
+  const tableCells = artifactState?.tableCells;
+  if (tableCells) {
+    tmp.querySelectorAll('table').forEach((table, ti) => {
+      table.querySelectorAll('tbody tr').forEach((tr, ri) => {
+        tr.querySelectorAll('td').forEach((td, ci) => {
+          const cellKey = `t${ti}-r${ri}-c${ci}`;
+          const saved = tableCells[cellKey];
+          if (saved !== undefined && saved !== '') td.textContent = saved;
+        });
+      });
+    });
+  }
+
+  let html = tmp.innerHTML;
   // Remove the bullet on task-list items so the box stands alone
   html = html.replace(/<li>(\s*☐|\s*☑)/g, '<li style="list-style:none; margin-left:-18pt;">$1');
 
@@ -1700,9 +1786,9 @@ function triggerDownload(key, instanceId) {
     const titledMeta = {...d, title: instanceLabel ? `${d.title} — ${instanceLabel}` : d.title};
     downloadFilledForm(titledMeta, schema, proj, merged);
   } else {
-    const checklistState = proj?.artifactStatus[key]?.checklistState;
+    const artifactState = proj?.artifactStatus[key];
     const titlePrefix = proj ? proj.name + ' — ' : '';
-    downloadAsWord(titlePrefix + d.title, d.sopId, d.markdown, checklistState);
+    downloadAsWord(titlePrefix + d.title, d.sopId, d.markdown, artifactState);
   }
 }
 
@@ -2338,10 +2424,12 @@ function renderProjectHome() {
       val.instances.forEach(inst => {
         artifacts.push({ key, ...meta, status: inst.status, updatedAt: inst.updatedAt, instanceLabel: inst.label, instanceId: inst.id });
       });
-    } else if (val.status || val.data || val.checklistState) {
+    } else if (val.status || val.data || val.checklistState || val.textFields || val.tableCells) {
       const completed = val.checklistState ? Object.values(val.checklistState).filter(v => v === true).length : null;
       const total = val.checklistState ? countChecklistItems(key) : null;
-      artifacts.push({ key, ...meta, ...val, checklistCompleted: completed, checklistTotal: total });
+      const filledFields = val.textFields ? Object.values(val.textFields).filter(v => v).length : 0;
+      const editedCells = val.tableCells ? Object.values(val.tableCells).filter(v => v).length : 0;
+      artifacts.push({ key, ...meta, ...val, checklistCompleted: completed, checklistTotal: total, filledFields, editedCells });
     }
   });
   artifacts.sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
@@ -2403,6 +2491,8 @@ function renderProjectHome() {
                 <strong>${escapeHtml(a.instanceLabel || a.label || (a.kind.charAt(0).toUpperCase() + a.kind.slice(1)))}</strong>
                 <span style="color:var(--text-faint); margin-left:6px; font-size:11.5px;">${a.instanceLabel ? escapeHtml(a.label || a.kind) : a.kind}</span>
                 ${a.checklistTotal ? `<span style="color:var(--text-faint); margin-left:8px; font-size:11.5px;">${a.checklistCompleted}/${a.checklistTotal} items</span>` : ''}
+                ${a.filledFields ? `<span style="color:var(--text-faint); margin-left:8px; font-size:11.5px;">${a.filledFields} fields</span>` : ''}
+                ${a.editedCells ? `<span style="color:var(--text-faint); margin-left:8px; font-size:11.5px;">${a.editedCells} cells</span>` : ''}
               </div>
               <span class="artifact-row-status status-${a.status || 'todo'}">${(a.status || 'todo').replace('-', ' ')}</span>
               <span class="artifact-row-date">${formatRelative(a.updatedAt)}</span>
@@ -2687,6 +2777,12 @@ function saveToProjectControl(key) {
   const cur = (proj.artifactStatus || {})[key] || {};
   const status = cur.status || '';
   const completion = checklistCompletion(key);
+  const textCount = cur.textFields ? Object.keys(cur.textFields).filter(k => cur.textFields[k]).length : 0;
+  const cellCount = cur.tableCells ? Object.keys(cur.tableCells).filter(k => cur.tableCells[k]).length : 0;
+  const summaryParts = [];
+  if (completion && completion.total > 0) summaryParts.push(`<strong>${completion.completed}/${completion.total}</strong> items checked`);
+  if (textCount) summaryParts.push(`<strong>${textCount}</strong> field${textCount===1?'':'s'} filled`);
+  if (cellCount) summaryParts.push(`<strong>${cellCount}</strong> cell${cellCount===1?'':'s'} edited`);
   return `<div class="save-to-project">
     <span class="save-status-label">Save to <strong>${escapeHtml(proj.name)}</strong>:</span>
     <select onchange="onArtifactStatusChange('${key}', this.value)">
@@ -2695,19 +2791,136 @@ function saveToProjectControl(key) {
       <option value="in-progress" ${status==='in-progress'?'selected':''}>In progress</option>
       <option value="done" ${status==='done'?'selected':''}>Done</option>
     </select>
-    ${completion && completion.total > 0 ? `<span class="save-status-label"><strong>${completion.completed}/${completion.total}</strong> items checked</span>` : ''}
+    ${summaryParts.length ? `<span class="save-status-label">${summaryParts.join(' · ')}</span>` : ''}
     ${cur.updatedAt ? `<span class="save-status-label">Updated ${formatRelative(cur.updatedAt)}</span>` : ''}
   </div>`;
 }
 
-// ---- Interactive checklists (project-scoped) ----
+// ---- Interactive checklists, text fields, and table cells (project-scoped) ----
 function wireChecklistsInBody(rootEl) {
   rootEl.querySelectorAll('.attach[data-artifact-key]').forEach(attach => {
     const key = attach.dataset.artifactKey;
     // Skip templates that have a real form — they manage their own state
     if (DATA.template_forms[key]) return;
     bindAttachChecklist(attach, key);
+    bindAttachTextFields(attach, key);
+    bindAttachTableCells(attach, key);
   });
+}
+
+// Walk text nodes in the attach body, replacing runs of 3+ underscores with
+// inline <input> fields bound to project state. Skips code/pre/existing inputs.
+function bindAttachTextFields(attach, key) {
+  const content = attach.querySelector('.attach-content');
+  if (!content) return;
+  const proj = activeProject();
+  const state = (proj && proj.artifactStatus[key]?.textFields) || {};
+
+  const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT, {
+    acceptNode: (node) => {
+      let p = node.parentNode;
+      while (p && p !== content) {
+        if (p.tagName && ['PRE', 'CODE', 'INPUT', 'TH'].includes(p.tagName)) return NodeFilter.FILTER_REJECT;
+        p = p.parentNode;
+      }
+      return /_{3,}/.test(node.nodeValue) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+    }
+  });
+  const targets = [];
+  let n; while ((n = walker.nextNode())) targets.push(n);
+
+  let counter = 0;
+  targets.forEach(textNode => {
+    const parts = textNode.nodeValue.split(/(_{3,})/);
+    const frag = document.createDocumentFragment();
+    parts.forEach(part => {
+      if (/^_{3,}$/.test(part)) {
+        const idx = counter++;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'inline-field';
+        input.dataset.fieldIdx = String(idx);
+        input.value = state[idx] || '';
+        input.disabled = !proj;
+        input.style.minWidth = Math.max(80, Math.min(280, part.length * 6)) + 'px';
+        if (proj) {
+          input.addEventListener('blur', () => onTextFieldChange(key, idx, input.value));
+        }
+        frag.appendChild(input);
+      } else {
+        frag.appendChild(document.createTextNode(part));
+      }
+    });
+    textNode.parentNode.replaceChild(frag, textNode);
+  });
+  attach.dataset.textFieldCount = String(counter);
+}
+
+function bindAttachTableCells(attach, key) {
+  const proj = activeProject();
+  const state = (proj && proj.artifactStatus[key]?.tableCells) || {};
+  let cellCount = 0;
+  attach.querySelectorAll('.attach-content table').forEach((table, ti) => {
+    table.querySelectorAll('tbody tr').forEach((tr, ri) => {
+      tr.querySelectorAll('td').forEach((td, ci) => {
+        const cellKey = `t${ti}-r${ri}-c${ci}`;
+        td.dataset.cellKey = cellKey;
+        cellCount++;
+        if (state[cellKey] !== undefined && state[cellKey] !== '') {
+          td.textContent = state[cellKey];
+        }
+        if (proj) {
+          td.contentEditable = 'true';
+          td.addEventListener('blur', () => onTableCellChange(key, cellKey, td.textContent.trim()));
+          td.addEventListener('keydown', e => {
+            // Tab moves to next editable cell instead of leaving the form
+            if (e.key === 'Tab') {
+              e.preventDefault();
+              const cells = Array.from(attach.querySelectorAll('.attach-content td[contenteditable="true"]'));
+              const i = cells.indexOf(td);
+              const next = cells[i + (e.shiftKey ? -1 : 1)];
+              if (next) next.focus();
+            }
+          });
+        }
+      });
+    });
+  });
+  attach.dataset.tableCellCount = String(cellCount);
+}
+
+function onTextFieldChange(key, idx, value) {
+  if (!activeProject()) return;
+  updateActiveProject(p => {
+    const cur = p.artifactStatus[key] || {};
+    cur.textFields = cur.textFields || {};
+    if (value) cur.textFields[idx] = value;
+    else delete cur.textFields[idx];
+    cur.status = cur.status === 'done' ? 'done' : 'in-progress';
+    cur.updatedAt = new Date().toISOString();
+    p.artifactStatus[key] = cur;
+  });
+  refreshAttachSave(key);
+}
+
+function onTableCellChange(key, cellKey, value) {
+  if (!activeProject()) return;
+  updateActiveProject(p => {
+    const cur = p.artifactStatus[key] || {};
+    cur.tableCells = cur.tableCells || {};
+    if (value) cur.tableCells[cellKey] = value;
+    else delete cur.tableCells[cellKey];
+    cur.status = cur.status === 'done' ? 'done' : 'in-progress';
+    cur.updatedAt = new Date().toISOString();
+    p.artifactStatus[key] = cur;
+  });
+  refreshAttachSave(key);
+}
+
+function refreshAttachSave(key) {
+  const saveEl = document.querySelector(`.attach[data-artifact-key="${key}"] .save-to-project`);
+  if (saveEl) saveEl.outerHTML = saveToProjectControl(key);
+  renderProjectBanner();
 }
 
 function bindAttachChecklist(attach, key) {

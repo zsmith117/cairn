@@ -4786,11 +4786,21 @@ const WORD_CSS = `
   .meta { color: #666; font-size: 9.5pt; margin-bottom: 18pt; padding-bottom: 10pt; border-bottom: 1pt solid #ddd; }
 `;
 
-function downloadAsWord(title, sopId, markdown) {
+function downloadAsWord(title, sopId, markdown, checklistState) {
   let html = marked.parse(markdown);
-  // Word-friendly checkboxes: replace marked's <input> with Unicode glyphs
-  html = html.replace(/<input[^>]*type="checkbox"[^>]*checked[^>]*>\s*/gi, '☑ ');
-  html = html.replace(/<input[^>]*type="checkbox"[^>]*>\s*/gi, '☐ ');
+  // Word-friendly checkboxes: replace marked's <input> with Unicode glyphs,
+  // honoring per-project checklist state when provided.
+  if (checklistState) {
+    let idx = 0;
+    html = html.replace(/<input[^>]*type="checkbox"[^>]*>\s*/gi, () => {
+      const checked = checklistState[idx] === true;
+      idx++;
+      return checked ? '☑ ' : '☐ ';
+    });
+  } else {
+    html = html.replace(/<input[^>]*type="checkbox"[^>]*checked[^>]*>\s*/gi, '☑ ');
+    html = html.replace(/<input[^>]*type="checkbox"[^>]*>\s*/gi, '☐ ');
+  }
   // Remove the bullet on task-list items so the box stands alone
   html = html.replace(/<li>(\s*☐|\s*☑)/g, '<li style="list-style:none; margin-left:-18pt;">$1');
 
@@ -4847,7 +4857,9 @@ function triggerDownload(key, instanceId) {
     const titledMeta = {...d, title: instanceLabel ? `${d.title} — ${instanceLabel}` : d.title};
     downloadFilledForm(titledMeta, schema, proj, merged);
   } else {
-    downloadAsWord(d.title, d.sopId, d.markdown);
+    const checklistState = proj?.artifactStatus[key]?.checklistState;
+    const titlePrefix = proj ? proj.name + ' — ' : '';
+    downloadAsWord(titlePrefix + d.title, d.sopId, d.markdown, checklistState);
   }
 }
 
@@ -5483,8 +5495,10 @@ function renderProjectHome() {
       val.instances.forEach(inst => {
         artifacts.push({ key, ...meta, status: inst.status, updatedAt: inst.updatedAt, instanceLabel: inst.label, instanceId: inst.id });
       });
-    } else if (val.status || val.data) {
-      artifacts.push({ key, ...meta, ...val });
+    } else if (val.status || val.data || val.checklistState) {
+      const completed = val.checklistState ? Object.values(val.checklistState).filter(v => v === true).length : null;
+      const total = val.checklistState ? countChecklistItems(key) : null;
+      artifacts.push({ key, ...meta, ...val, checklistCompleted: completed, checklistTotal: total });
     }
   });
   artifacts.sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
@@ -5540,11 +5554,12 @@ function renderProjectHome() {
       ` : `
         <div style="background:var(--surface); border:1px solid var(--border); border-radius:8px; overflow:hidden;">
           ${artifacts.map(a => `
-            <div class="artifact-row" onclick="route('sop/${a.sopId}/${a.kind}s')">
+            <div class="artifact-row" onclick="route('sop/${a.sopId}/${a.kind}s#sec-${a.section.replace('.','-')}')">
               <div class="artifact-row-kind">${a.sopId} · ${a.section}</div>
               <div class="artifact-row-title">
                 <strong>${escapeHtml(a.instanceLabel || a.label || (a.kind.charAt(0).toUpperCase() + a.kind.slice(1)))}</strong>
                 <span style="color:var(--text-faint); margin-left:6px; font-size:11.5px;">${a.instanceLabel ? escapeHtml(a.label || a.kind) : a.kind}</span>
+                ${a.checklistTotal ? `<span style="color:var(--text-faint); margin-left:8px; font-size:11.5px;">${a.checklistCompleted}/${a.checklistTotal} items</span>` : ''}
               </div>
               <span class="artifact-row-status status-${a.status || 'todo'}">${(a.status || 'todo').replace('-', ' ')}</span>
               <span class="artifact-row-date">${formatRelative(a.updatedAt)}</span>
@@ -5766,10 +5781,12 @@ function renderSop(sopId, tab, anchor) {
     body.innerHTML = renderAttachments(sop.checklists, 'checklist', sopId);
     toc.innerHTML = renderAttachmentToc(sop.checklists);
     wireAttachments(anchor);
+    wireChecklistsInBody(body);
   } else if (tab === 'templates') {
     body.innerHTML = renderAttachments(sop.templates, 'template', sopId);
     toc.innerHTML = renderAttachmentToc(sop.templates);
     wireAttachments(anchor);
+    wireChecklistsInBody(body);
   }
 
   if (anchor && tab === 'procedure') {
@@ -5826,6 +5843,7 @@ function saveToProjectControl(key) {
   }
   const cur = (proj.artifactStatus || {})[key] || {};
   const status = cur.status || '';
+  const completion = checklistCompletion(key);
   return `<div class="save-to-project">
     <span class="save-status-label">Save to <strong>${escapeHtml(proj.name)}</strong>:</span>
     <select onchange="onArtifactStatusChange('${key}', this.value)">
@@ -5834,8 +5852,78 @@ function saveToProjectControl(key) {
       <option value="in-progress" ${status==='in-progress'?'selected':''}>In progress</option>
       <option value="done" ${status==='done'?'selected':''}>Done</option>
     </select>
+    ${completion && completion.total > 0 ? `<span class="save-status-label"><strong>${completion.completed}/${completion.total}</strong> items checked</span>` : ''}
     ${cur.updatedAt ? `<span class="save-status-label">Updated ${formatRelative(cur.updatedAt)}</span>` : ''}
   </div>`;
+}
+
+// ---- Interactive checklists (project-scoped) ----
+function wireChecklistsInBody(rootEl) {
+  rootEl.querySelectorAll('.attach[data-artifact-key]').forEach(attach => {
+    const key = attach.dataset.artifactKey;
+    // Skip templates that have a real form — they manage their own state
+    if (DATA.template_forms[key]) return;
+    bindAttachChecklist(attach, key);
+  });
+}
+
+function bindAttachChecklist(attach, key) {
+  const checkboxes = attach.querySelectorAll('.attach-content input[type="checkbox"]');
+  if (!checkboxes.length) return;
+  attach.dataset.checklistCount = String(checkboxes.length);
+  const proj = activeProject();
+  const state = (proj && proj.artifactStatus[key]?.checklistState) || {};
+  checkboxes.forEach((cb, idx) => {
+    cb.disabled = !proj;
+    cb.checked = state[idx] === true;
+    cb.dataset.checklistIdx = String(idx);
+    if (proj) {
+      cb.addEventListener('change', () => onChecklistCheckboxChange(key, idx, cb.checked));
+    }
+  });
+}
+
+function onChecklistCheckboxChange(key, idx, checked) {
+  if (!activeProject()) return;
+  const attach = document.querySelector(`.attach[data-artifact-key="${key}"]`);
+  const total = parseInt(attach?.dataset.checklistCount || '0', 10);
+  updateActiveProject(p => {
+    const cur = p.artifactStatus[key] || {};
+    cur.checklistState = cur.checklistState || {};
+    cur.checklistState[idx] = checked;
+    const completed = Object.values(cur.checklistState).filter(v => v === true).length;
+    if (total > 0 && completed === total) cur.status = 'done';
+    else if (cur.status !== 'done') cur.status = completed > 0 ? 'in-progress' : 'todo';
+    cur.updatedAt = new Date().toISOString();
+    p.artifactStatus[key] = cur;
+  });
+  const saveEl = document.querySelector(`.attach[data-artifact-key="${key}"] .save-to-project`);
+  if (saveEl) saveEl.outerHTML = saveToProjectControl(key);
+  renderProjectBanner();
+}
+
+function countChecklistItems(key) {
+  // Prefer the DOM (works after the accordion has been rendered)
+  const attach = document.querySelector(`.attach[data-artifact-key="${key}"]`);
+  if (attach?.dataset.checklistCount) return parseInt(attach.dataset.checklistCount, 10);
+  // Fall back to counting markdown task-list items in the source content
+  const m = key.match(/^(UXR-\d{3})-(checklist|template)-(.+)$/);
+  if (!m) return 0;
+  const sop = SOPS[m[1]];
+  const list = m[2] === 'checklist' ? sop?.checklists : sop?.templates;
+  const item = list?.find(x => x.section === m[3]);
+  if (!item) return 0;
+  return (item.content.match(/^\s*-\s+\[[ xX]\]/gm) || []).length;
+}
+
+function checklistCompletion(key) {
+  const proj = activeProject();
+  if (!proj) return null;
+  const cur = proj.artifactStatus[key];
+  if (!cur || !cur.checklistState) return null;
+  const total = countChecklistItems(key);
+  const completed = Object.values(cur.checklistState).filter(v => v === true).length;
+  return { completed, total };
 }
 
 function onArtifactStatusChange(key, value) {

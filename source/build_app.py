@@ -22,6 +22,8 @@ GUIDE_PHASES = [
         "duration": "1–2 weeks",
         "sops": ["UXR-001", "UXR-004"],
         "file": "phase-1-project-initiation.md",
+        "recommended_artifact": "UXR-004-template-5.1",  # Research Brief
+        "recommended_label": "Draft your Research Brief",
     },
     {
         "id": "phase-2",
@@ -31,6 +33,8 @@ GUIDE_PHASES = [
         "duration": "1–3 weeks",
         "sops": ["UXR-003", "UXR-004", "UXR-005"],
         "file": "phase-2-research-design.md",
+        "recommended_artifact": "UXR-004-template-5.2",  # Research Plan
+        "recommended_label": "Build the Research Plan",
     },
     {
         "id": "phase-3",
@@ -40,6 +44,8 @@ GUIDE_PHASES = [
         "duration": "2–4 weeks",
         "sops": ["UXR-001", "UXR-002", "UXR-003", "UXR-006"],
         "file": "phase-3-field-work.md",
+        "recommended_artifact": "UXR-003-template-5.4",  # Recruitment Email
+        "recommended_label": "Send the Recruitment Outreach",
     },
     {
         "id": "phase-4",
@@ -49,6 +55,8 @@ GUIDE_PHASES = [
         "duration": "1–3 weeks",
         "sops": ["UXR-007"],
         "file": "phase-4-analysis.md",
+        "recommended_artifact": "UXR-007-template-5.1",  # Analysis Plan
+        "recommended_label": "Set up your Analysis Plan",
     },
     {
         "id": "phase-5",
@@ -58,6 +66,8 @@ GUIDE_PHASES = [
         "duration": "1–2 weeks",
         "sops": ["UXR-008", "UXR-009"],
         "file": "phase-5-delivery-close.md",
+        "recommended_artifact": "UXR-008-template-5.2",  # Executive Summary
+        "recommended_label": "Draft the Executive Summary",
     },
 ]
 
@@ -306,6 +316,8 @@ def collect_guide_phases():
                 "sops": ph["sops"],
                 "content": content,
                 "read_minutes": estimate_read_minutes(content),
+                "recommended_artifact": ph.get("recommended_artifact"),
+                "recommended_label": ph.get("recommended_label"),
             }
         )
     return phases
@@ -4567,6 +4579,177 @@ TEMPLATE = r"""<!doctype html>
     transition: width .25s;
   }
 
+  /* Next-action card on project home */
+  .next-action {
+    background: var(--accent-soft);
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    transition: transform .15s, box-shadow .15s;
+  }
+  .next-action:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--shadow);
+  }
+  .next-action-icon {
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--surface);
+    display: grid; place-items: center;
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  html[data-theme="dark"] .next-action-icon { color: var(--bg); }
+  .next-action-body { flex: 1; min-width: 0; }
+  .next-action-eyebrow {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--accent-ink);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  html[data-theme="dark"] .next-action-eyebrow { color: var(--accent); }
+  .next-action-title {
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 500;
+    letter-spacing: -.005em;
+    color: var(--text);
+    line-height: 1.25;
+  }
+  .next-action-sub {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+  .next-action-arrow {
+    color: var(--accent);
+    font-size: 22px;
+    flex-shrink: 0;
+    transition: transform .15s;
+  }
+  .next-action:hover .next-action-arrow { transform: translateX(2px); }
+
+  /* "Your work for this phase" section */
+  .phase-work {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 24px;
+    margin-bottom: 28px;
+  }
+  .phase-work-eyebrow {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--accent);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  .phase-work-title {
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 500;
+    margin: 0 0 16px;
+    letter-spacing: -.005em;
+  }
+  .phase-work-cta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--accent-soft);
+    border-radius: 8px;
+    cursor: pointer;
+    color: var(--accent-ink);
+    font-size: 13.5px;
+    transition: background .15s;
+  }
+  html[data-theme="dark"] .phase-work-cta { color: var(--accent); }
+  .phase-work-cta:hover { background: color-mix(in srgb, var(--accent) 15%, var(--surface)); }
+  .phase-work-cta-arrow { margin-left: auto; font-size: 18px; }
+
+  .work-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 14px;
+    cursor: pointer;
+    transition: padding-left .15s;
+  }
+  .work-row:hover { padding-left: 6px; }
+  .work-row:last-child { border-bottom: none; }
+  .work-row-kind {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--text-faint);
+    width: 86px;
+    flex-shrink: 0;
+  }
+  .work-row-title { flex: 1; min-width: 0; font-size: 13.5px; }
+  .work-row-status {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    flex-shrink: 0;
+  }
+  .status-not-started { background: var(--surface-2); color: var(--text-faint); }
+  .work-row-progress {
+    font-size: 11px;
+    color: var(--text-faint);
+    flex-shrink: 0;
+  }
+  .work-row-arrow {
+    color: var(--text-faint);
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .work-row:hover .work-row-arrow { color: var(--accent); }
+  .phase-work-toggle {
+    display: block;
+    margin-top: 12px;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 12.5px;
+    cursor: pointer;
+    padding: 0;
+  }
+  .phase-work-toggle:hover { color: var(--accent-ink); }
+  html[data-theme="dark"] .phase-work-toggle:hover { color: var(--accent); }
+
+  /* Back-to-phase link on SOP pages */
+  .back-to-phase {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    color: var(--accent-ink);
+    background: var(--accent-soft);
+    padding: 5px 11px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-bottom: 8px;
+    border: 1px solid transparent;
+    transition: border-color .15s;
+  }
+  html[data-theme="dark"] .back-to-phase { color: var(--accent); }
+  .back-to-phase:hover { border-color: var(--accent); }
+
   /* Phase pill on SOP detail (cross-reference back to guide) */
   .phase-pills {
     display: flex;
@@ -6010,10 +6193,21 @@ function goHome() {
 function parseHash() {
   const h = location.hash.replace(/^#/, '');
   if (!h) {
-    // Default landing: dashboard always (per multi-project answer).
     return { view: 'projects' };
   }
-  const [path, anchor] = h.split('#');
+  const [pathPart, anchor] = h.split('#');
+  // Extract optional ?query=string from the path
+  let path = pathPart;
+  const query = {};
+  const qIdx = path.indexOf('?');
+  if (qIdx > -1) {
+    const qs = path.slice(qIdx + 1);
+    path = path.slice(0, qIdx);
+    qs.split('&').forEach(p => {
+      const [k, v] = p.split('=');
+      if (k) query[k] = decodeURIComponent(v || '');
+    });
+  }
   const parts = path.split('/');
   if (parts[0] === 'projects' && parts[1] === 'new') return { view: 'project-new' };
   if (parts[0] === 'projects' && parts[1] === 'edit') return { view: 'project-edit' };
@@ -6023,7 +6217,7 @@ function parseHash() {
   if (parts[0] === 'guide') return { view: 'guide-home' };
   if (parts[0] === 'library') return { view: 'library-home' };
   if (parts[0] === 'sop' && parts[1]) {
-    return { view: 'sop', sopId: parts[1], tab: parts[2] || 'procedure', anchor };
+    return { view: 'sop', sopId: parts[1], tab: parts[2] || 'procedure', anchor, from: query.from || null };
   }
   return { view: 'projects' };
 }
@@ -6064,7 +6258,7 @@ function render() {
     renderLibraryHome();
   } else if (r.view === 'sop') {
     renderLibraryNav(r.sopId);
-    renderSop(r.sopId, r.tab, r.anchor);
+    renderSop(r.sopId, r.tab, r.anchor, r.from);
   }
   if (!r.anchor) window.scrollTo({top: 0, behavior: 'instant'});
 }
@@ -6115,11 +6309,134 @@ function bindPhaseCheckboxes(container, phaseId) {
     cb.addEventListener('change', () => {
       phaseState[idx] = cb.checked;
       savePhaseChecks(state);
+      maybeAdvanceCurrentPhase();
       renderGuideNav(phaseId);
       renderProjectBanner();
     });
   });
 }
+// ---- Artifact roll-up helpers (project + phase awareness) ----
+
+// Status of an artifact in the active project, including multi-instance handling.
+function artifactDisplayStatus(key) {
+  const proj = activeProject();
+  const state = proj?.artifactStatus?.[key];
+  if (!state) return { status: 'not-started', statusLabel: 'Not started', progress: '' };
+
+  if (state.multi) {
+    const count = (state.instances || []).length;
+    const done = (state.instances || []).filter(i => i.status === 'done').length;
+    return {
+      status: count > 0 ? (done === count ? 'done' : 'in-progress') : 'not-started',
+      statusLabel: count === 0 ? 'Not started' : (done === count ? 'done' : 'in progress'),
+      progress: count > 0 ? `${count} ${count === 1 ? 'entry' : 'entries'}${done > 0 ? ` · ${done} done` : ''}` : '',
+    };
+  }
+
+  // Single-instance
+  const status = state.status || 'in-progress';
+  const parts = [];
+  if (state.checklistState) {
+    const completed = Object.values(state.checklistState).filter(v => v === true).length;
+    const total = countChecklistItems(key);
+    if (total > 0) parts.push(`${completed}/${total} items`);
+  }
+  if (state.textFields) {
+    const filled = Object.values(state.textFields).filter(v => v).length;
+    if (filled > 0) parts.push(`${filled} field${filled === 1 ? '' : 's'}`);
+  }
+  if (state.tableCells) {
+    const cells = Object.values(state.tableCells).filter(v => v).length;
+    if (cells > 0) parts.push(`${cells} cell${cells === 1 ? '' : 's'}`);
+  }
+  if (state.data) {
+    const fields = Object.values(state.data).filter(v => v !== '' && v != null && v !== false).length;
+    if (fields > 0) parts.push(`${fields} field${fields === 1 ? '' : 's'}`);
+  }
+  return { status, statusLabel: status.replace('-', ' '), progress: parts.join(' · ') };
+}
+
+// All templates + checklists from the SOPs referenced by a guide phase.
+function artifactsForPhase(phaseId) {
+  const phase = DATA.guide_phases.find(p => p.id === phaseId);
+  if (!phase) return [];
+  const out = [];
+  phase.sops.forEach(sopId => {
+    const sop = SOPS[sopId];
+    if (!sop) return;
+    sop.templates.forEach(t => out.push({
+      key: `${sopId}-template-${t.section}`, sopId, kind: 'template',
+      section: t.section, label: t.label,
+    }));
+    sop.checklists.forEach(c => out.push({
+      key: `${sopId}-checklist-${c.section}`, sopId, kind: 'checklist',
+      section: c.section, label: c.label,
+    }));
+  });
+  return out;
+}
+
+// Compute "next action" for the active project — surface the most relevant artifact.
+function computeNextAction() {
+  const proj = activeProject();
+  if (!proj) return null;
+  const currentPhaseId = proj.currentPhase || 'phase-1';
+  const phase = DATA.guide_phases.find(p => p.id === currentPhaseId);
+  if (!phase) return null;
+
+  const artifacts = artifactsForPhase(currentPhaseId);
+  const started = artifacts.filter(a => {
+    const s = proj.artifactStatus?.[a.key];
+    return s && (s.status === 'in-progress' || (s.instances && s.instances.some(i => i.status === 'in-progress')));
+  });
+  if (started.length > 0) {
+    const a = started[0];
+    return {
+      eyebrow: `Phase ${phase.number} · in progress`,
+      title: 'Continue ' + a.label,
+      sub: `${a.sopId} · ${a.kind}`,
+      route: `sop/${a.sopId}/${a.kind}s?from=${currentPhaseId}#sec-${a.section.replace('.', '-')}`,
+      number: phase.number,
+    };
+  }
+
+  // Nothing in progress — recommend the phase starter
+  if (phase.recommended_artifact) {
+    const a = artifacts.find(x => x.key === phase.recommended_artifact);
+    if (a) {
+      return {
+        eyebrow: `Phase ${phase.number} · recommended start`,
+        title: phase.recommended_label || ('Start ' + a.label),
+        sub: `${a.sopId} · ${a.kind}`,
+        route: `sop/${a.sopId}/${a.kind}s?from=${currentPhaseId}#sec-${a.section.replace('.', '-')}`,
+        number: phase.number,
+      };
+    }
+  }
+
+  // No recommendation — point at the phase completion checklist
+  return {
+    eyebrow: `Phase ${phase.number}`,
+    title: phase.title,
+    sub: 'Open the phase guide',
+    route: `guide/${currentPhaseId}`,
+    number: phase.number,
+  };
+}
+
+// Auto-advance currentPhase when the active phase's checklist hits 100%.
+function maybeAdvanceCurrentPhase() {
+  const proj = activeProject();
+  if (!proj) return;
+  const cur = proj.currentPhase || 'phase-1';
+  const idx = DATA.guide_phases.findIndex(p => p.id === cur);
+  if (idx === -1 || idx >= DATA.guide_phases.length - 1) return;
+  const pct = phaseCompletionPercent(cur);
+  if (pct === 100) {
+    updateActiveProject(p => { p.currentPhase = DATA.guide_phases[idx + 1].id; });
+  }
+}
+
 function projectOverallCompletion(proj) {
   if (!proj) return 0;
   const phases = DATA.guide_phases;
@@ -6308,6 +6625,8 @@ function renderProjectHome() {
   });
   artifacts.sort((a, b) => (b.updatedAt || '').localeCompare(a.updatedAt || ''));
 
+  const next = computeNextAction();
+
   document.getElementById('main').innerHTML = `
     <div class="breadcrumb">
       <a onclick="route('projects')">Projects</a>
@@ -6325,11 +6644,22 @@ function renderProjectHome() {
         ${p.description ? `<p style="color:var(--text-muted); margin-top:12px; max-width:640px; font-size:14.5px;">${escapeHtml(p.description)}</p>` : ''}
       </div>
       <div class="ph-actions">
-        <button class="ph-action-btn" onclick="route('guide/${p.currentPhase}')">Continue ${phase ? `Phase ${phase.number}` : ''} →</button>
         <button class="ph-action-btn" onclick="route('projects/edit')">Edit</button>
         <button class="ph-action-btn" onclick="exportProjectJson()">Export JSON</button>
       </div>
     </div>
+
+    ${next ? `
+      <div class="next-action" onclick="route('${next.route}')" style="margin-top:32px;">
+        <div class="next-action-icon">${next.number}</div>
+        <div class="next-action-body">
+          <div class="next-action-eyebrow">${escapeHtml(next.eyebrow)}</div>
+          <div class="next-action-title">${escapeHtml(next.title)}</div>
+          ${next.sub ? `<div class="next-action-sub">${escapeHtml(next.sub)}</div>` : ''}
+        </div>
+        <span class="next-action-arrow">→</span>
+      </div>
+    ` : ''}
 
     <section class="ph-section">
       <h2 class="ph-section-title">Phase progress</h2>
@@ -6451,8 +6781,15 @@ function renderGuideHome() {
 function renderPhase(phaseId, anchor) {
   const phase = DATA.guide_phases.find(p => p.id === phaseId);
   if (!phase) { goHome(); return; }
+  const proj = activeProject();
 
   const main = document.getElementById('main');
+  // Replace inline SOP links with project-aware ones (?from=phase-N)
+  let content = phase.content.replace(
+    /\(#sop\/(UXR-\d{3})\/(procedure|checklists|templates)\)/g,
+    (_, sopId, tab) => `(#sop/${sopId}/${tab}?from=${phaseId})`
+  );
+
   main.innerHTML = `
     <div class="breadcrumb">
       <a onclick="route('guide')">Project Guide</a>
@@ -6466,10 +6803,11 @@ function renderPhase(phaseId, anchor) {
       <div class="phase-meta-row">
         <span><strong>Duration:</strong> ${phase.duration}</span>
         <span>·</span>
-        <span><strong>SOPs:</strong> ${phase.sops.map(s => `<a class="phase-pill" onclick="route('sop/${s}/procedure')" style="margin-left:4px;">${s}</a>`).join('')}</span>
+        <span><strong>SOPs:</strong> ${phase.sops.map(s => `<a class="phase-pill" onclick="route('sop/${s}/procedure?from=${phaseId}')" style="margin-left:4px;">${s}</a>`).join('')}</span>
       </div>
     </div>
-    <div id="phase-body"><div class="prose">${renderMd(phase.content)}</div></div>
+    ${proj ? renderPhaseWorkSection(phaseId) : ''}
+    <div id="phase-body"><div class="prose">${renderMd(content)}</div></div>
   `;
 
   const body = document.getElementById('phase-body');
@@ -6479,6 +6817,53 @@ function renderPhase(phaseId, anchor) {
     const el = document.getElementById(anchor);
     if (el) scrollToElement(el, false);
   }
+}
+
+function renderPhaseWorkSection(phaseId) {
+  const phase = DATA.guide_phases.find(p => p.id === phaseId);
+  const artifacts = artifactsForPhase(phaseId);
+  const grouped = artifacts.map(a => ({ ...a, ...artifactDisplayStatus(a.key) }));
+  const started = grouped.filter(a => a.status !== 'not-started');
+  const available = grouped.filter(a => a.status === 'not-started');
+  const recommendedKey = phase.recommended_artifact;
+  const recommended = !started.length && recommendedKey
+    ? grouped.find(a => a.key === recommendedKey)
+    : null;
+
+  if (!started.length && !recommended && !available.length) return '';
+
+  const rowHtml = (a) => `
+    <div class="work-row" onclick="route('sop/${a.sopId}/${a.kind}s?from=${phaseId}#sec-${a.section.replace('.', '-')}')">
+      <div class="work-row-kind">${a.sopId} · ${a.section}</div>
+      <div class="work-row-title">${escapeHtml(a.label)} <span style="color:var(--text-faint); font-size:11.5px; margin-left:4px;">${a.kind}</span></div>
+      ${a.progress ? `<span class="work-row-progress">${a.progress}</span>` : ''}
+      <span class="work-row-status status-${a.status}">${escapeHtml(a.statusLabel)}</span>
+      <span class="work-row-arrow">→</span>
+    </div>
+  `;
+
+  return `
+    <section class="phase-work">
+      <div class="phase-work-eyebrow">YOUR WORK FOR THIS PHASE</div>
+      <h2 class="phase-work-title">${started.length ? started.length + ' in progress' : (recommended ? 'Start here' : 'Available artifacts')}</h2>
+      ${recommended ? `
+        <div class="phase-work-cta" onclick="route('sop/${recommended.sopId}/${recommended.kind}s?from=${phaseId}#sec-${recommended.section.replace('.', '-')}')">
+          <div>
+            <strong>${escapeHtml(phase.recommended_label || ('Start ' + recommended.label))}</strong>
+            <div style="font-size:11.5px; opacity:.8;">${recommended.sopId} · ${recommended.kind}</div>
+          </div>
+          <span class="phase-work-cta-arrow">→</span>
+        </div>
+      ` : ''}
+      ${started.length ? `<div style="margin-top: ${recommended ? '14px' : '0'};">${started.map(rowHtml).join('')}</div>` : ''}
+      ${available.length ? `
+        <details ${started.length === 0 && !recommended ? 'open' : ''}>
+          <summary class="phase-work-toggle">${available.length} more available · click to expand</summary>
+          <div style="margin-top:8px;">${available.map(rowHtml).join('')}</div>
+        </details>
+      ` : ''}
+    </section>
+  `;
 }
 
 // ---- Library home view ----
@@ -6527,17 +6912,27 @@ function renderLibraryHome() {
 }
 
 // ---- SOP detail view ----
-function renderSop(sopId, tab, anchor) {
+function renderSop(sopId, tab, anchor, fromPhase) {
   const sop = SOPS[sopId];
   if (!sop) { goHome(); return; }
   const phase = DATA.phases.find(p => p.sops.some(s => s.id === sopId));
   const phaseRefs = sop.phase_refs || [];
+  const guidePhase = fromPhase ? DATA.guide_phases.find(p => p.id === fromPhase) : null;
 
   document.getElementById('main').innerHTML = `
+    ${guidePhase ? `
+      <a class="back-to-phase" onclick="route('guide/${guidePhase.id}')">← Back to Phase ${guidePhase.number}: ${escapeHtml(guidePhase.title)}</a>
+    ` : ''}
     <div class="breadcrumb">
-      <a onclick="route('library')">Library</a>
-      <span class="sep">/</span>
-      <span>${phase.name}</span>
+      ${guidePhase ? `
+        <a onclick="route('guide')">Project Guide</a>
+        <span class="sep">/</span>
+        <a onclick="route('guide/${guidePhase.id}')">Phase ${guidePhase.number}</a>
+      ` : `
+        <a onclick="route('library')">Library</a>
+        <span class="sep">/</span>
+        <span>${phase.name}</span>
+      `}
     </div>
     <div class="sop-title-row">
       <h1 class="sop-title">${sop.display}</h1>

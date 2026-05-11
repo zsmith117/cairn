@@ -731,6 +731,213 @@ TEMPLATE_FORMS = {
             },
         ],
     },
+    "UXR-006-template-5.2": {
+        "title": "Usability Test Observation Notes",
+        "multi_instance": True,
+        "instance_singular": "session",
+        "instance_plural": "sessions",
+        "intro": "One entry per usability session. Up to three tasks per session — combine into the issues log at the bottom and export to Word.",
+        "sections": [
+            {
+                "id": "header",
+                "title": "Session header",
+                "fields": [
+                    {"name": "study_name", "label": "Study", "type": "text", "autofill": "project.name"},
+                    {"name": "session_number", "label": "Session #", "type": "text", "placeholder": "S03"},
+                    {"name": "participant_id", "label": "Participant ID", "type": "text", "placeholder": "P03"},
+                    {"name": "session_date", "label": "Date", "type": "date", "autofill": "today"},
+                    {"name": "product", "label": "Product / prototype", "type": "text"},
+                    {
+                        "name": "device",
+                        "label": "Device",
+                        "type": "radio",
+                        "options": [
+                            {"value": "desktop", "label": "Desktop"},
+                            {"value": "mobile", "label": "Mobile"},
+                            {"value": "tablet", "label": "Tablet"},
+                        ],
+                    },
+                    {"name": "moderator", "label": "Moderator", "type": "text", "autofill": "project.owner"},
+                    {"name": "observer", "label": "Observer", "type": "text"},
+                ],
+            },
+            {
+                "id": "context",
+                "title": "Participant context",
+                "fields": [
+                    {"name": "p_experience", "label": "Experience level with this product type", "type": "text"},
+                    {"name": "p_tools", "label": "Current tools used", "type": "text"},
+                    {"name": "p_background", "label": "Relevant background", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "pre_task",
+                "title": "Pre-task questions",
+                "fields": [
+                    {"name": "pre_task_notes", "label": "Context-setting Q&A", "type": "textarea", "rows": 4},
+                ],
+            },
+            {
+                "id": "task1",
+                "title": "Task 1",
+                "fields": [
+                    {"name": "t1_name", "label": "Task name", "type": "text"},
+                    {"name": "t1_duration", "label": "Duration", "type": "text", "placeholder": "4:30"},
+                    {"name": "t1_scenario", "label": "Scenario (read to participant)", "type": "textarea", "rows": 2},
+                    {"name": "t1_success_criteria", "label": "Success criteria (one per line)", "type": "textarea", "rows": 3},
+                    {"name": "t1_path", "label": "Path taken (steps + result)", "type": "textarea", "rows": 4},
+                    {"name": "t1_behaviors", "label": "Behaviors & verbalizations (timestamps welcome)", "type": "textarea", "rows": 4},
+                    {"name": "t1_errors", "label": "Errors / usability issues", "type": "textarea", "rows": 3},
+                    {
+                        "name": "t1_outcome",
+                        "label": "Outcome",
+                        "type": "radio",
+                        "options": [
+                            {"value": "success", "label": "Success — without assistance"},
+                            {"value": "success_difficulty", "label": "Success with difficulty"},
+                            {"value": "partial", "label": "Partial success"},
+                            {"value": "failure", "label": "Failure"},
+                        ],
+                    },
+                    {
+                        "name": "t1_ease",
+                        "label": "Ease rating (1 = very easy, 5 = very difficult)",
+                        "type": "radio",
+                        "options": [
+                            {"value": "1", "label": "1"},
+                            {"value": "2", "label": "2"},
+                            {"value": "3", "label": "3"},
+                            {"value": "4", "label": "4"},
+                            {"value": "5", "label": "5"},
+                        ],
+                    },
+                    {"name": "t1_post", "label": "Post-task notes (what made it easy / hard, observed behavior)", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "task2",
+                "title": "Task 2",
+                "fields": [
+                    {"name": "t2_name", "label": "Task name", "type": "text"},
+                    {"name": "t2_duration", "label": "Duration", "type": "text"},
+                    {"name": "t2_scenario", "label": "Scenario", "type": "textarea", "rows": 2},
+                    {"name": "t2_success_criteria", "label": "Success criteria", "type": "textarea", "rows": 3},
+                    {"name": "t2_path", "label": "Path taken", "type": "textarea", "rows": 4},
+                    {"name": "t2_behaviors", "label": "Behaviors & verbalizations", "type": "textarea", "rows": 4},
+                    {"name": "t2_errors", "label": "Errors / issues", "type": "textarea", "rows": 3},
+                    {
+                        "name": "t2_outcome",
+                        "label": "Outcome",
+                        "type": "radio",
+                        "options": [
+                            {"value": "success", "label": "Success"},
+                            {"value": "success_difficulty", "label": "Success with difficulty"},
+                            {"value": "partial", "label": "Partial"},
+                            {"value": "failure", "label": "Failure"},
+                        ],
+                    },
+                    {
+                        "name": "t2_ease",
+                        "label": "Ease rating (1–5)",
+                        "type": "radio",
+                        "options": [
+                            {"value": "1", "label": "1"},
+                            {"value": "2", "label": "2"},
+                            {"value": "3", "label": "3"},
+                            {"value": "4", "label": "4"},
+                            {"value": "5", "label": "5"},
+                        ],
+                    },
+                    {"name": "t2_post", "label": "Post-task notes", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "task3",
+                "title": "Task 3",
+                "fields": [
+                    {"name": "t3_name", "label": "Task name", "type": "text"},
+                    {"name": "t3_duration", "label": "Duration", "type": "text"},
+                    {"name": "t3_scenario", "label": "Scenario", "type": "textarea", "rows": 2},
+                    {"name": "t3_success_criteria", "label": "Success criteria", "type": "textarea", "rows": 3},
+                    {"name": "t3_path", "label": "Path taken", "type": "textarea", "rows": 4},
+                    {"name": "t3_behaviors", "label": "Behaviors & verbalizations", "type": "textarea", "rows": 4},
+                    {"name": "t3_errors", "label": "Errors / issues", "type": "textarea", "rows": 3},
+                    {
+                        "name": "t3_outcome",
+                        "label": "Outcome",
+                        "type": "radio",
+                        "options": [
+                            {"value": "success", "label": "Success"},
+                            {"value": "success_difficulty", "label": "Success with difficulty"},
+                            {"value": "partial", "label": "Partial"},
+                            {"value": "failure", "label": "Failure"},
+                        ],
+                    },
+                    {
+                        "name": "t3_ease",
+                        "label": "Ease rating (1–5)",
+                        "type": "radio",
+                        "options": [
+                            {"value": "1", "label": "1"},
+                            {"value": "2", "label": "2"},
+                            {"value": "3", "label": "3"},
+                            {"value": "4", "label": "4"},
+                            {"value": "5", "label": "5"},
+                        ],
+                    },
+                    {"name": "t3_post", "label": "Post-task notes", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "more_tasks",
+                "title": "Additional tasks (if any)",
+                "blurb": "Use this for any tasks 4+. Mirror the structure above.",
+                "fields": [
+                    {"name": "extra_tasks", "type": "textarea", "rows": 6},
+                ],
+            },
+            {
+                "id": "debrief",
+                "title": "Debrief",
+                "fields": [
+                    {"name": "d_overall", "label": "Overall impression", "type": "textarea", "rows": 3},
+                    {"name": "d_worked_well", "label": "What worked well", "type": "textarea", "rows": 3},
+                    {"name": "d_frustrating", "label": "What was frustrating", "type": "textarea", "rows": 3},
+                    {"name": "d_comparison", "label": "How does this compare to [current tool]?", "type": "textarea", "rows": 3},
+                    {
+                        "name": "d_would_use",
+                        "label": "Would you use this?",
+                        "type": "radio",
+                        "options": [
+                            {"value": "definitely", "label": "Definitely"},
+                            {"value": "probably", "label": "Probably"},
+                            {"value": "maybe", "label": "Maybe"},
+                            {"value": "probably_not", "label": "Probably not"},
+                            {"value": "definitely_not", "label": "Definitely not"},
+                        ],
+                    },
+                    {"name": "d_why", "label": "Why", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "issues_log",
+                "title": "Usability issues log",
+                "blurb": "One issue per line: # · task · severity (Critical/Serious/Minor) · description · screen · timestamp",
+                "fields": [
+                    {"name": "issues", "type": "textarea", "rows": 6, "placeholder": "1 · Task 1 · Critical · Couldn't find primary CTA after step 3 · Configurator results · 04:12"},
+                ],
+            },
+            {
+                "id": "insights",
+                "title": "Observer insights",
+                "fields": [
+                    {"name": "patterns", "label": "Patterns (how this session compares to others)", "type": "textarea", "rows": 3},
+                    {"name": "key_findings", "label": "Key findings (one per line)", "type": "textarea", "rows": 4},
+                    {"name": "recommendations", "label": "Recommendations (one per line)", "type": "textarea", "rows": 4},
+                ],
+            },
+        ],
+    },
     "UXR-003-template-5.4": {
         "title": "Recruitment Outreach Email",
         "intro": "Fill in the variables once; the Word export generates three ready-to-send email versions (cold-professional, warm-customer, reminder) with your values substituted.",
@@ -3808,7 +4015,7 @@ function addInstance(key) {
   const id = createInstance(key);
   if (id) {
     updateInstance(key, id, i => { i.open = true; });
-    render();
+    rerenderAttach(key);
   }
 }
 function renameInstance(key, instanceId, newLabel) {
@@ -3819,7 +4026,21 @@ function removeInstance(key, instanceId) {
   if (!inst) return;
   if (!confirm(`Delete "${inst.label}"? This cannot be undone.`)) return;
   deleteInstance(key, instanceId);
-  render();
+  rerenderAttach(key);
+}
+
+function rerenderAttach(key) {
+  const attach = document.querySelector(`.attach[data-artifact-key="${key}"]`);
+  if (!attach) return;
+  const schema = DATA.template_forms[key];
+  if (!schema) return;
+  const body = attach.querySelector('.tform-body');
+  if (body && schema.multi_instance) {
+    body.innerHTML = (schema.intro ? `<div class="tform-intro">${escapeHtml(schema.intro)}</div>` : '') + renderInstanceList(key, schema);
+  }
+  const save = attach.querySelector('.save-to-project');
+  if (save) save.outerHTML = saveToProjectControl(key);
+  renderProjectBanner();
 }
 function onInstanceStatusChange(key, instanceId, status) {
   updateInstance(key, instanceId, i => { i.status = status; });

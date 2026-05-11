@@ -938,6 +938,443 @@ TEMPLATE_FORMS = {
             },
         ],
     },
+    "UXR-006-template-5.3": {
+        "title": "Contextual Inquiry Field Notes",
+        "multi_instance": True,
+        "instance_singular": "visit",
+        "instance_plural": "visits",
+        "intro": "One entry per site visit. Capture the environment, the workflow, and the artifacts as you see them — then refine after you leave.",
+        "sections": [
+            {
+                "id": "header",
+                "title": "Visit header",
+                "fields": [
+                    {"name": "study_name", "label": "Study", "type": "text", "autofill": "project.name"},
+                    {"name": "session_number", "label": "Session #", "type": "text"},
+                    {"name": "participant_id", "label": "Participant ID", "type": "text"},
+                    {"name": "visit_date", "label": "Date", "type": "date", "autofill": "today"},
+                    {"name": "location", "label": "Location", "type": "text", "placeholder": "Acme Industrial — Dayton plant, line 3"},
+                    {"name": "activity", "label": "Activity observed", "type": "text"},
+                    {"name": "start_time", "label": "Start", "type": "text", "placeholder": "08:30"},
+                    {"name": "end_time", "label": "End", "type": "text", "placeholder": "11:00"},
+                    {"name": "observer", "label": "Observer", "type": "text", "autofill": "project.owner"},
+                ],
+            },
+            {
+                "id": "pre_observation",
+                "title": "Pre-observation interview",
+                "fields": [
+                    {"name": "pre_planned_work", "label": "What are you planning to work on today?", "type": "textarea", "rows": 2},
+                    {"name": "pre_typical", "label": "Is this a typical day/shift?", "type": "textarea", "rows": 2},
+                    {"name": "pre_goals", "label": "What are your main goals?", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "environment",
+                "title": "Environmental context",
+                "fields": [
+                    {"name": "physical_setting", "label": "Physical setting (space type, layout, lighting, noise, people)", "type": "textarea", "rows": 4},
+                    {"name": "tools_artifacts_visible", "label": "Tools & artifacts visible (physical, digital, info sources)", "type": "textarea", "rows": 4},
+                    {"name": "workspace_organization", "label": "Workspace organization (sketch description)", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "observation_log",
+                "title": "Observation log",
+                "blurb": "Chronological notes. One line per moment: time · activity · tools used · context/observations.",
+                "fields": [
+                    {"name": "observation_log", "type": "textarea", "rows": 14},
+                ],
+            },
+            {
+                "id": "workflow",
+                "title": "Workflow diagram",
+                "blurb": "Steps in sequence, decision points, branches.",
+                "fields": [
+                    {"name": "workflow", "type": "textarea", "rows": 6},
+                ],
+            },
+            {
+                "id": "artifacts",
+                "title": "Artifacts captured",
+                "blurb": "One artifact per block: name, type, content, how it's used, significance.",
+                "fields": [
+                    {"name": "artifacts", "type": "textarea", "rows": 8},
+                ],
+            },
+            {
+                "id": "questions_during",
+                "title": "Questions asked during observation",
+                "fields": [
+                    {"name": "questions_during", "type": "textarea", "rows": 6, "placeholder": "Q: What are you doing now? / A: ...\nQ: Why did you do it that way? / A: ..."},
+                ],
+            },
+            {
+                "id": "debrief",
+                "title": "Debrief interview",
+                "fields": [
+                    {"name": "d_typical", "label": "Was today typical? Anything different?", "type": "textarea", "rows": 2},
+                    {"name": "d_challenging", "label": "What parts of what I observed are most challenging?", "type": "textarea", "rows": 3},
+                    {"name": "d_works_well", "label": "What works well in your current process?", "type": "textarea", "rows": 3},
+                    {"name": "d_change", "label": "If you could change anything, what?", "type": "textarea", "rows": 3},
+                    {"name": "d_missed", "label": "What did I miss? What else should I know?", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "insights",
+                "title": "Key insights & patterns",
+                "fields": [
+                    {"name": "pain_points", "label": "Pain points observed (one per line)", "type": "textarea", "rows": 4},
+                    {"name": "workarounds", "label": "Workarounds & adaptations", "type": "textarea", "rows": 4},
+                    {"name": "information_flow", "label": "Information flow (how info moves through the process)", "type": "textarea", "rows": 3},
+                    {"name": "collaboration_points", "label": "Collaboration points (when/why participant interacted with others)", "type": "textarea", "rows": 3},
+                    {"name": "efficiency", "label": "Efficiency & inefficiency (what works, what creates friction)", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "reflections",
+                "title": "Observer reflections",
+                "fields": [
+                    {"name": "surprises", "label": "Surprises", "type": "textarea", "rows": 3},
+                    {"name": "connections", "label": "Connections to other sessions", "type": "textarea", "rows": 3},
+                    {"name": "future_questions", "label": "Questions for future exploration", "type": "textarea", "rows": 3},
+                    {"name": "design_implications", "label": "Design implications", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "post_session",
+                "title": "Post-visit tasks",
+                "fields": [
+                    {"name": "ps_photos", "label": "Photos organized and labeled", "type": "checkbox"},
+                    {"name": "ps_artifacts", "label": "Artifacts documented", "type": "checkbox"},
+                    {"name": "ps_diagram", "label": "Workflow diagram created", "type": "checkbox"},
+                    {"name": "ps_shared", "label": "Key insights shared with team", "type": "checkbox"},
+                    {"name": "ps_digital", "label": "Field notes transferred to digital format", "type": "checkbox"},
+                    {"name": "ps_followups", "label": "Follow-up questions noted", "type": "checkbox"},
+                ],
+            },
+        ],
+    },
+    "UXR-006-template-5.4": {
+        "title": "Post-Session Summary",
+        "multi_instance": True,
+        "instance_singular": "summary",
+        "instance_plural": "summaries",
+        "intro": "Complete within one hour of session end while details are fresh. Optimized for synthesis later — focus on the most important takeaways and the verbatim quotes that capture them.",
+        "sections": [
+            {
+                "id": "header",
+                "title": "Session header",
+                "fields": [
+                    {"name": "study_name", "label": "Study", "type": "text", "autofill": "project.name"},
+                    {"name": "session_number", "label": "Session #", "type": "text"},
+                    {"name": "participant_id", "label": "Participant ID", "type": "text"},
+                    {"name": "session_date", "label": "Date", "type": "date", "autofill": "today"},
+                    {"name": "completed_by", "label": "Completed by", "type": "text", "autofill": "project.owner"},
+                    {"name": "completed_time", "label": "Completed at", "type": "text", "placeholder": "11:45 (within 1 hr of session end)"},
+                ],
+            },
+            {
+                "id": "overview",
+                "title": "Session overview",
+                "fields": [
+                    {"name": "duration_planned", "label": "Planned duration", "type": "text"},
+                    {"name": "duration_actual", "label": "Actual duration", "type": "text"},
+                    {
+                        "name": "method",
+                        "label": "Method",
+                        "type": "radio",
+                        "options": [
+                            {"value": "interview", "label": "Interview"},
+                            {"value": "usability", "label": "Usability test"},
+                            {"value": "contextual", "label": "Contextual inquiry"},
+                            {"value": "other", "label": "Other"},
+                        ],
+                    },
+                    {"name": "moderator", "label": "Moderator", "type": "text", "autofill": "project.owner"},
+                    {
+                        "name": "location",
+                        "label": "Location",
+                        "type": "radio",
+                        "options": [
+                            {"value": "in_person", "label": "In-person"},
+                            {"value": "remote", "label": "Remote"},
+                        ],
+                    },
+                    {
+                        "name": "quality",
+                        "label": "Session quality",
+                        "type": "radio",
+                        "options": [
+                            {"value": "excellent", "label": "Excellent"},
+                            {"value": "good", "label": "Good"},
+                            {"value": "fair", "label": "Fair"},
+                            {"value": "poor", "label": "Poor"},
+                        ],
+                    },
+                    {"name": "quality_notes", "label": "Notes on session quality", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "findings",
+                "title": "Key findings",
+                "blurb": "3–5 main takeaways. Lead each with the insight, then 1–2 sentences of context.",
+                "fields": [
+                    {"name": "finding_1", "label": "Finding 1", "type": "textarea", "rows": 3},
+                    {"name": "finding_2", "label": "Finding 2", "type": "textarea", "rows": 3},
+                    {"name": "finding_3", "label": "Finding 3", "type": "textarea", "rows": 3},
+                    {"name": "finding_4", "label": "Finding 4 (optional)", "type": "textarea", "rows": 3},
+                    {"name": "finding_5", "label": "Finding 5 (optional)", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "quotes",
+                "title": "Notable quotes",
+                "blurb": "Verbatim — capture what participants actually said.",
+                "fields": [
+                    {"name": "quote_1", "label": "Quote 1", "type": "textarea", "rows": 2},
+                    {"name": "quote_1_context", "label": "Context", "type": "text"},
+                    {"name": "quote_2", "label": "Quote 2", "type": "textarea", "rows": 2},
+                    {"name": "quote_2_context", "label": "Context", "type": "text"},
+                    {"name": "quote_3", "label": "Quote 3", "type": "textarea", "rows": 2},
+                    {"name": "quote_3_context", "label": "Context", "type": "text"},
+                    {"name": "quote_4", "label": "Quote 4", "type": "textarea", "rows": 2},
+                    {"name": "quote_4_context", "label": "Context", "type": "text"},
+                    {"name": "quote_5", "label": "Quote 5", "type": "textarea", "rows": 2},
+                    {"name": "quote_5_context", "label": "Context", "type": "text"},
+                ],
+            },
+            {
+                "id": "surprises",
+                "title": "Surprises & unexpected insights",
+                "fields": [
+                    {"name": "surprised", "label": "What surprised us", "type": "textarea", "rows": 3},
+                    {"name": "contradicted", "label": "What contradicted our expectations", "type": "textarea", "rows": 3},
+                    {"name": "unexpected_learn", "label": "What we didn't expect to learn", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "patterns",
+                "title": "Patterns & connections",
+                "fields": [
+                    {"name": "relates_to", "label": "How this session relates to others", "type": "textarea", "rows": 3},
+                    {"name": "patterns_confirmed", "label": "Patterns confirmed or strengthened", "type": "textarea", "rows": 3},
+                    {"name": "patterns_new", "label": "New patterns emerging", "type": "textarea", "rows": 3},
+                    {"name": "variations", "label": "Variations from previous sessions", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "behavioral",
+                "title": "Behavioral observations",
+                "fields": [
+                    {"name": "key_behaviors", "label": "Key behaviors observed", "type": "textarea", "rows": 3},
+                    {"name": "emotional", "label": "Emotional responses", "type": "textarea", "rows": 3},
+                    {"name": "reactions", "label": "Notable reactions", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "context",
+                "title": "Participant context",
+                "fields": [
+                    {"name": "background", "label": "Relevant background that affects interpretation", "type": "textarea", "rows": 3},
+                    {"name": "circumstances", "label": "Unique circumstances to note", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "followups",
+                "title": "Follow-up questions",
+                "fields": [
+                    {"name": "followup_raised", "label": "Questions this session raised", "type": "textarea", "rows": 3},
+                    {"name": "followup_probe", "label": "Areas to probe more deeply", "type": "textarea", "rows": 3},
+                    {"name": "followup_clarify", "label": "Clarifications needed", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "method_notes",
+                "title": "Methodological notes",
+                "fields": [
+                    {"name": "worked", "label": "What worked well", "type": "textarea", "rows": 3},
+                    {"name": "didnt_work", "label": "What didn't work well", "type": "textarea", "rows": 3},
+                    {"name": "guide_adjustments", "label": "Suggested adjustments to guide", "type": "textarea", "rows": 3},
+                    {"name": "timing_notes", "label": "Timing notes (sections long/short)", "type": "textarea", "rows": 2},
+                    {"name": "technical_issues", "label": "Technical issues", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "implications",
+                "title": "Implications",
+                "fields": [
+                    {"name": "immediate", "label": "Immediate implications", "type": "textarea", "rows": 3},
+                    {"name": "product_impact", "label": "Potential impact on design / product", "type": "textarea", "rows": 3},
+                    {"name": "deeper", "label": "Areas needing deeper exploration", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "next_steps",
+                "title": "Next steps",
+                "fields": [
+                    {"name": "research_actions", "label": "Research actions (one per line)", "type": "textarea", "rows": 3},
+                    {"name": "comm_actions", "label": "Communication actions", "type": "textarea", "rows": 2},
+                ],
+            },
+            {
+                "id": "team",
+                "title": "Research team notes",
+                "fields": [
+                    {"name": "team_notes", "type": "textarea", "rows": 4},
+                ],
+            },
+            {
+                "id": "links",
+                "title": "Document links",
+                "fields": [
+                    {"name": "session_notes_link", "label": "Detailed session notes", "type": "text"},
+                    {"name": "recording_link", "label": "Recording", "type": "text"},
+                    {"name": "transcript_link", "label": "Transcript", "type": "text"},
+                    {"name": "photos_link", "label": "Photos / artifacts folder", "type": "text"},
+                ],
+            },
+        ],
+    },
+    "UXR-006-template-5.5": {
+        "title": "Research Journal Entry",
+        "multi_instance": True,
+        "instance_singular": "entry",
+        "instance_plural": "entries",
+        "intro": "Periodic check-in during fieldwork — what patterns are emerging, what's surprising you, what hypotheses you're building. Add an entry every few sessions or whenever your thinking shifts.",
+        "sections": [
+            {
+                "id": "header",
+                "title": "Entry header",
+                "fields": [
+                    {"name": "study_name", "label": "Study", "type": "text", "autofill": "project.name"},
+                    {"name": "entry_date", "label": "Entry date", "type": "date", "autofill": "today"},
+                    {"name": "sessions_to_date", "label": "Sessions completed to date", "type": "text"},
+                    {"name": "entry_by", "label": "Journal entry by", "type": "text", "autofill": "project.owner"},
+                    {"name": "sessions_covered", "label": "Sessions covered (IDs or date range)", "type": "text"},
+                ],
+            },
+            {
+                "id": "patterns",
+                "title": "Patterns emerging across sessions",
+                "fields": [
+                    {"name": "strong_patterns", "label": "Strong patterns (seen in most/all sessions). Per pattern: evidence, strength, implications.", "type": "textarea", "rows": 6},
+                    {"name": "emerging_patterns", "label": "Emerging patterns (seen in some sessions). Per pattern: evidence, confidence, what would confirm.", "type": "textarea", "rows": 6},
+                    {"name": "variations", "label": "Variations between participants — what varies, what explains it, hypothesis why", "type": "textarea", "rows": 4},
+                ],
+            },
+            {
+                "id": "hypotheses",
+                "title": "Working hypotheses",
+                "blurb": "Per hypothesis: evidence for, evidence against, confidence (high/medium/low), how to test.",
+                "fields": [
+                    {"name": "hypothesis_1", "label": "Hypothesis 1", "type": "textarea", "rows": 5},
+                    {"name": "hypothesis_2", "label": "Hypothesis 2", "type": "textarea", "rows": 5},
+                    {"name": "hypothesis_3", "label": "Hypothesis 3 (optional)", "type": "textarea", "rows": 5},
+                ],
+            },
+            {
+                "id": "reflexivity",
+                "title": "Reflexivity & bias check",
+                "fields": [
+                    {"name": "expected_find", "label": "What I expected to find", "type": "textarea", "rows": 3},
+                    {"name": "actually_finding", "label": "What I'm actually finding", "type": "textarea", "rows": 3},
+                    {"name": "assumptions_challenged", "label": "Assumptions being challenged", "type": "textarea", "rows": 3},
+                    {"name": "potential_biases", "label": "Potential biases in my interpretation", "type": "textarea", "rows": 3},
+                    {"name": "perspective_check", "label": "Areas where I need to check my perspective", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "surprises",
+                "title": "Surprises & novel insights",
+                "fields": [
+                    {"name": "surprised_me", "label": "What has surprised me (one per line)", "type": "textarea", "rows": 4},
+                    {"name": "emerging_unexpected", "label": "What I didn't expect but is emerging", "type": "textarea", "rows": 4},
+                    {"name": "questions_should_have_asked", "label": "Questions I didn't know to ask but should have", "type": "textarea", "rows": 4},
+                ],
+            },
+            {
+                "id": "theme_quotes",
+                "title": "Quotes that capture key themes",
+                "fields": [
+                    {"name": "theme_quotes", "label": "Theme · quote · participant. Group by theme.", "type": "textarea", "rows": 8},
+                ],
+            },
+            {
+                "id": "methodology",
+                "title": "Methodological reflections",
+                "fields": [
+                    {"name": "working", "label": "What's working well", "type": "textarea", "rows": 3},
+                    {"name": "not_working", "label": "What's not working", "type": "textarea", "rows": 3},
+                    {"name": "adjustments", "label": "Adjustments made (date · what · why)", "type": "textarea", "rows": 4},
+                    {"name": "guide_improvements", "label": "Guide / protocol improvements", "type": "textarea", "rows": 3},
+                    {"name": "things_to_change", "label": "Things to do differently", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "questions",
+                "title": "Questions & areas for deeper exploration",
+                "fields": [
+                    {"name": "questions_remaining", "label": "Questions remaining (one per line)", "type": "textarea", "rows": 4},
+                    {"name": "questions_emerging", "label": "New questions emerging", "type": "textarea", "rows": 4},
+                    {"name": "areas_more_depth", "label": "Areas needing more depth in remaining sessions", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "connections",
+                "title": "Connections to existing knowledge",
+                "fields": [
+                    {"name": "prior_research", "label": "How findings relate to prior research", "type": "textarea", "rows": 3},
+                    {"name": "other_studies", "label": "How findings relate to other studies we've done", "type": "textarea", "rows": 3},
+                    {"name": "frameworks", "label": "Theories or frameworks that seem relevant", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "themes",
+                "title": "Emerging themes & preliminary framework",
+                "fields": [
+                    {"name": "major_themes", "label": "Major themes (name · definition · evidence · sub-themes)", "type": "textarea", "rows": 8},
+                    {"name": "organizing_framework", "label": "Potential organizing framework — how themes relate", "type": "textarea", "rows": 4},
+                ],
+            },
+            {
+                "id": "implications",
+                "title": "Implications taking shape",
+                "fields": [
+                    {"name": "design_implications", "label": "Design implications", "type": "textarea", "rows": 3},
+                    {"name": "product_implications", "label": "Product implications", "type": "textarea", "rows": 3},
+                    {"name": "strategic_implications", "label": "Strategic implications", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "confidence",
+                "title": "Confidence assessment",
+                "fields": [
+                    {"name": "confident_about", "label": "What I'm confident about", "type": "textarea", "rows": 3},
+                    {"name": "uncertain_about", "label": "What I'm uncertain about", "type": "textarea", "rows": 3},
+                    {"name": "need_more_data", "label": "What I need more data on", "type": "textarea", "rows": 3},
+                    {"name": "saturation_estimate", "label": "When I think we'll reach saturation", "type": "text"},
+                ],
+            },
+            {
+                "id": "next_steps",
+                "title": "Next steps",
+                "fields": [
+                    {"name": "remaining_sessions", "label": "For remaining sessions (one per line)", "type": "textarea", "rows": 3},
+                    {"name": "analysis_tasks", "label": "For analysis", "type": "textarea", "rows": 3},
+                    {"name": "team_actions", "label": "For team", "type": "textarea", "rows": 3},
+                ],
+            },
+            {
+                "id": "team_discussion",
+                "title": "Team discussion points",
+                "fields": [
+                    {"name": "discussion_items", "label": "Items to discuss with team", "type": "textarea", "rows": 4},
+                    {"name": "team_questions", "label": "Questions for team", "type": "textarea", "rows": 3},
+                ],
+            },
+        ],
+    },
     "UXR-003-template-5.4": {
         "title": "Recruitment Outreach Email",
         "intro": "Fill in the variables once; the Word export generates three ready-to-send email versions (cold-professional, warm-customer, reminder) with your values substituted.",

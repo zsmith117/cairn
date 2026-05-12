@@ -58,7 +58,8 @@
   }
   .mobile-header, .sidebar-backdrop { display: none; }
   @media (max-width: 880px) {
-    .app { grid-template-columns: 1fr; }
+    .app { grid-template-columns: minmax(0, 1fr); }
+    .main { min-width: 0; }
     .sidebar {
       position: fixed !important;
       top: 0; left: 0; bottom: 0;
@@ -697,9 +698,13 @@
     align-items: start;
   }
   @media (max-width: 1000px) {
-    .sop-detail-grid { grid-template-columns: 1fr; }
+    .sop-detail-grid { grid-template-columns: minmax(0, 1fr); }
     .toc { display: none; }
   }
+  /* Defensive: any direct grid child must be allowed to shrink below
+     its intrinsic content width, otherwise long <pre> / <table> /
+     unbreakable strings expand the column past the viewport. */
+  .sop-detail-grid > * { min-width: 0; max-width: 100%; }
   .breadcrumb {
     font-family: var(--mono);
     font-size: 11px;
@@ -777,7 +782,16 @@
   .tab.active .count { color: var(--text-muted); }
 
   /* Prose */
-  .prose { font-size: 15px; line-height: 1.65; color: var(--text); }
+  .prose {
+    font-size: 15px;
+    line-height: 1.65;
+    color: var(--text);
+    /* Break long URLs / unbreakable tokens before they overflow */
+    overflow-wrap: anywhere;
+    word-wrap: break-word;
+  }
+  .prose img { max-width: 100%; height: auto; }
+  .prose pre { max-width: 100%; }
   .prose h1 { display: none; }
   .prose h2 {
     font-family: var(--serif);
